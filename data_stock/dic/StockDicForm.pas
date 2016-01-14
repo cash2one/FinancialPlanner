@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, ActiveX, SysUtils, ShellApi,
   Classes, Controls, Forms, StdCtrls,
-  BaseApp, BaseWinApp, DB_StockItem;
+  BaseApp, BaseWinApp, db_dealitem;
 
 type
   TfrmStockDic = class(TForm)
@@ -36,8 +36,8 @@ var
 implementation
 
 uses
-  DB_StockItem_LoadIni,
-  DB_StockItem_Save;
+  db_dealItem_LoadIni,
+  db_dealItem_Save;
 
 {$R *.dfm}
                       
@@ -95,7 +95,7 @@ begin
     mmo1.Lines.Insert(0, tmpfileName);
     tmpFileUrl := tmpfileName;
     //DB_StockItem_LoadIni.LoadDBStockItemIni(GlobalApp, GlobalApp.fDBStockItem);
-    DB_StockItem_LoadIni.LoadDBStockItemIniFromFile(GlobalApp, GlobalApp.fDBStockItem, tmpFileUrl);
+    db_dealItem_LoadIni.LoadDBStockItemIniFromFile(GlobalApp, GlobalApp.fDBStockItem, tmpFileUrl);
     if '' = tmpPath then
       tmpPath := ExtractFilePath(tmpFileUrl);
     if 1 = tmpfileCount then
@@ -106,7 +106,7 @@ begin
         tmpNewFileUrl := ChangeFileExt(tmpFileUrl, '.dic');
         if not FileExists(tmpNewFileUrl) then
         begin
-          DB_StockItem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.fDBStockItem, tmpNewFileUrl);
+          db_dealItem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.fDBStockItem, tmpNewFileUrl);
         end;
       end;
     end;
@@ -116,7 +116,7 @@ begin
     if 0 < GlobalApp.fDBStockItem.RecordCount then
     begin
       GlobalApp.fDBStockItem.Sort;
-      DB_StockItem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.fDBStockItem, tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic');
+      db_dealitem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.fDBStockItem, tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic');
     end;
   end;
   //release memory
