@@ -57,7 +57,7 @@ uses
   BaseStockApp,
   Define_DataSrc,
   define_DealItem,
-  Define_RunTime_StockQuote,
+  define_stock_quotes,
   UIStockData,
   StockDayData_Load,
   db_dealItem_Load;

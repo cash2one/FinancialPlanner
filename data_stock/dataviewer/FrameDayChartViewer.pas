@@ -39,7 +39,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Define_DataSrc, StockDayData_Load, Define_RunTime_StockQuote;
+  Define_DataSrc, StockDayData_Load, define_stock_quotes;
   
 constructor TfmeDayChartViewer.Create(AOwner: TComponent);
 begin

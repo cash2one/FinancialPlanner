@@ -49,7 +49,7 @@ implementation
 uses
   BaseStockApp,
   Define_DataSrc,
-  Define_RunTime_StockQuote,
+  define_stock_quotes,
   StockDayData_Load,
   StockDetailData_Load,
   db_DealItem_Load;

@@ -6,7 +6,7 @@ uses
   SysUtils, BaseWinApp, 
   define_datasrc,
   define_dealitem,
-  Define_Store_File;
+  define_dealstore_file;
   
 type
   TStockAppPath = class(TBaseWinAppPath)
