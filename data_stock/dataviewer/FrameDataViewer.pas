@@ -5,8 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   BaseApp, BaseForm, VirtualTrees, ExtCtrls, 
-  Define_StockItem,  UIStockData,
-  DB_StockItem,
+  define_dealItem,  UIStockData,
+  db_dealItem,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, 
   StockDayDataAccess,
   StockDetailDataAccess;
@@ -52,7 +52,7 @@ uses
   Define_RunTime_StockQuote,
   StockDayData_Load,
   StockDetailData_Load,
-  DB_StockItem_Load;
+  db_DealItem_Load;
 
 type    
   TDayColumns = (

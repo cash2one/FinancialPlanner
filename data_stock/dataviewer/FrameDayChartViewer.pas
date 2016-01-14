@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Controls, Graphics, Forms, Messages, SysUtils, Windows,  
-  Define_StockItem,
+  define_DealItem,
   BaseApp, BaseForm, StockDayDataAccess, UIStockData,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, ExtCtrls;
 

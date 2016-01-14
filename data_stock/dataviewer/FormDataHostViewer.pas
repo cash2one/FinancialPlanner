@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   BaseApp, BaseForm, VirtualTrees, ExtCtrls, Tabs,
-  DB_StockItem, StockDayDataAccess,
+  db_dealItem, StockDayDataAccess,
   FrameDataViewer, FrameDayChartViewer,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA;
 
@@ -56,11 +56,11 @@ implementation
 uses
   BaseStockApp,
   Define_DataSrc,
-  Define_StockItem,
+  define_DealItem,
   Define_RunTime_StockQuote,
   UIStockData,
   StockDayData_Load,
-  DB_StockItem_Load;
+  db_dealItem_Load;
       
 procedure CreateMainForm(var AForm: TfrmBase);
 begin
@@ -130,7 +130,7 @@ end;
 procedure TfrmDataViewer.InitializeStockListTree;
 var
   i: integer;
-  tmpStockItem: PRT_StockItem;
+  tmpStockItem: PRT_DealItem;
   tmpNode: PVirtualNode;
   tmpNodeData: PStockItemNode;
 begin

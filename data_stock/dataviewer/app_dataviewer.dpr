@@ -16,18 +16,14 @@ uses
   BaseForm in '..\..\..\devwintech\v0000\win_base\BaseForm.pas' {frmBase},
   Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
   define_price in '..\..\basedefine\define_price.pas',
-  Define_DataSrc in '..\..\basedefine\define_datasrc.pas',
+  define_datasrc in '..\..\basedefine\define_datasrc.pas',
   Define_Store_File in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\Define\Define_Store_File.pas',
   Define_Store_Header in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\Define\Define_Store_Header.pas',
-  Define_StockItem in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\Define\Define_StockItem.pas',
-  Define_DealMarket in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\Define\Define_DealMarket.pas',
   Define_RunTime_StockQuote in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\Define\Define_RunTime_StockQuote.pas',
   Define_Store_StockQuote in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\Define\Define_Store_StockQuote.pas',
   DefineWinMsg in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\DefineBase\DefineWinMsg.pas',
   BaseWinApp in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\BaseApp\BaseWinApp.pas',
-  DB_StockItem in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\StockItem\DB_StockItem.pas',
-  DB_StockItem_Load in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\StockItem\DB_StockItem_Load.pas',
-  StockAppPath in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\StockApp\StockAppPath.pas',
+  StockAppPath in '..\..\base\StockAppPath.pas',
   BaseStockApp in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\StockApp\BaseStockApp.pas',
   StockDayDataAccess in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\StockDataAccess\StockDayDataAccess.pas',
   StockDayData_Load in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\StockDataAccess\StockDayData_Load.pas',
@@ -45,7 +41,13 @@ uses
   FrameDataViewer in 'FrameDataViewer.pas' {fmeDataViewer},
   FormDataHostViewer in 'FormDataHostViewer.pas' {frmDataViewer},
   FrameDayChartViewer in 'FrameDayChartViewer.pas' {fmeDayChartViewer},
-  UIStockData in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\App_DataViewer\UIStockData.pas';
+  UIStockData in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\App_DataViewer\UIStockData.pas',
+  define_dealitem in '..\..\basedefine\define_dealitem.pas',
+  db_dealitem in '..\..\dealitem\db_dealitem.pas',
+  define_dealmarket in '..\..\basedefine\define_dealmarket.pas',
+  define_dealstore_header in '..\..\basedefine\define_dealstore_header.pas',
+  db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
+  define_dealstore_file in '..\..\basedefine\define_dealstore_file.pas';
 
 {$R *.res}
 

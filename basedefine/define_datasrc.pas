@@ -3,7 +3,7 @@ unit define_datasrc;
 interface
 
 uses
-  define_StockItem;
+  define_dealitem;
                
 const          
   DataSrc_CTP        = 11;
@@ -18,14 +18,14 @@ const
   DataSrc_QQ         = 33;
   DataSrc_XQ         = 34; // Ñ©Çò
             
-  function GetDataSrcCode(ADataSrc: integer): String;
+  function GetDataSrcCode(ADataSrc: integer): AnsiString;
                                                      
-  function GetStockCode_163(AStockItem: PRT_StockItem): string;
-  function GetStockCode_Sina(AStockItem: PRT_StockItem): string;
+  function GetStockCode_163(AStockItem: PRT_DealItem): AnsiString;
+  function GetStockCode_Sina(AStockItem: PRT_DealItem): AnsiString;
               
 implementation
          
-function GetDataSrcCode(ADataSrc: integer): String;
+function GetDataSrcCode(ADataSrc: integer): AnsiString;
 begin
   Result := '';
   case ADataSrc of
@@ -42,7 +42,7 @@ begin
   end;
 end;
          
-function GetStockCode_163(AStockItem: PRT_StockItem): string;
+function GetStockCode_163(AStockItem: PRT_DealItem): AnsiString;
 begin
   if AStockItem.sCode[1] = '6' then
   begin
@@ -53,7 +53,7 @@ begin
   end;
 end;
       
-function GetStockCode_Sina(AStockItem: PRT_StockItem): string;
+function GetStockCode_Sina(AStockItem: PRT_DealItem): AnsiString;
 begin
   if AStockItem.sCode[1] = '6' then
   begin
