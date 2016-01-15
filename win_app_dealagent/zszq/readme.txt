@@ -1,1 +1,0 @@
-deal helper for zszq
