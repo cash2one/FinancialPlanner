@@ -14,10 +14,9 @@ uses
   Windows,
   BaseWinFile,
   Define_Price,
-  Define_RunTime_StockQuote,
-  Define_Store_Header,
-  Define_Store_StockQuote,
-  Define_Store_File;
+  define_stock_quotes,
+  define_dealstore_header,
+  define_dealstore_file;
                        
 procedure SaveStockDayDataToBuffer(App: TBaseApp; ADataAccess: TStockDayDataAccess; AMemory: pointer); forward;
 
@@ -75,7 +74,7 @@ begin
   tmpHead.Header.BaseHeader.CompressFlag        := 0;             // 1 -- 17
   tmpHead.Header.BaseHeader.EncryptFlag         := 0;             // 1 -- 18
   tmpHead.Header.BaseHeader.DataSourceId        := ADataAccess.DataSourceId;             // 2 -- 20
-  CopyMemory(@tmpHead.Header.BaseHeader.Code[0], @ADataAccess.StockItem.Code[1], Length(ADataAccess.StockItem.Code));
+  CopyMemory(@tmpHead.Header.BaseHeader.Code[0], @ADataAccess.StockItem.sCode[1], Length(ADataAccess.StockItem.sCode));
   //Move(ADataAccess.StockItem.Code, tmpHead.Header.BaseHeader.Code[0], Length(ADataAccess.StockItem.Code)); // 12 - 32
   // ----------------------------------------------------
   tmpHead.Header.BaseHeader.StorePriceFactor    := 1000;             // 2 - 34
