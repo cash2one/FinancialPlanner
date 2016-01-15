@@ -9,13 +9,19 @@ uses
   define_stock_quotes;
   
 type
+  { 行情日线数据访问 }
+  TStockDayData = record
+    DealItem: PRT_DealItem;
+    IsDataChangedStatus: Byte;
+    DayDealData: TALIntegerList;
+    FirstDealDate     : Word;   // 2
+    LastDealDate      : Word;   // 2 最后记录交易时间
+    DataSourceId: integer;
+  end;
+  
   TStockDayDataAccess = class(TBaseDataSetAccess)
   protected
-    fStockItem: PRT_DealItem;  
-    fDayDealData: TALIntegerList;
-    fFirstDealDate     : Word;   // 2
-    fLastDealDate      : Word;   // 2 最后记录交易时间
-    fDataSourceId: integer;
+    fStockDayData: TStockDayData;
     function GetFirstDealDate: Word; 
     procedure SetFirstDealDate(const Value: Word);
 
@@ -39,8 +45,8 @@ type
     property FirstDealDate: Word read GetFirstDealDate;
     property LastDealDate: Word read GetLastDealDate;
     property EndDealDate: Word read GetEndDealDate write SetEndDealDate;
-    property StockItem: PRT_DealItem read fStockItem write SetStockItem;
-    property DataSourceId: integer read fDataSourceId write fDataSourceId;
+    property StockItem: PRT_DealItem read fStockDayData.DealItem write SetStockItem;
+    property DataSourceId: integer read fStockDayData.DataSourceId write fStockDayData.DataSourceId;
   end;
   
 implementation
@@ -49,11 +55,13 @@ implementation
 
 constructor TStockDayDataAccess.Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
 begin
-  fStockItem := AStockItem;   
-  fDayDealData := TALIntegerList.Create; 
-  fFirstDealDate     := 0;   // 2
-  fLastDealDate      := 0;   // 2 最后记录交易时间
-  fDataSourceId := ADataSrcId;
+  //inherited;
+  FillChar(fStockDayData, SizeOf(fStockDayData), 0);
+  fStockDayData.DealItem := AStockItem;
+  fStockDayData.DayDealData := TALIntegerList.Create; 
+  fStockDayData.FirstDealDate     := 0;   // 2
+  fStockDayData.LastDealDate      := 0;   // 2 最后记录交易时间
+  fStockDayData.DataSourceId := ADataSrcId;
 end;
 
 destructor TStockDayDataAccess.Destroy;
@@ -61,13 +69,13 @@ var
   i: integer;
   tmpQuoteDay: PRT_Quote_M1_Day;
 begin
-  for i := fDayDealData.Count - 1 downto 0 do
+  for i := fStockDayData.DayDealData.Count - 1 downto 0 do
   begin
-    tmpQuoteDay := PRT_Quote_M1_Day(fDayDealData.Objects[i]);
+    tmpQuoteDay := PRT_Quote_M1_Day(fStockDayData.DayDealData.Objects[i]);
     FreeMem(tmpQuoteDay);
   end;
-  fDayDealData.Clear;
-  fDayDealData.Free;
+  fStockDayData.DayDealData.Clear;
+  fStockDayData.DayDealData.Free;
   inherited;
 end;
 
@@ -75,13 +83,13 @@ procedure TStockDayDataAccess.SetStockItem(AStockItem: PRT_DealItem);
 begin
   if nil <> AStockItem then
   begin
-    if fStockItem <> AStockItem then
+    if fStockDayData.DealItem <> AStockItem then
     begin
     
     end;
   end;
-  fStockItem := AStockItem;
-  if nil <> fStockItem then
+  fStockDayData.DealItem := AStockItem;
+  if nil <> fStockDayData.DealItem then
   begin
 
   end;
@@ -89,22 +97,22 @@ end;
 
 function TStockDayDataAccess.GetFirstDealDate: Word;
 begin         
-  Result := fFirstDealDate;
+  Result := fStockDayData.FirstDealDate;
 end;
                   
 procedure TStockDayDataAccess.SetFirstDealDate(const Value: Word);
 begin
-  fFirstDealDate := Value;
+  fStockDayData.FirstDealDate := Value;
 end;
 
 function TStockDayDataAccess.GetLastDealDate: Word;
 begin
-  Result := fLastDealDate;
+  Result := fStockDayData.LastDealDate;
 end;
               
 procedure TStockDayDataAccess.SetLastDealDate(const Value: Word);
 begin
-  fLastDealDate := Value;
+  fStockDayData.LastDealDate := Value;
 end;
 
 function TStockDayDataAccess.GetEndDealDate: Word;
@@ -118,17 +126,17 @@ end;
 
 function TStockDayDataAccess.GetRecordCount: Integer;
 begin
-  Result := fDayDealData.Count;
+  Result := fStockDayData.DayDealData.Count;
 end;
 
 function TStockDayDataAccess.GetRecordItem(AIndex: integer): Pointer;
 begin
-  Result := fDayDealData.Objects[AIndex];
+  Result := fStockDayData.DayDealData.Objects[AIndex];
 end;
 
 procedure TStockDayDataAccess.Sort;
 begin
-  fDayDealData.Sort;
+  fStockDayData.DayDealData.Sort;
 end;
 
 function TStockDayDataAccess.CheckOutRecord(ADate: Integer): PRT_Quote_M1_Day;
@@ -139,16 +147,16 @@ begin
   Result := FindRecord(ADate);
   if nil = Result then
   begin
-    if fFirstDealDate = 0 then
-      fFirstDealDate := ADate;
-    if fFirstDealDate > ADate then
-      fFirstDealDate := ADate;
-    if fLastDealDate < ADate then
-      fLastDealDate := ADate;
+    if fStockDayData.FirstDealDate = 0 then
+      fStockDayData.FirstDealDate := ADate;
+    if fStockDayData.FirstDealDate > ADate then
+      fStockDayData.FirstDealDate := ADate;
+    if fStockDayData.LastDealDate < ADate then
+      fStockDayData.LastDealDate := ADate;
     Result := System.New(PRT_Quote_M1_Day);
     FillChar(Result^, SizeOf(TRT_Quote_M1_Day), 0);
     Result.DealDateTime.Value := ADate;
-    fDayDealData.AddObject(ADate, TObject(Result));
+    fStockDayData.DayDealData.AddObject(ADate, TObject(Result));
   end;
 end;
 
@@ -157,9 +165,9 @@ var
   tmpPos: integer;
 begin
   Result := nil;
-  tmpPos := fDayDealData.IndexOf(ADate);
+  tmpPos := fStockDayData.DayDealData.IndexOf(ADate);
   if 0 <= tmpPos then
-    Result := PRT_Quote_M1_Day(fDayDealData.Objects[tmpPos]);
+    Result := PRT_Quote_M1_Day(fStockDayData.DayDealData.Objects[tmpPos]);
 end;
 
 end.
