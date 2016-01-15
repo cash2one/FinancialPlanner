@@ -21,7 +21,7 @@ implementation
 uses
   Sysutils,
   Classes,
-  HttpUtils,
+  UtilsHttp,
   Define_Price,
   define_dealItem,
   define_datasrc,
