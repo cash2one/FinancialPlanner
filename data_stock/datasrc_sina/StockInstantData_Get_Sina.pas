@@ -125,6 +125,17 @@ begin
           // 33
           if nil <> tmpInstant then
           begin
+            if '' = tmpInstant.Item.Name then
+            begin
+              tmpRowData := tmpRowStrs[0];
+              j := Pos('=', tmpRowData);
+              if j > 0 then
+              begin
+                tmpRowData := Copy(tmpRowData, j + 1, maxint);
+                tmpRowData := StringReplace(tmpRowData, '"', '', [rfReplaceAll]);
+                tmpInstant.Item.Name := tmpRowData;
+              end;
+            end;
             trySetRTPricePack(@tmpInstant.PriceRange.PriceOpen, tmpRowStrs[1]);
             trySetRTPricePack(@tmpInstant.PriceRange.PriceClose, tmpRowStrs[3]);
             trySetRTPricePack(@tmpInstant.PriceRange.PriceHigh, tmpRowStrs[4]);
