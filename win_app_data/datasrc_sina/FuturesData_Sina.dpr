@@ -30,6 +30,9 @@ uses
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   db_dealitem_save in '..\..\dealitem\db_dealitem_save.pas',
+  FuturesDataAccess in '..\..\data_futures\FuturesDataAccess.pas',
+  FuturesData_Load in '..\..\data_futures\FuturesData_Load.pas',
+  FuturesData_Save in '..\..\data_futures\FuturesData_Save.pas',
   FuturesData_Get_Sina in 'FuturesData_Get_Sina.pas';
 
 {$R *.res}
