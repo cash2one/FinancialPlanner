@@ -48,11 +48,36 @@ type
     property StockItem: PRT_DealItem read fStockDayData.DealItem write SetStockItem;
     property DataSourceId: integer read fStockDayData.DataSourceId write fStockDayData.DataSourceId;
   end;
+                            
+  procedure AddDealDayData(ADataAccess: TStockDayDataAccess; ATempDealDayData: PRT_Quote_M1_Day);
   
 implementation
 
 { TStockDayDataAccess }
 
+procedure AddDealDayData(ADataAccess: TStockDayDataAccess; ATempDealDayData: PRT_Quote_M1_Day);
+var
+  tmpAddDealDayData: PRT_Quote_M1_Day;
+begin
+  if (nil = ATempDealDayData) then
+    exit;
+  if (ATempDealDayData.DealDateTime.Value > 0) and
+                 (ATempDealDayData.PriceRange.PriceOpen.Value > 0) and
+                 (ATempDealDayData.PriceRange.PriceClose.Value > 0) and
+                 (ATempDealDayData.DealVolume > 0) and
+                 (ATempDealDayData.DealAmount > 0) then
+  begin
+    tmpAddDealDayData := ADataAccess.CheckOutRecord(ATempDealDayData.DealDateTime.Value);
+    tmpAddDealDayData.PriceRange.PriceHigh := ATempDealDayData.PriceRange.PriceHigh;
+    tmpAddDealDayData.PriceRange.PriceLow := ATempDealDayData.PriceRange.PriceLow;
+    tmpAddDealDayData.PriceRange.PriceOpen := ATempDealDayData.PriceRange.PriceOpen;
+    tmpAddDealDayData.PriceRange.PriceClose := ATempDealDayData.PriceRange.PriceClose;
+    tmpAddDealDayData.DealVolume := ATempDealDayData.DealVolume;
+    tmpAddDealDayData.DealAmount := ATempDealDayData.DealAmount;
+    tmpAddDealDayData.Weight := ATempDealDayData.Weight;
+  end;
+end;
+        
 constructor TStockDayDataAccess.Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
 begin
   //inherited;
