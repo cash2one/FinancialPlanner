@@ -1,4 +1,4 @@
-﻿program FuturesData_Sina;
+﻿program StockDetail_Sina;
 
 uses
   Windows,
@@ -9,8 +9,8 @@ uses
   BaseFile in '..\..\..\devwintech\v0000\app_base\BaseFile.pas',
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
   BaseApp in '..\..\..\devwintech\v0000\app_base\BaseApp.pas',
-  BaseRun in '..\..\..\devwintech\v0000\app_base\BaseRun.pas',
   BaseThread in '..\..\..\devwintech\v0000\app_base\BaseThread.pas',
+  BaseRun in '..\..\..\devwintech\v0000\app_base\BaseRun.pas',
   BaseWinThread in '..\..\..\devwintech\v0000\win_base\BaseWinThread.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
   Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
@@ -26,20 +26,20 @@ uses
   define_price in '..\..\basedefine\define_price.pas',
   define_dealstore_header in '..\..\basedefine\define_dealstore_header.pas',
   define_dealstore_file in '..\..\basedefine\define_dealstore_file.pas',
-  define_futures_quotes in '..\..\basedefine\define_futures_quotes.pas',
+  define_stock_quotes in '..\..\basedefine\define_stock_quotes.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   db_dealitem_save in '..\..\dealitem\db_dealitem_save.pas',
-  FuturesDataAccess in '..\..\data_futures\FuturesDataAccess.pas',
-  FuturesData_Load in '..\..\data_futures\FuturesData_Load.pas',
-  FuturesData_Save in '..\..\data_futures\FuturesData_Save.pas',
-  Futures_Get_Sina in 'Futures_Get_Sina.pas',
-  FuturesData_Get_Sina in '..\..\data_futures\datasrc_sina\FuturesData_Get_Sina.pas';
+  StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
+  StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
+  StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
+  StockDetailData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDetailData_Get_Sina.pas',
+  StockDetail_Get_Sina in 'StockDetail_Get_Sina.pas';
 
 {$R *.res}
 
 type
-  TFuturesSinaApp = class(TBaseStockApp)
+  TStockDetailSinaApp = class(TBaseStockApp)
   protected
   public     
     constructor Create(AppClassId: AnsiString); override;
@@ -48,20 +48,20 @@ type
 
 { TStockDay163App }
 
-constructor TFuturesSinaApp.Create(AppClassId: AnsiString);
+constructor TStockDetailSinaApp.Create(AppClassId: AnsiString);
 begin
   inherited;
 end;
 
-procedure TFuturesSinaApp.Run;
+procedure TStockDetailSinaApp.Run;
 begin
-  GetFuturesData_Sina_All(Self);
+  GetStockDataDetail_Sina_All(Self);
 end;
 
 var
-  GlobalApp: TFuturesSinaApp;
+  GlobalApp: TStockDetailSinaApp;
 begin
-  GlobalApp := TFuturesSinaApp.Create('');
+  GlobalApp := TStockDetailSinaApp.Create('');
   try
     if GlobalApp.Initialize then
       GlobalApp.Run;
