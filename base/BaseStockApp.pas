@@ -7,7 +7,7 @@ uses
   
 type
   TBaseStockAppData = record
-    StockItemDB: TDBStockItem;
+    StockItemDB: TDBDealItem;
   end;
   
   TBaseStockApp = class(TBaseWinApp)
@@ -18,7 +18,7 @@ type
     constructor Create(AppClassId: AnsiString); override;
     destructor Destroy; override;     
     procedure InitializeDBStockItem;    
-    property StockItemDB: TDBStockItem read fBaseStockAppData.StockItemDB;
+    property StockItemDB: TDBDealItem read fBaseStockAppData.StockItemDB;
   end;
 
 implementation
@@ -54,7 +54,7 @@ procedure TBaseStockApp.InitializeDBStockItem;
 begin              
   if nil = fBaseStockAppData.StockItemDB then
   begin              
-    fBaseStockAppData.StockItemDB := TDBStockItem.Create;
+    fBaseStockAppData.StockItemDB := TDBDealItem.Create;
     db_dealitem_Load.LoadDBStockItem(Self, fBaseStockAppData.StockItemDB);
   end;
 end;

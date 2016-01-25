@@ -8,7 +8,7 @@ uses
   define_price,
   define_dealstore_header;
   
-  procedure LoadDBStockItem(App: TBaseApp; ADB: TDBStockItem);
+  procedure LoadDBStockItem(App: TBaseApp; ADB: TDBDealItem);
 
 implementation
 
@@ -18,7 +18,7 @@ uses
   define_dealstore_file,
   BaseWinFile;
                             
-procedure LoadDBStockItemFromBuffer(App: TBaseApp; ADB: TDBStockItem; AMemory: Pointer);
+procedure LoadDBStockItemFromBuffer(App: TBaseApp; ADB: TDBDealItem; AMemory: Pointer);
 var
   tmpRecordCount: integer;   
   tmpHead: PStore_HeaderRec;
@@ -61,7 +61,7 @@ begin
   end;
 end;
 
-procedure LoadDBStockItem2(App: TBaseApp; ADB: TDBStockItem);
+procedure LoadDBStockItem2(App: TBaseApp; ADB: TDBDealItem);
 var
   tmpFileUrl: string; 
   tmpWinFile: TWinFile;
@@ -95,7 +95,7 @@ begin
   end;
 end;
 
-procedure LoadDBStockItem(App: TBaseApp; ADB: TDBStockItem);
+procedure LoadDBStockItem(App: TBaseApp; ADB: TDBDealItem);
 var
   tmpFileUrl: string; 
   tmpWinFile: TWinFile;

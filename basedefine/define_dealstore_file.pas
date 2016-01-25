@@ -3,7 +3,8 @@ unit define_dealstore_file;
 interface
 
 const                               
-  FilePath_StockData      = 'sdata';
+  FilePath_StockData      = 'sdata';   
+  FilePath_FutureData     = 'fdata';
 
   FilePath_DBType_ItemDB      = 1;
   FilePath_DBType_DayData     = 2;

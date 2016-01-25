@@ -27,7 +27,7 @@ var
   tmpFileMapView: Pointer; 
   tmpFileNewSize: integer;
 begin
-  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.DealItem);
   tmpWinFile := TWinFile.Create;
   try
     if tmpWinFile.OpenFile(tmpFileUrl, true) then
@@ -67,15 +67,15 @@ begin
   tmpHead.Header.BaseHeader.HeadSize            := SizeOf(TStore_Quote_M1_Day_Header_V1Rec);             // 1 -- 7
   tmpHead.Header.BaseHeader.StoreSizeMode.Value := 16;  // 1 -- 8 page size mode
   { 表明是什么数据 }
-  tmpHead.Header.BaseHeader.DataType            := DataType_Stock;             // 2 -- 10
+  tmpHead.Header.BaseHeader.DataType            := DataType_Futures;             // 2 -- 10
   tmpHead.Header.BaseHeader.DataMode            := DataMode_DayData;             // 1 -- 11
   tmpHead.Header.BaseHeader.RecordSizeMode.Value:= 6;  // 1 -- 12
   tmpHead.Header.BaseHeader.RecordCount         := ADataAccess.RecordCount;          // 4 -- 16
   tmpHead.Header.BaseHeader.CompressFlag        := 0;             // 1 -- 17
   tmpHead.Header.BaseHeader.EncryptFlag         := 0;             // 1 -- 18
   tmpHead.Header.BaseHeader.DataSourceId        := ADataAccess.DataSourceId;             // 2 -- 20
-  CopyMemory(@tmpHead.Header.BaseHeader.Code[0], @ADataAccess.StockItem.sCode[1], Length(ADataAccess.StockItem.sCode));
-  //Move(ADataAccess.StockItem.Code, tmpHead.Header.BaseHeader.Code[0], Length(ADataAccess.StockItem.Code)); // 12 - 32
+  CopyMemory(@tmpHead.Header.BaseHeader.Code[0], @ADataAccess.DealItem.sCode[1], Length(ADataAccess.DealItem.sCode));
+  //Move(ADataAccess.DealItem.Code, tmpHead.Header.BaseHeader.Code[0], Length(ADataAccess.DealItem.Code)); // 12 - 32
   // ----------------------------------------------------
   tmpHead.Header.BaseHeader.StorePriceFactor    := 1000;             // 2 - 34
                                                 

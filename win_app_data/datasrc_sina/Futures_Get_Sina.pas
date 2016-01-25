@@ -38,15 +38,15 @@ var
                     
 procedure GetFuturesData_Sina_All(App: TBaseApp);
 var
-  tmpDBStockItem: TDBStockItem;
+  tmpDBDealItem: TDBDealItem;
   i: integer;
 begin
-  tmpDBStockItem := TDBStockItem.Create;
+  tmpDBDealItem := TDBDealItem.Create;
   try
-    LoadDBStockItem(App, tmpDBStockItem);
-    for i := 0 to tmpDBStockItem.RecordCount - 1 do
+    LoadDBStockItem(App, tmpDBDealItem);
+    for i := 0 to tmpDBDealItem.RecordCount - 1 do
     begin
-      if 0 = tmpDBStockItem.Items[i].EndDealDate then
+      if 0 = tmpDBDealItem.Items[i].EndDealDate then
       begin
         begin
           Sleep(2000);
@@ -54,7 +54,7 @@ begin
       end;
     end;
   finally
-    tmpDBStockItem.Free;
+    tmpDBDealItem.Free;
   end;
 end;
 

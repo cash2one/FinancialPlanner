@@ -21,7 +21,7 @@ type
   
   TFuturesDataAccess = class(TBaseDataSetAccess)
   protected
-    fStockDayData: TFuturesData;
+    fFuturesData: TFuturesData;
     function GetFirstDealDate: Word; 
     procedure SetFirstDealDate(const Value: Word);
 
@@ -31,12 +31,12 @@ type
     function GetEndDealDate: Word;
     procedure SetEndDealDate(const Value: Word);
 
-    procedure SetStockItem(AStockItem: PRT_DealItem);
+    procedure SetDealItem(ADealItem: PRT_DealItem);
     
     function GetRecordItem(AIndex: integer): Pointer; override;
     function GetRecordCount: Integer; override;
   public
-    constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
+    constructor Create(ADealItem: PRT_DealItem; ADataSrcId: integer);
     destructor Destroy; override;
     
     function FindRecord(ADate: Integer): PRT_Quote_M1_Day;
@@ -45,23 +45,21 @@ type
     property FirstDealDate: Word read GetFirstDealDate;
     property LastDealDate: Word read GetLastDealDate;
     property EndDealDate: Word read GetEndDealDate write SetEndDealDate;
-    property StockItem: PRT_DealItem read fStockDayData.DealItem write SetStockItem;
-    property DataSourceId: integer read fStockDayData.DataSourceId write fStockDayData.DataSourceId;
+    property DealItem: PRT_DealItem read fFuturesData.DealItem write SetDealItem;
+    property DataSourceId: integer read fFuturesData.DataSourceId write fFuturesData.DataSourceId;
   end;
   
 implementation
 
-{ TStockDayDataAccess }
-
-constructor TFuturesDataAccess.Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
+constructor TFuturesDataAccess.Create(ADealItem: PRT_DealItem; ADataSrcId: integer);
 begin
   //inherited;
-  FillChar(fStockDayData, SizeOf(fStockDayData), 0);
-  fStockDayData.DealItem := AStockItem;
-  fStockDayData.DayDealData := TALIntegerList.Create; 
-  fStockDayData.FirstDealDate     := 0;   // 2
-  fStockDayData.LastDealDate      := 0;   // 2 最后记录交易时间
-  fStockDayData.DataSourceId := ADataSrcId;
+  FillChar(fFuturesData, SizeOf(fFuturesData), 0);
+  fFuturesData.DealItem := ADealItem;
+  fFuturesData.DayDealData := TALIntegerList.Create; 
+  fFuturesData.FirstDealDate     := 0;   // 2
+  fFuturesData.LastDealDate      := 0;   // 2 最后记录交易时间
+  fFuturesData.DataSourceId := ADataSrcId;
 end;
 
 destructor TFuturesDataAccess.Destroy;
@@ -69,27 +67,27 @@ var
   i: integer;
   tmpQuoteDay: PRT_Quote_M1_Day;
 begin
-  for i := fStockDayData.DayDealData.Count - 1 downto 0 do
+  for i := fFuturesData.DayDealData.Count - 1 downto 0 do
   begin
-    tmpQuoteDay := PRT_Quote_M1_Day(fStockDayData.DayDealData.Objects[i]);
+    tmpQuoteDay := PRT_Quote_M1_Day(fFuturesData.DayDealData.Objects[i]);
     FreeMem(tmpQuoteDay);
   end;
-  fStockDayData.DayDealData.Clear;
-  fStockDayData.DayDealData.Free;
+  fFuturesData.DayDealData.Clear;
+  fFuturesData.DayDealData.Free;
   inherited;
 end;
 
-procedure TFuturesDataAccess.SetStockItem(AStockItem: PRT_DealItem);
+procedure TFuturesDataAccess.SetDealItem(ADealItem: PRT_DealItem);
 begin
-  if nil <> AStockItem then
+  if nil <> ADealItem then
   begin
-    if fStockDayData.DealItem <> AStockItem then
+    if fFuturesData.DealItem <> ADealItem then
     begin
     
     end;
   end;
-  fStockDayData.DealItem := AStockItem;
-  if nil <> fStockDayData.DealItem then
+  fFuturesData.DealItem := ADealItem;
+  if nil <> fFuturesData.DealItem then
   begin
 
   end;
@@ -97,22 +95,22 @@ end;
 
 function TFuturesDataAccess.GetFirstDealDate: Word;
 begin         
-  Result := fStockDayData.FirstDealDate;
+  Result := fFuturesData.FirstDealDate;
 end;
                   
 procedure TFuturesDataAccess.SetFirstDealDate(const Value: Word);
 begin
-  fStockDayData.FirstDealDate := Value;
+  fFuturesData.FirstDealDate := Value;
 end;
 
 function TFuturesDataAccess.GetLastDealDate: Word;
 begin
-  Result := fStockDayData.LastDealDate;
+  Result := fFuturesData.LastDealDate;
 end;
               
 procedure TFuturesDataAccess.SetLastDealDate(const Value: Word);
 begin
-  fStockDayData.LastDealDate := Value;
+  fFuturesData.LastDealDate := Value;
 end;
 
 function TFuturesDataAccess.GetEndDealDate: Word;
@@ -126,17 +124,17 @@ end;
 
 function TFuturesDataAccess.GetRecordCount: Integer;
 begin
-  Result := fStockDayData.DayDealData.Count;
+  Result := fFuturesData.DayDealData.Count;
 end;
 
 function TFuturesDataAccess.GetRecordItem(AIndex: integer): Pointer;
 begin
-  Result := fStockDayData.DayDealData.Objects[AIndex];
+  Result := fFuturesData.DayDealData.Objects[AIndex];
 end;
 
 procedure TFuturesDataAccess.Sort;
 begin
-  fStockDayData.DayDealData.Sort;
+  fFuturesData.DayDealData.Sort;
 end;
 
 function TFuturesDataAccess.CheckOutRecord(ADate: Integer): PRT_Quote_M1_Day;
@@ -147,16 +145,16 @@ begin
   Result := FindRecord(ADate);
   if nil = Result then
   begin
-    if fStockDayData.FirstDealDate = 0 then
-      fStockDayData.FirstDealDate := ADate;
-    if fStockDayData.FirstDealDate > ADate then
-      fStockDayData.FirstDealDate := ADate;
-    if fStockDayData.LastDealDate < ADate then
-      fStockDayData.LastDealDate := ADate;
+    if fFuturesData.FirstDealDate = 0 then
+      fFuturesData.FirstDealDate := ADate;
+    if fFuturesData.FirstDealDate > ADate then
+      fFuturesData.FirstDealDate := ADate;
+    if fFuturesData.LastDealDate < ADate then
+      fFuturesData.LastDealDate := ADate;
     Result := System.New(PRT_Quote_M1_Day);
     FillChar(Result^, SizeOf(TRT_Quote_M1_Day), 0);
     Result.DealDateTime.Value := ADate;
-    fStockDayData.DayDealData.AddObject(ADate, TObject(Result));
+    fFuturesData.DayDealData.AddObject(ADate, TObject(Result));
   end;
 end;
 
@@ -165,9 +163,9 @@ var
   tmpPos: integer;
 begin
   Result := nil;
-  tmpPos := fStockDayData.DayDealData.IndexOf(ADate);
+  tmpPos := fFuturesData.DayDealData.IndexOf(ADate);
   if 0 <= tmpPos then
-    Result := PRT_Quote_M1_Day(fStockDayData.DayDealData.Objects[tmpPos]);
+    Result := PRT_Quote_M1_Day(fFuturesData.DayDealData.Objects[tmpPos]);
 end;
 
 end.

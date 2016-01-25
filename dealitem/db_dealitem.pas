@@ -6,9 +6,9 @@ uses
   define_dealitem, BaseDataSet, QuickList_int, Define_DealMarket, define_dealstore_header;
   
 type
-  TDBStockItem = class(TBaseDataSetAccess)
+  TDBDealItem = class(TBaseDataSetAccess)
   protected
-    fStockList: TALIntegerList;
+    fDealItemList: TALIntegerList;
     function GetRecordCount: Integer; override;  
     function GetRecordItem(AIndex: integer): Pointer; override;
     function GetItem(AIndex: integer): PRT_DealItem; overload;
@@ -51,55 +51,53 @@ implementation
 uses
   QuickSortList;
   
-{ TDBStockItem }
-
-constructor TDBStockItem.Create;
+constructor TDBDealItem.Create;
 begin
-  fStockList := TALIntegerList.Create;
-  fStockList.Duplicates := QuickSortList.lstdupIgnore;
+  fDealItemList := TALIntegerList.Create;
+  fDealItemList.Duplicates := QuickSortList.lstdupIgnore;
 end;
 
-destructor TDBStockItem.Destroy;
+destructor TDBDealItem.Destroy;
 begin
-  fStockList.Free;
+  fDealItemList.Free;
   inherited;
 end;
 
-function TDBStockItem.GetRecordItem(AIndex: integer): Pointer;
+function TDBDealItem.GetRecordItem(AIndex: integer): Pointer;
 begin
-  Result := Pointer(fStockList.Objects[AIndex]);
+  Result := Pointer(fDealItemList.Objects[AIndex]);
 end;
 
-function TDBStockItem.GetItem(AIndex: integer): PRT_DealItem;
+function TDBDealItem.GetItem(AIndex: integer): PRT_DealItem;
 begin
   Result := GetRecordItem(AIndex);
 end;
 
-function TDBStockItem.GetItem(ACode: string): PRT_DealItem;
+function TDBDealItem.GetItem(ACode: string): PRT_DealItem;
 begin
   Result := nil;
 end;
 
-function TDBStockItem.GetRecordCount: integer;
+function TDBDealItem.GetRecordCount: integer;
 begin
-  Result := fStockList.Count;
+  Result := fDealItemList.Count;
 end;
 
-procedure TDBStockItem.Sort;
+procedure TDBDealItem.Sort;
 begin
-  fStockList.Sort;
+  fDealItemList.Sort;
 end;
                        
-function TDBStockItem.AddItem(AMarketCode, AStockCode: AnsiString): PRT_DealItem;
+function TDBDealItem.AddItem(AMarketCode, AStockCode: AnsiString): PRT_DealItem;
 begin
   Result := System.New(PRT_DealItem);
   FillChar(Result^, SizeOf(TRT_DealItem), 0);
   Result.sMarketCode := AMarketCode;
   Result.sCode := AStockCode;
-  fStockList.AddObject(getStockCodePack(AStockCode), TObject(Result));
+  fDealItemList.AddObject(getStockCodePack(AStockCode), TObject(Result));
 end;
                     
-function TDBStockItem.FindItem(AStockCode: AnsiString): PRT_DealItem;   
+function TDBDealItem.FindItem(AStockCode: AnsiString): PRT_DealItem;   
 var
   tmpIndex: integer;
   tmpPackStockCode: integer;
@@ -115,15 +113,15 @@ begin
   end;
   if 0 < tmpPackStockCode then
   begin
-    tmpIndex := fStockList.IndexOf(tmpPackStockCode);
+    tmpIndex := fDealItemList.IndexOf(tmpPackStockCode);
     if 0 <= tmpIndex then
     begin
-      Result := PRT_DealItem(fStockList.Objects[tmpIndex]);
+      Result := PRT_DealItem(fDealItemList.Objects[tmpIndex]);
     end;
   end;
 end;
 
-function TDBStockItem.CheckOutItem(AMarketCode, AStockCode: AnsiString): PRT_DealItem;
+function TDBDealItem.CheckOutItem(AMarketCode, AStockCode: AnsiString): PRT_DealItem;
 begin
   Result := FindItem(AMarketCode + AStockCode);
   if nil = Result then

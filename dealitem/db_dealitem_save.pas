@@ -10,8 +10,8 @@ uses
   define_dealstore_header;
   
              
-  procedure SaveDBStockItem(App: TBaseApp; ADB: TDBStockItem);    
-  procedure SaveDBStockItemToFile(App: TBaseApp; ADB: TDBStockItem; AFileUrl: string);
+  procedure SaveDBStockItem(App: TBaseApp; ADB: TDBDealItem);    
+  procedure SaveDBStockItemToFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
 
 implementation
 
@@ -20,7 +20,7 @@ uses
   define_dealstore_file,           
   BaseWinFile;
                         
-procedure SaveDBStockItemToBuffer(App: TBaseApp; ADB: TDBStockItem; AMemory: Pointer);
+procedure SaveDBStockItemToBuffer(App: TBaseApp; ADB: TDBDealItem; AMemory: Pointer);
 var  
   tmpHead: PStore_HeaderRec;
   tmpItemRec: PStore_DealItem32Rec;
@@ -66,7 +66,7 @@ begin
   end;
 end;
                                                             
-function SaveDBStockItem2(App: TBaseApp; ADB: TDBStockItem): Boolean;   
+function SaveDBStockItem2(App: TBaseApp; ADB: TDBDealItem): Boolean;   
 var
   tmpFileUrl: string;   
   tmpWinFile: TWinFile;   
@@ -103,12 +103,12 @@ begin
   end;
 end;
 
-procedure SaveDBStockItem(App: TBaseApp; ADB: TDBStockItem);
+procedure SaveDBStockItem(App: TBaseApp; ADB: TDBDealItem);
 begin
   SaveDBStockItemToFile(App, ADB, App.Path.GetFileUrl(FilePath_DBType_ItemDB, 0, 2, nil));
 end;
 
-procedure SaveDBStockItemToFile(App: TBaseApp; ADB: TDBStockItem; AFileUrl: string);
+procedure SaveDBStockItemToFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
 var
   tmpWinFile: TWinFile;
   tmpFileMapView: Pointer; 

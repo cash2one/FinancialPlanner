@@ -27,7 +27,7 @@ var
   tmpFileMapView: Pointer;   
 begin
   Result := false;
-  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.DealItem);
   if App.Path.IsFileExists(tmpFileUrl) then
   begin
     tmpWinFile := TWinFile.Create;
@@ -54,7 +54,7 @@ begin
   tmpHead := AMemory;
   if tmpHead.Header.BaseHeader.HeadSize = SizeOf(TStore_Quote_M1_Day_Header_V1Rec) then
   begin
-    if (tmpHead.Header.BaseHeader.DataType = DataType_Stock) then
+    if (tmpHead.Header.BaseHeader.DataType = DataType_Futures) then
     begin
       if (tmpHead.Header.BaseHeader.DataMode = DataMode_DayData) then
       begin
@@ -112,7 +112,7 @@ var
   tmpHead: PStore_Quote_M1_Day_Header_V1Rec;
 begin
   Result := true; 
-  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.DealItem);
   if App.Path.IsFileExists(tmpFileUrl) then
   begin      
     tmpWinFile := TWinFile.Create;

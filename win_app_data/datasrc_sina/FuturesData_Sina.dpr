@@ -18,8 +18,8 @@ uses
   UtilsHttp_Indy in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Indy.pas',
   UtilsHtmlParser in '..\..\..\devwintech\v0000\win_utils\UtilsHtmlParser.pas',
   UtilsDateTime in '..\..\..\devwintech\v0000\win_utils\UtilsDateTime.pas',
-  BaseStockApp in '..\..\base\BaseStockApp.pas',
-  StockAppPath in '..\..\base\StockAppPath.pas',
+  BaseFutureApp in '..\..\base\BaseFutureApp.pas',
+  FutureAppPath in '..\..\base\FutureAppPath.pas',
   define_dealmarket in '..\..\basedefine\define_dealmarket.pas',
   define_dealitem in '..\..\basedefine\define_dealitem.pas',
   define_datasrc in '..\..\basedefine\define_datasrc.pas',
@@ -33,20 +33,18 @@ uses
   FuturesDataAccess in '..\..\data_futures\FuturesDataAccess.pas',
   FuturesData_Load in '..\..\data_futures\FuturesData_Load.pas',
   FuturesData_Save in '..\..\data_futures\FuturesData_Save.pas',
-  Futures_Get_Sina in 'Futures_Get_Sina.pas',
-  FuturesData_Get_Sina in '..\..\data_futures\datasrc_sina\FuturesData_Get_Sina.pas';
+  FuturesData_Get_Sina in '..\..\data_futures\datasrc_sina\FuturesData_Get_Sina.pas',
+  Futures_Get_Sina in 'Futures_Get_Sina.pas';
 
 {$R *.res}
 
 type
-  TFuturesSinaApp = class(TBaseStockApp)
+  TFuturesSinaApp = class(TBaseFutureApp)
   protected
   public     
     constructor Create(AppClassId: AnsiString); override;
     procedure Run; override;
   end;
-
-{ TStockDay163App }
 
 constructor TFuturesSinaApp.Create(AppClassId: AnsiString);
 begin

@@ -119,7 +119,7 @@ type
 
 const
   DataType_Stock            = 1;
-  DataType_CTP              = 2;
+  DataType_Futures          = 2;
   DataType_DBItem           = 3;  
 
   DataMode_DayData          = 1; // 日线数据 M1
