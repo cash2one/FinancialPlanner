@@ -8,12 +8,13 @@ uses
   QuickList_int in '..\..\..\devwintech\comps\list\QuickList_int.pas',
   QuickList_double in '..\..\..\devwintech\comps\list\QuickList_double.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
-  BaseDataSet in '..\..\..\devwintech\v0000\win_base\BaseDataSet.pas',
-  BaseApp in '..\..\..\devwintech\v0000\win_base\BaseApp.pas',
-  BasePath in '..\..\..\devwintech\v0000\win_base\BasePath.pas',
+  BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
+  BaseApp in '..\..\..\devwintech\v0000\app_base\BaseApp.pas',
+  BasePath in '..\..\..\devwintech\v0000\app_base\BasePath.pas',
+  BaseFile in '..\..\..\devwintech\v0000\app_base\BaseFile.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
-  BaseFile in '..\..\..\devwintech\v0000\win_base\BaseFile.pas',
-  BaseForm in '..\..\..\devwintech\v0000\win_base\BaseForm.pas' {frmBase},
+  BaseWinApp in '..\..\..\devwintech\v0000\win_base\BaseWinApp.pas',
+  BaseForm in '..\..\..\devwintech\v0000\win_ui\BaseForm.pas' {frmBase},
   Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
   define_price in '..\..\basedefine\define_price.pas',
   define_datasrc in '..\..\basedefine\define_datasrc.pas',
@@ -26,7 +27,6 @@ uses
   BaseStockApp in '..\..\base\BaseStockApp.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
-  BaseWinApp in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\BaseApp\BaseWinApp.pas',
   BaseRule in '..\..\baserule\BaseRule.pas',
   Rule_STD in '..\..\baserule\Rule_STD.pas',
   Rule_Boll in '..\..\baserule\Rule_Boll.pas',
@@ -43,7 +43,7 @@ uses
   FrameDataViewer in 'FrameDataViewer.pas' {fmeDataViewer},
   FormDataHostViewer in 'FormDataHostViewer.pas' {frmDataViewer},
   FrameDayChartViewer in 'FrameDayChartViewer.pas' {fmeDayChartViewer},
-  UIStockData in '..\..\..\litwrd_git\AppPrestudy\Windows\DealData\v03\App_DataViewer\UIStockData.pas';
+  UIDealItemNode in 'UIDealItemNode.pas';
 
 {$R *.res}
 

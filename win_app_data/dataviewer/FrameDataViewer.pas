@@ -5,10 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   BaseApp, BaseForm, VirtualTrees, ExtCtrls, 
-  define_dealItem,  UIStockData,
+  define_dealItem,  
   db_dealItem,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, 
-  StockDayDataAccess,
+  StockDayDataAccess, UIDealItemNode,
   StockDetailDataAccess;
 
 type

@@ -23,7 +23,7 @@ type
   TStockDicApp = class(TBaseWinApp)
   protected
     frmStockDic: TfrmStockDic;
-    fDBStockItem: TDBStockItem;
+    fDBStockItem: TDBDealItem;
   public                     
     constructor Create(AppClassId: AnsiString); override;
     function Initialize: Boolean; override;
@@ -52,7 +52,7 @@ begin
   Result := true;
   Application.Initialize;
   Application.MainFormOnTaskbar := True;  
-  fDBStockItem := TDBStockItem.Create;
+  fDBStockItem := TDBDealItem.Create;
 end;
 
 procedure TStockDicApp.Run;

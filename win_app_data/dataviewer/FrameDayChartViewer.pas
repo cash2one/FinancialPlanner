@@ -5,7 +5,7 @@ interface
 uses
   Classes, Controls, Graphics, Forms, Messages, SysUtils, Windows,  
   define_DealItem,
-  BaseApp, BaseForm, StockDayDataAccess, UIStockData,
+  BaseApp, BaseForm, StockDayDataAccess, UIDealItemNode,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, ExtCtrls;
 
 type             
@@ -18,7 +18,7 @@ type
 
     DataSrcId: integer;    
   end;
-
+                       
   TfmeDayChartViewer = class(TfrmBase)
     pbChart: TPaintBox;
     procedure pbChartPaint(Sender: TObject);

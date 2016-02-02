@@ -6,7 +6,7 @@ uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   BaseApp, BaseForm, VirtualTrees, ExtCtrls, Tabs,
   db_dealItem, StockDayDataAccess,
-  FrameDataViewer, FrameDayChartViewer,
+  FrameDataViewer, FrameDayChartViewer, UIDealItemNode,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA;
 
 type
@@ -58,7 +58,6 @@ uses
   Define_DataSrc,
   define_DealItem,
   define_stock_quotes,
-  UIStockData,
   StockDayData_Load,
   db_dealItem_Load;
       
