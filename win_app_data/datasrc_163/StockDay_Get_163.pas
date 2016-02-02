@@ -15,13 +15,13 @@ uses
   Classes,
   UtilsHttp,
   Define_Price,
+  db_dealitem,
   define_dealItem,
   Define_DataSrc,
   StockDayDataAccess,
   StockDayData_Load,
   StockDayData_Save,
   define_stock_quotes,
-  DB_dealItem,
   DB_dealItem_Load,
   DB_dealItem_Save;
 
@@ -335,12 +335,12 @@ end;
 
 procedure GetStockDataDay_163_All(App: TBaseApp);
 var
-  tmpDBStockItem: TDBStockItem;
+  tmpDBStockItem: TDBDealItem;
   tmpIsNeedSaveStockItemDB: Boolean;
   i: integer;
 begin
   tmpIsNeedSaveStockItemDB := false;
-  tmpDBStockItem := TDBStockItem.Create;
+  tmpDBStockItem := TDBDealItem.Create;
   try
     //LoadDBStockItemIni(App, tmpDBStockItem1);
     //SaveDBStockItem(App, tmpDBStockItem1);
