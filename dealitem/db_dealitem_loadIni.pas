@@ -5,8 +5,8 @@ interface
 uses
   BaseApp, db_dealItem, Define_DealMarket;
   
-  procedure LoadDBStockItemIni(App: TBaseApp; ADB: TDBStockItem);     
-  procedure LoadDBStockItemIniFromFile(App: TBaseApp; ADB: TDBStockItem; AFileUrl: string);
+  procedure LoadDBStockItemIni(App: TBaseApp; ADB: TDBDealItem);     
+  procedure LoadDBStockItemIniFromFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
 
 implementation
 
@@ -17,7 +17,7 @@ uses
   Sysutils,
   IniFiles;
 
-procedure LoadDBStockItemIni(App: TBaseApp; ADB: TDBStockItem);
+procedure LoadDBStockItemIni(App: TBaseApp; ADB: TDBDealItem);
 var                           
   tmpFilePath: string;
   tmpFileUrl: string;
@@ -48,7 +48,7 @@ begin
   end;
 end;
 
-procedure LoadDBStockItemIniFromFile(App: TBaseApp; ADB: TDBStockItem; AFileUrl: string);
+procedure LoadDBStockItemIniFromFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
 var            
   i: integer;
   tmpSections: TStringList;
