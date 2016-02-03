@@ -2,13 +2,12 @@ program zsHelper;
 
 uses
   Forms,
-  BaseWinThread in '..\..\..\devwintech\v0000\win_base\BaseWinThread.pas',
-  BaseForm in '..\..\..\devwintech\v0000\win_base\BaseForm.pas' {frmBase},
-  BaseApp in '..\..\..\devwintech\v0000\win_base\BaseApp.pas',
-  BasePath in '..\..\..\devwintech\v0000\win_base\BasePath.pas',
+  BaseApp in '..\..\..\devwintech\v0000\app_base\BaseApp.pas',
+  BasePath in '..\..\..\devwintech\v0000\app_base\BasePath.pas',
   BaseWinApp in '..\..\..\devwintech\v0000\win_base\BaseWinApp.pas',
   Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
   Define_Message in '..\..\..\devwintech\v0000\win_basedefine\Define_Message.pas',
+  BaseForm in '..\..\..\devwintech\v0000\win_ui\BaseForm.pas' {frmBase},
   UtilsWindows in '..\..\..\devwintech\v0000\win_utils\UtilsWindows.pas',
   UtilsApplication in '..\..\..\devwintech\v0000\win_utils\UtilsApplication.pas',
   define_price in '..\..\basedefine\define_price.pas',
