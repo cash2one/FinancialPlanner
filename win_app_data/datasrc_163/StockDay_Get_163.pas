@@ -199,7 +199,7 @@ begin
   end;
 end;
 
-function ParseStockDataDay_163(ADataAccess: TStockDayDataAccess; AData: string): Boolean;
+function ParseStockDataDay_163(ADataAccess: TStockDayDataAccess; AData: PHttpBuffer): Boolean;
 var 
   tmp163data: TRT_DealData_163;
   tmp163header: TRT_DealData_Header163;
@@ -208,14 +208,20 @@ var
   i: integer;
   tmpDealData: PRT_Quote_M1_Day;
   tmpIsCheckedName: Boolean;
+  tmpHttpHeadParse: THttpHeadParseSession;
 begin
   Result := false;
+  if nil = AData then
+    exit;    
+  FillChar(tmpHttpHeadParse, SizeOf(tmpHttpHeadParse), 0);
+  HttpBufferHeader_Parser(AData, @tmpHttpHeadParse);
+
   tmpIsCheckedName := false;
   FillChar(tmp163header, SizeOf(tmp163header), 0);
   tmpRowDatas := TStringList.Create;
   tmpParseDatas := TStringList.Create;
   try
-    tmpRowDatas.Text := AData;
+    tmpRowDatas.Text := PAnsiChar(@AData.Data[tmpHttpHeadParse.HeadEndPos + 1]);
     if 1 < tmpRowDatas.Count then
     begin         
       for i := 0 to tmpRowDatas.Count - 1 do
@@ -278,7 +284,6 @@ function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; ANetSessio
 var
   tmpStockDataAccess: TStockDayDataAccess;
   tmpUrl: string;
-  tmpRetData: string;
   tmpLastDealDate: Word;
   tmpInt: integer;
   tmpQuoteDay: PRT_Quote_M1_Day;
@@ -312,9 +317,8 @@ begin
       end;
     end else
       exit;
-    tmpRetData := GetHttpUrlData(tmpUrl, ANetSession);
     // parse result data
-    if ParseStockDataDay_163(tmpStockDataAccess, tmpRetData) then
+    if ParseStockDataDay_163(tmpStockDataAccess, GetHttpUrlData(tmpUrl, ANetSession)) then
     begin        
       Result := true;
       SaveStockDayData(App, tmpStockDataAccess);
