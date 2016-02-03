@@ -5,6 +5,7 @@ interface
 uses
   BaseApp,
   Sysutils,
+  UtilsHttp,
   define_dealitem,
   StockDayDataAccess;
          
@@ -53,7 +54,7 @@ var
     LongDateFormat : 'yyyy-mm-dd';
   );//*)
              
-function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean): Boolean;
+function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean;
 
 implementation
 
@@ -61,7 +62,6 @@ uses
   define_price,         
   Define_DataSrc,    
   define_stock_quotes,
-  UtilsHttp,
   UtilsHtmlParser,
   UtilsDateTime,
   StockDayData_Load,
@@ -265,17 +265,26 @@ end;
 function DataParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AResultData: string): Boolean; overload;
 var     
   tmpParseRec: TParseRecord;
+  tmpPos: Integer;
+  // 168k 的数据太大 不能这样设置
 begin
   Result := False; 
   FillChar(tmpParseRec, SizeOf(tmpParseRec), 0);
-  tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHTML(AResultData);
+  tmpPos := Pos('<', AResultData);
+  if tmpPos > 1 then
+  begin
+    tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(@AResultData, Length(AResultData));
+  end else
+  begin
+    tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(@AResultData[1], Length(AResultData));
+  end;
   if tmpParseRec.HtmlRoot <> nil then
   begin
     Result := HtmlParse_DayData_Sina(ADataAccess, @tmpParseRec, tmpParseRec.HtmlRoot); 
   end;
 end;
 
-function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean): Boolean; overload;
+function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean; overload;
 var
   tmpurl: string;      
   tmpRetData: string;
@@ -285,11 +294,11 @@ begin
   else
     tmpUrl := BaseSinaDayUrl1;
   tmpurl := tmpurl + ADataAccess.StockItem.sCode + '.phtml';
-  tmpRetData := GetHttpUrlData(tmpUrl);
+  tmpRetData := GetHttpUrlData(tmpUrl, ANetSession);
   Result := DataParse_DayData_Sina(ADataAccess, tmpRetData);
 end;
 
-function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean): Boolean; overload;
+function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean; overload;
 var
   tmpUrl: string;          
   tmpRetData: string;
@@ -304,12 +313,12 @@ begin
     tmpurl := tmpurl + '?year=' + inttostr(AYear);
     tmpUrl := tmpUrl + '&' + 'jidu=' + inttostr(ASeason);
   end;
-  tmpRetData := GetHttpUrlData(tmpUrl);
+  tmpRetData := GetHttpUrlData(tmpUrl, ANetSession);
   // parse html data
   Result := DataParse_DayData_Sina(ADataAccess, tmpRetData);
 end;
 
-function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean): Boolean;
+function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean;
 var
   tmpStockDataAccess: TStockDayDataAccess; 
   tmpLastDealDate: Word;
@@ -363,7 +372,7 @@ begin
     begin
       while tmpJidu < 5 do
       begin
-        DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, AIsWeight);
+        DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, AIsWeight, ANetSession);
         Inc(tmpJidu);
         Sleep(100);
       end;
@@ -372,11 +381,11 @@ begin
     end; 
     while tmpJidu < SeasonOfMonth(tmpCurrentMonth) do
     begin
-      DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, AIsWeight);
+      DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, AIsWeight, ANetSession);
       Inc(tmpJidu);
       Sleep(100);
     end;
-    DataGet_DayData_SinaNow(tmpStockDataAccess, AIsWeight);
+    DataGet_DayData_SinaNow(tmpStockDataAccess, AIsWeight, ANetSession);
     
     SaveStockDayData(App, tmpStockDataAccess); 
     if 0 = AStockItem.FirstDealDate then

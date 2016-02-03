@@ -17,10 +17,10 @@ uses
 
 procedure GetStockDataDetail_Sina_All(App: TBaseApp);
 var
-  tmpDBStockItem: TDBStockItem;
+  tmpDBStockItem: TDBDealItem;
   i: integer;
 begin
-  tmpDBStockItem := TDBStockItem.Create;
+  tmpDBStockItem := TDBDealItem.Create;
   try
     LoadDBStockItem(App, tmpDBStockItem);
     for i := 0 to tmpDBStockItem.RecordCount - 1 do

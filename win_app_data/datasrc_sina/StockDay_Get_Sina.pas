@@ -20,7 +20,6 @@ uses
   define_stock_quotes,
   StockDayData_Get_Sina,
      
-  UtilsHtmlParser,
   UtilsDateTime,
   
   StockDayDataAccess,
@@ -34,8 +33,10 @@ uses
 procedure GetStockDataDay_Sina_All(App: TBaseApp);
 var
   tmpDBStockItem: TDBDealItem;
+  tmpNetClientSession: TNetClientSession;
   i: integer;
 begin
+  FillChar(tmpNetClientSession, SizeOf(tmpNetClientSession), 0);
   tmpDBStockItem := TDBDealItem.Create;
   try
     LoadDBStockItem(App, tmpDBStockItem);
@@ -43,7 +44,7 @@ begin
     begin
       if 0 = tmpDBStockItem.Items[i].EndDealDate then
       begin
-        if GetStockDataDay_Sina(App, tmpDBStockItem.Items[i], true) then
+        if GetStockDataDay_Sina(App, tmpDBStockItem.Items[i], true, @tmpNetClientSession) then
         begin
           Sleep(2000);
         end;
