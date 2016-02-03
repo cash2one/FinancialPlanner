@@ -14,6 +14,7 @@ uses
   BaseWinApp in '..\..\..\devwintech\v0000\win_base\BaseWinApp.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
   Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
+  win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
   xlNetwork in '..\..\..\devwintech\v0000\win_net\xlNetwork.pas',
   xlTcpClient in '..\..\..\devwintech\v0000\win_net\xlTcpClient.pas',
   xlClientSocket in '..\..\..\devwintech\v0000\win_net\xlClientSocket.pas',

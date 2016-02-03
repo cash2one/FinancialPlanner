@@ -6,6 +6,7 @@ uses
   BaseApp,
   Sysutils,
   UtilsHttp,
+  win.iobuffer,
   define_dealitem,
   StockDayDataAccess;
          
@@ -59,10 +60,12 @@ function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight
 implementation
 
 uses
+  Classes,
+  Windows,
   define_price,         
   Define_DataSrc,    
   define_stock_quotes,
-  UtilsHtmlParser,
+  UtilsHtmlBufferParser,
   UtilsDateTime,
   StockDayData_Load,
   StockDayData_Save;
@@ -239,11 +242,17 @@ begin
       tmpData := ANode.Attributes['id'];
       if tmpData <> '' then
       begin
-        if Pos('fundholdsharestable', lowercase(tmpData)) = 1 then
+        if SameText('FundHoldSharesTable', tmpData) then
         begin
           result := HtmlParse_DayData_Sina_Table(ADataAccess, AParseRecord, ANode);
+        end else
+        begin
+          if Pos('fundholdsharestable', lowercase(tmpData)) = 1 then
+          begin
+            result := HtmlParse_DayData_Sina_Table(ADataAccess, AParseRecord, ANode);
+          end;
         end;
-      end;  
+      end;
       Dec(AParseRecord.IsInTable);
     end else
     begin
@@ -262,22 +271,27 @@ begin
   end;
 end;
 
-function DataParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AResultData: string): Boolean; overload;
+function DataParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AResultData: PIOBuffer): Boolean; overload;
 var     
   tmpParseRec: TParseRecord;
   tmpPos: Integer;
   // 168k 的数据太大 不能这样设置
+  tmpStrs: TStringList;
 begin
+  tmpStrs := TStringList.Create;
+  try
+    tmpStrs.Text := AResultData.Data;
+    tmpStrs.SaveToFile('e:\html' +
+        FormatDateTime('yyyymmdd', now) + '_' +
+        IntToStr(GetTickCount) + '.txt');
+  finally
+    tmpStrs.Free;
+  end;
   Result := False; 
   FillChar(tmpParseRec, SizeOf(tmpParseRec), 0);
-  tmpPos := Pos('<', AResultData);
-  if tmpPos > 1 then
-  begin
-    tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(@AResultData, Length(AResultData));
-  end else
-  begin
-    tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(@AResultData[1], Length(AResultData));
-  end;
+  
+  tmpParseRec.HtmlRoot := UtilsHtmlBufferParser.ParserHtml(AResultData);
+  
   if tmpParseRec.HtmlRoot <> nil then
   begin
     Result := HtmlParse_DayData_Sina(ADataAccess, @tmpParseRec, tmpParseRec.HtmlRoot); 
@@ -287,7 +301,7 @@ end;
 function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean; overload;
 var
   tmpurl: string;      
-  tmpRetData: string;
+  tmpRetData: PIOBuffer;
 begin
   if AIsWeight then
     tmpUrl := BaseSinaDayUrl2
@@ -301,7 +315,6 @@ end;
 function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean; overload;
 var
   tmpUrl: string;          
-  tmpRetData: string;
 begin
   if AIsWeight then
     tmpUrl := BaseSinaDayUrl2
@@ -313,9 +326,8 @@ begin
     tmpurl := tmpurl + '?year=' + inttostr(AYear);
     tmpUrl := tmpUrl + '&' + 'jidu=' + inttostr(ASeason);
   end;
-  tmpRetData := GetHttpUrlData(tmpUrl, ANetSession);
   // parse html data
-  Result := DataParse_DayData_Sina(ADataAccess, tmpRetData);
+  Result := DataParse_DayData_Sina(ADataAccess, GetHttpUrlData(tmpUrl, ANetSession));
 end;
 
 function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean;

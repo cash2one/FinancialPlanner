@@ -18,6 +18,7 @@ uses
   db_dealitem,
   define_dealItem,
   Define_DataSrc,
+  win.iobuffer,
   StockDayDataAccess,
   StockDayData_Load,
   StockDayData_Save,
@@ -199,7 +200,7 @@ begin
   end;
 end;
 
-function ParseStockDataDay_163(ADataAccess: TStockDayDataAccess; AData: PHttpBuffer): Boolean;
+function ParseStockDataDay_163(ADataAccess: TStockDayDataAccess; AData: PIOBuffer): Boolean;
 var 
   tmp163data: TRT_DealData_163;
   tmp163header: TRT_DealData_Header163;
@@ -215,69 +216,71 @@ begin
     exit;    
   FillChar(tmpHttpHeadParse, SizeOf(tmpHttpHeadParse), 0);
   HttpBufferHeader_Parser(AData, @tmpHttpHeadParse);
-
-  tmpIsCheckedName := false;
-  FillChar(tmp163header, SizeOf(tmp163header), 0);
-  tmpRowDatas := TStringList.Create;
-  tmpParseDatas := TStringList.Create;
-  try
-    tmpRowDatas.Text := PAnsiChar(@AData.Data[tmpHttpHeadParse.HeadEndPos + 1]);
-    if 1 < tmpRowDatas.Count then
-    begin         
-      for i := 0 to tmpRowDatas.Count - 1 do
-      begin
-        if 0 = tmp163header.IsReady then
+  if 0 < tmpHttpHeadParse.HeadEndPos then
+  begin
+    tmpIsCheckedName := false;
+    FillChar(tmp163header, SizeOf(tmp163header), 0);
+    tmpRowDatas := TStringList.Create;
+    tmpParseDatas := TStringList.Create;
+    try
+      tmpRowDatas.Text := PAnsiChar(@AData.Data[tmpHttpHeadParse.HeadEndPos + 1]);
+      if 1 < tmpRowDatas.Count then
+      begin         
+        for i := 0 to tmpRowDatas.Count - 1 do
         begin
-          if ParseDataHeader_163(@tmp163header, tmpRowDatas[i], tmpParseDatas) then
+          if 0 = tmp163header.IsReady then
           begin
-            tmp163header.IsReady := 1;
-            tmp163header.DateFormat_163.DateSeparator := '-';
-            tmp163header.DateFormat_163.TimeSeparator := ':';            
-            tmp163header.DateFormat_163.ListSeparator := ';';
-            tmp163header.DateFormat_163.ShortDateFormat := 'yyyy-mm-dd';
-            tmp163header.DateFormat_163.LongDateFormat := 'yyyy-mm-dd';
-          end;
-        end else
-        begin
-          if ParseData_163(@tmp163data, @tmp163header, tmpRowDatas[i], tmpParseDatas) then
-          begin         
-            Result := true;
-            // 网易是倒叙排的 以最早的为准
-            if not tmpIsCheckedName then
+            if ParseDataHeader_163(@tmp163header, tmpRowDatas[i], tmpParseDatas) then
             begin
-              tmpIsCheckedName := true;
-              if tmp163data.Name <> ADataAccess.StockItem.Name  then
-              begin
-                ADataAccess.StockItem.Name := tmp163data.Name;
-                ADataAccess.StockItem.IsDataChange := 1;
-              end;
+              tmp163header.IsReady := 1;
+              tmp163header.DateFormat_163.DateSeparator := '-';
+              tmp163header.DateFormat_163.TimeSeparator := ':';            
+              tmp163header.DateFormat_163.ListSeparator := ';';
+              tmp163header.DateFormat_163.ShortDateFormat := 'yyyy-mm-dd';
+              tmp163header.DateFormat_163.LongDateFormat := 'yyyy-mm-dd';
             end;
-            
-            if (0 < tmp163data.Day) and (tmp163data.Price_Low > 0) and (tmp163data.Price_High > 0) and
-               (tmp163data.Deal_Amount > 0) and (tmp163data.Deal_Volume > 0) then
-            begin
-              tmpDealData := ADataAccess.CheckOutRecord(tmp163data.Day);
-              if (nil <> tmpDealData) then
+          end else
+          begin
+            if ParseData_163(@tmp163data, @tmp163header, tmpRowDatas[i], tmpParseDatas) then
+            begin         
+              Result := true;
+              // 网易是倒叙排的 以最早的为准
+              if not tmpIsCheckedName then
               begin
-                SetRTPricePack(@tmpDealData.PriceRange.PriceHigh, tmp163data.Price_High);
-                SetRTPricePack(@tmpDealData.PriceRange.PriceLow, tmp163data.Price_Low);
-                SetRTPricePack(@tmpDealData.PriceRange.PriceOpen, tmp163data.Price_Open);
-                SetRTPricePack(@tmpDealData.PriceRange.PriceClose, tmp163data.Price_Close);
-                tmpDealData.DealVolume := tmp163data.Deal_Volume;
-                tmpDealData.DealAmount := tmp163data.Deal_Amount;
-                tmpDealData.TotalValue := tmp163data.Total_Value;
-                tmpDealData.DealValue := tmp163data.Deal_Value;
+                tmpIsCheckedName := true;
+                if tmp163data.Name <> ADataAccess.StockItem.Name  then
+                begin
+                  ADataAccess.StockItem.Name := tmp163data.Name;
+                  ADataAccess.StockItem.IsDataChange := 1;
+                end;
+              end;
+            
+              if (0 < tmp163data.Day) and (tmp163data.Price_Low > 0) and (tmp163data.Price_High > 0) and
+                 (tmp163data.Deal_Amount > 0) and (tmp163data.Deal_Volume > 0) then
+              begin
+                tmpDealData := ADataAccess.CheckOutRecord(tmp163data.Day);
+                if (nil <> tmpDealData) then
+                begin
+                  SetRTPricePack(@tmpDealData.PriceRange.PriceHigh, tmp163data.Price_High);
+                  SetRTPricePack(@tmpDealData.PriceRange.PriceLow, tmp163data.Price_Low);
+                  SetRTPricePack(@tmpDealData.PriceRange.PriceOpen, tmp163data.Price_Open);
+                  SetRTPricePack(@tmpDealData.PriceRange.PriceClose, tmp163data.Price_Close);
+                  tmpDealData.DealVolume := tmp163data.Deal_Volume;
+                  tmpDealData.DealAmount := tmp163data.Deal_Amount;
+                  tmpDealData.TotalValue := tmp163data.Total_Value;
+                  tmpDealData.DealValue := tmp163data.Deal_Value;
+                end;
               end;
             end;
           end;
         end;
       end;
+    finally
+      tmpRowDatas.Free;
+      tmpParseDatas.Free;
     end;
-  finally
-    tmpRowDatas.Free;
-    tmpParseDatas.Free;
+    ADataAccess.Sort;
   end;
-  ADataAccess.Sort;
 end;
 
 function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PNetClientSession): Boolean;
