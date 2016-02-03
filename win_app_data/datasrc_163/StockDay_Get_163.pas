@@ -274,7 +274,7 @@ begin
   ADataAccess.Sort;
 end;
 
-function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem): Boolean;
+function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PNetClientSession): Boolean;
 var
   tmpStockDataAccess: TStockDayDataAccess;
   tmpUrl: string;
@@ -312,7 +312,7 @@ begin
       end;
     end else
       exit;
-    tmpRetData := GetHttpUrlData(tmpUrl);
+    tmpRetData := GetHttpUrlData(tmpUrl, ANetSession);
     // parse result data
     if ParseStockDataDay_163(tmpStockDataAccess, tmpRetData) then
     begin        
@@ -337,8 +337,10 @@ procedure GetStockDataDay_163_All(App: TBaseApp);
 var
   tmpDBStockItem: TDBDealItem;
   tmpIsNeedSaveStockItemDB: Boolean;
+  tmpNetClientSession: TNetClientSession;
   i: integer;
 begin
+  FillChar(tmpNetClientSession, SizeOf(tmpNetClientSession), 0);
   tmpIsNeedSaveStockItemDB := false;
   tmpDBStockItem := TDBDealItem.Create;
   try
@@ -355,7 +357,7 @@ begin
           tmpIsNeedSaveStockItemDB := true;
         end;
         tmpDBStockItem.Items[i].IsDataChange := 0;
-        if GetStockDataDay_163(App, tmpDBStockItem.Items[i]) then
+        if GetStockDataDay_163(App, tmpDBStockItem.Items[i], @tmpNetClientSession) then
         begin
           Sleep(2000);
         end;                                      
