@@ -65,7 +65,7 @@ uses
   define_price,         
   Define_DataSrc,    
   define_stock_quotes,
-  UtilsHtmlBufferParser,
+  UtilsHtmlParser,
   UtilsDateTime,
   StockDayData_Load,
   StockDayData_Save;
@@ -277,20 +277,24 @@ var
   tmpPos: Integer;
   // 168k 的数据太大 不能这样设置
   tmpStrs: TStringList;
+  tmpHttpHeadSession: THttpHeadParseSession;
 begin
+  Result := False; 
+  FillChar(tmpParseRec, SizeOf(tmpParseRec), 0);
+  FIllChar(tmpHttpHeadSession, SizeOf(tmpHttpHeadSession), 0);
+  
+  HttpBufferHeader_Parser(AResultData, @tmpHttpHeadSession);
+                         
   tmpStrs := TStringList.Create;
   try
-    tmpStrs.Text := AResultData.Data;
+    tmpStrs.Text := PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1]);
     tmpStrs.SaveToFile('e:\html' +
         FormatDateTime('yyyymmdd', now) + '_' +
         IntToStr(GetTickCount) + '.txt');
   finally
     tmpStrs.Free;
   end;
-  Result := False; 
-  FillChar(tmpParseRec, SizeOf(tmpParseRec), 0);
-  
-  tmpParseRec.HtmlRoot := UtilsHtmlBufferParser.ParserHtml(AResultData);
+  tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
   
   if tmpParseRec.HtmlRoot <> nil then
   begin
@@ -301,15 +305,13 @@ end;
 function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean; overload;
 var
   tmpurl: string;      
-  tmpRetData: PIOBuffer;
 begin
   if AIsWeight then
     tmpUrl := BaseSinaDayUrl2
   else
     tmpUrl := BaseSinaDayUrl1;
   tmpurl := tmpurl + ADataAccess.StockItem.sCode + '.phtml';
-  tmpRetData := GetHttpUrlData(tmpUrl, ANetSession);
-  Result := DataParse_DayData_Sina(ADataAccess, tmpRetData);
+  Result := DataParse_DayData_Sina(ADataAccess, GetHttpUrlData(tmpUrl, ANetSession));
 end;
 
 function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean; overload;
