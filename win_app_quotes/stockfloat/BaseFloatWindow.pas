@@ -3,7 +3,7 @@ unit BaseFloatWindow;
 interface
 
 uses
-  Windows, BaseApp, UIBaseWin, BaseWinThread, UIBaseWinMemDC;
+  Windows, BaseApp, UIBaseWin, win.thread, uiwin.memdc, ui.color;
   
 type           
   PRT_BaseFloatWindow = ^TRT_BaseFloatWindow;
@@ -12,7 +12,7 @@ type
     BaseWindow    : TUIBaseWnd;
     DataThread    : TSysWinThread;
     Font          : HFONT;
-    MemDC         : TMemDC;
+    MemDC         : TWinMemDC;
     OnPaint       : procedure(ADC: HDC; ABaseFloatWindow: PRT_BaseFloatWindow);
   end;
                                                                               
@@ -23,7 +23,7 @@ type
 implementation
 
 uses
-  IniFiles, SysUtils, UIWinColor;
+  IniFiles, SysUtils;
                 
 function WMPaint_FloatWindowWndProcA(ABaseFloatWindow: PRT_BaseFloatWindow; AWnd: HWND): LRESULT;
 var
@@ -60,15 +60,15 @@ procedure Paint_FloatWindow_Layered(ABaseFloatWindow: PRT_BaseFloatWindow);
 var
   tmpBlend: TBLENDFUNCTION;
   i, j: Integer;  
-  tmpColor: PColor32;
+  tmpColor: PColor32Array;
 begin
-  if 0 = ABaseFloatWindow.MemDC.Handle then
+  if 0 = ABaseFloatWindow.MemDC.DCHandle then
   begin
     UpdateMemDC(@ABaseFloatWindow.MemDC,
         ABaseFloatWindow.BaseWindow.ClientRect.Right,
         ABaseFloatWindow.BaseWindow.ClientRect.Bottom);
   end;                                   
-  tmpColor := ABaseFloatWindow.MemDC.MemData;
+  tmpColor := ABaseFloatWindow.MemDC.MemBitmap.BitsData;
   if tmpColor <> nil then
   begin
     for i := 0 to ABaseFloatWindow.MemDC.Height - 1 do
@@ -84,9 +84,9 @@ begin
   end;
   if Assigned(ABaseFloatWindow.OnPaint) then
   begin
-    ABaseFloatWindow.OnPaint(ABaseFloatWindow.MemDC.Handle, ABaseFloatWindow);
+    ABaseFloatWindow.OnPaint(ABaseFloatWindow.MemDC.DCHandle, ABaseFloatWindow);
   end;
-  tmpColor := ABaseFloatWindow.MemDC.MemData;
+  tmpColor := ABaseFloatWindow.MemDC.MemBitmap.BitsData;
   if tmpColor <> nil then
   begin
     for i := 0 to ABaseFloatWindow.MemDC.Height - 1 do
@@ -111,7 +111,7 @@ begin
     ABaseFloatWindow.BaseWindow.UIWndHandle, 0,
         @ABaseFloatWindow.BaseWindow.WindowRect.TopLeft,
         @ABaseFloatWindow.BaseWindow.ClientRect.BottomRight,
-        ABaseFloatWindow.MemDC.Handle,
+        ABaseFloatWindow.MemDC.DCHandle,
         @ABaseFloatWindow.BaseWindow.ClientRect.TopLeft,
         0, // crKey: COLORREF
         @tmpBlend,// pblend: PBLENDFUNCTION;

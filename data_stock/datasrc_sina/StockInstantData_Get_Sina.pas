@@ -22,6 +22,7 @@ uses
   Sysutils,
   Classes,
   UtilsHttp,
+  win.iobuffer,
   Define_Price,
   define_dealItem,
   define_datasrc,
@@ -81,12 +82,24 @@ end;
 procedure DataGet_Instant_Sina(App: TBaseApp; AInstant: PRT_InstantQuote);
 var  
   tmpUrl: string;
-  tmpRetData: string;
-begin        
+  tmpRetData: PIOBuffer;
+  tmpHttpParse: THttpHeadParseSession;
+begin
   tmpUrl := BaseSinaInstantUrl1 + GetStockCode_Sina(AInstant.Item);
-  tmpRetData := GetHttpUrlData(tmpUrl);        
+  tmpRetData := GetHttpUrlData(tmpUrl, nil); 
+  if nil <> tmpRetData then
+  begin
+    FillChar(tmpHttpParse, SizeOf(tmpHttpParse), 0);
+    HttpBufferHeader_Parser(tmpRetData, @tmpHttpParse);
+    if 200 = tmpHttpParse.RetCode then
+    begin
+      if 0 < tmpHttpParse.HeadEndPos  then
+      begin
     // parse result data
-  DataParse_Instant_Sina(AInstant, tmpRetData);
+        DataParse_Instant_Sina(AInstant, PAnsiChar(@PIOBufferX(tmpRetData).Data[tmpHttpParse.HeadEndPos + 1]));
+      end;
+    end;
+  end;
 end;
 
 function DataParse_InstantArray_Sina(AInstantArray: PInstantArray; AResultData: string): Boolean;   
@@ -157,7 +170,8 @@ end;
 procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray);
 var  
   tmpUrl: string;
-  tmpRetData: string;
+  tmpRetData: PIOBuffer;
+  tmpHttpParse: THttpHeadParseSession;
   i: integer;
 begin
   tmpUrl := '';
@@ -173,14 +187,25 @@ begin
   if '' <> tmpUrl then
   begin
     tmpUrl := BaseSinaInstantUrl1 + tmpUrl;
-    tmpRetData := GetHttpUrlData(tmpUrl);
-    DataParse_InstantArray_Sina(AInstantArray, tmpRetData);
+    tmpRetData := GetHttpUrlData(tmpUrl, nil);
+    if nil <> tmpRetData then
+    begin
+      FillChar(tmpHttpParse, SizeOf(tmpHttpParse), 0);
+      HttpBufferHeader_Parser(tmpRetData, @tmpHttpParse);
+      if 200 = tmpHttpParse.RetCode then
+      begin
+        if 0 < tmpHttpParse.HeadEndPos  then
+        begin
+          DataParse_InstantArray_Sina(AInstantArray, PAnsiChar(@PIOBufferX(tmpRetData).Data[tmpHttpParse.HeadEndPos + 1]));
+        end;
+      end;
+    end;
   end;
 end;
 
 procedure GetStockDataInstant_Sina_All(App: TBaseApp);
 var
-  tmpDBStockItem: TDBStockItem;
+  tmpDBStockItem: TDBDealItem;
   tmpDBStockInstant: TDBStockInstant;
   tmpInstantArray: TInstantArray;
   i: integer;
@@ -188,7 +213,7 @@ var
   //tmpPathUrl: AnsiString;
   //tmpFileUrl: AnsiString;
 begin
-  tmpDBStockItem := TDBStockItem.Create;
+  tmpDBStockItem := TDBDealItem.Create;
   tmpDBStockInstant := TDBStockInstant.Create(DataSrc_Sina);
   try
     LoadDBStockItem(App, tmpDBStockItem);

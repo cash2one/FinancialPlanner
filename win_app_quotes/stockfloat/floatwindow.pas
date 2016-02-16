@@ -6,9 +6,7 @@ uses
   Windows,
   Messages,
   Sysutils,
-  BaseWinThread,
   BaseApp,
-  UIBaseWinMemDC,
   BaseFloatWindow,
   StockInstantData_Get_Sina;
 
@@ -32,7 +30,8 @@ uses
   define_dealitem,
   define_stock_quotes_instant,
   DealTime,
-  UIBaseWndProc
+  UIBaseWndProc,
+  uiwin.memdc
   //,Graphics
   ;
 
@@ -164,9 +163,9 @@ end;
 
 procedure CreateRefreshDataThread(ABaseFloatWindow: PRT_BaseFloatWindow);
 begin
-  ABaseFloatWindow.DataThread.ThreadHandle := Windows.CreateThread(nil, 0, @ThreadProc_RefreshData,
-      ABaseFloatWindow, Create_Suspended, ABaseFloatWindow.DataThread.ThreadID);
-  Windows.ResumeThread(ABaseFloatWindow.DataThread.ThreadHandle);
+  ABaseFloatWindow.DataThread.Core.ThreadHandle := Windows.CreateThread(nil, 0, @ThreadProc_RefreshData,
+      ABaseFloatWindow, Create_Suspended, ABaseFloatWindow.DataThread.Core.ThreadID);
+  Windows.ResumeThread(ABaseFloatWindow.DataThread.Core.ThreadHandle);
 end;
 
 function CheckOutInstantQuote: PRT_InstantQuote;

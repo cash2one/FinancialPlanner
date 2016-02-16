@@ -26,7 +26,7 @@ type
   end;
   
   function SaveDBStockInstant(App: TBaseApp; ADB: TDBStockInstant): Boolean;   
-  procedure LoadDBStockInstant(AStockItemDB: TDBStockItem; AInstantDB: TDBStockInstant; AFileUrl: string);
+  procedure LoadDBStockInstant(AStockItemDB: TDBDealItem; AInstantDB: TDBStockInstant; AFileUrl: string);
   
 implementation
 
@@ -38,7 +38,7 @@ uses
   Define_Price,    
   Define_DealStore_Header;
                  
-procedure LoadDBStockInstantFromBuffer(AStockItemDB: TDBStockItem; AInstantDB: TDBStockInstant; AMemory: Pointer);
+procedure LoadDBStockInstantFromBuffer(AStockItemDB: TDBDealItem; AInstantDB: TDBStockInstant; AMemory: Pointer);
 var
   tmpStockItem: PRT_DealItem;
   tmpRTInstantQuote: PRT_InstantQuote; 
@@ -167,7 +167,7 @@ begin
   end;
 end;
 
-procedure LoadDBStockInstant(AStockItemDB: TDBStockItem; AInstantDB: TDBStockInstant; AFileUrl: string);
+procedure LoadDBStockInstant(AStockItemDB: TDBDealItem; AInstantDB: TDBStockInstant; AFileUrl: string);
 var  
   tmpWinFile: TWinFile;
   tmpFileContentBuffer: Pointer;   
