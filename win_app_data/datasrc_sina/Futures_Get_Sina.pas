@@ -14,11 +14,11 @@ uses
   Sysutils,
   Classes,
   UtilsHttp,
-  FuturesData_Get_Sina,
   Define_Price,
   Define_DealItem,
   Define_DataSrc,    
   define_futures_quotes,
+  FuturesData_Get_Sina,
      
   UtilsDateTime,
   
@@ -26,44 +26,27 @@ uses
   DB_DealItem_Load,
   DB_DealItem_Save;
 
-var
-  DateFormat_Sina: Sysutils.TFormatSettings;(*// =(
-    CurrencyString: '';
-    DateSeparator: '-';
-    TimeSeparator: ':';
-    ListSeparator: ';';
-    ShortDateFormat : 'yyyy-mm-dd';
-    LongDateFormat : 'yyyy-mm-dd';
-  );//*)
-                    
 procedure GetFuturesData_Sina_All(App: TBaseApp);
 var
-  tmpDBDealItem: TDBDealItem;
+  tmpDBDealItem: TDBDealItem;  
+  tmpNetClientSession: TNetClientSession;
   i: integer;
-begin
+begin              
+  FillChar(tmpNetClientSession, SizeOf(tmpNetClientSession), 0);
   tmpDBDealItem := TDBDealItem.Create;
-  try
-    LoadDBStockItem(App, tmpDBDealItem);
+  try                
+    tmpDBDealItem.AddItem('', 'IF1606');
+          
     for i := 0 to tmpDBDealItem.RecordCount - 1 do
     begin
-      if 0 = tmpDBDealItem.Items[i].EndDealDate then
+      if GetFuturesData_Sina_5m(App, tmpDBDealItem.Items[i], @tmpNetClientSession) then
       begin
-        begin
-          Sleep(2000);
-        end;
+        Sleep(2000);
       end;
     end;
   finally
     tmpDBDealItem.Free;
   end;
 end;
-
-initialization
-  FillChar(DateFormat_Sina, SizeOf(DateFormat_Sina), 0);
-  DateFormat_Sina.DateSeparator := '-';
-  DateFormat_Sina.TimeSeparator := ':';
-  DateFormat_Sina.ListSeparator := ';';
-  DateFormat_Sina.ShortDateFormat := 'yyyy-mm-dd';
-  DateFormat_Sina.LongDateFormat := 'yyyy-mm-dd';
 
 end.
