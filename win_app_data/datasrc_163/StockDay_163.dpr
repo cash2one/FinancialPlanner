@@ -20,7 +20,6 @@ uses
   xlClientSocket in '..\..\..\devwintech\v0000\win_net\xlClientSocket.pas',
   win.thread in '..\..\..\devwintech\v0000\win_system\win.thread.pas',
   UtilsHttp in '..\..\..\devwintech\v0000\win_utils\UtilsHttp.pas',
-  UtilsHttp_Indy in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Indy.pas',
   UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
@@ -38,8 +37,8 @@ uses
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
-
-  StockDay_Get_163 in 'StockDay_Get_163.pas';
+  StockDay_Get_163 in 'StockDay_Get_163.pas',
+  StockDayData_Get_163 in '..\..\data_stock\datasrc_163\StockDayData_Get_163.pas';
 
 {$R *.res}
 
