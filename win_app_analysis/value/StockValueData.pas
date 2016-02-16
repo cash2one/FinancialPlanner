@@ -73,7 +73,7 @@ type
   end;
   
   function SaveDBStockValue(App: TBaseApp; ADB: TDBStockValue): Boolean;   
-  procedure LoadDBStockValue(AStockItemDB: TDBStockItem; ADB: TDBStockValue; AFileUrl: string);
+  procedure LoadDBStockValue(AStockItemDB: TDBDealItem; ADB: TDBStockValue; AFileUrl: string);
   
 implementation
 
@@ -83,7 +83,7 @@ uses
   Define_dealStore_File,
   BaseWinFile;
   
-procedure LoadDBStockValueFromBuffer(AStockItemDB: TDBStockItem; ADB: TDBStockValue; AMemory: Pointer);
+procedure LoadDBStockValueFromBuffer(AStockItemDB: TDBDealItem; ADB: TDBStockValue; AMemory: Pointer);
 var
   tmpStockItem: PRT_DealItem;
   tmpRTStockValue: PRT_StockValue; 
@@ -215,7 +215,7 @@ begin
   end;
 end;
 
-procedure LoadDBStockValue(AStockItemDB: TDBStockItem; ADB: TDBStockValue; AFileUrl: string);
+procedure LoadDBStockValue(AStockItemDB: TDBDealItem; ADB: TDBStockValue; AFileUrl: string);
 var  
   tmpWinFile: TWinFile;
   tmpFileContentBuffer: Pointer;   

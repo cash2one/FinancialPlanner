@@ -8,23 +8,19 @@ uses
   Sysutils,
   BaseApp,
   QuickList_double,
+  win.thread,
   UIBaseWin,
-  UIBaseWinMemDC;
+  ui.color,
+  uiwin.memdc;
 
 type
-  PSysThread      = ^TSysThread;
-  TSysThread      = record
-    ThreadHandle  : THandle;
-    ThreadID      : DWORD;
-  end;
-
   PRT_AmountRateWindow = ^TRT_AmountRateWindow;
   TRT_AmountRateWindow = record
     BaseApp       : TBaseApp;
     BaseWindow    : TUIBaseWnd;
-    DataThread    : TSysThread;
+    DataThread    : TSysWinThread;
     Font          : HFONT;
-    MemDC         : TMemDC;
+    MemDC         : TWinMemDC;
 //    StockQuoteInstants: TInstantArray;
     IsFirstGot    : Byte;
     RowCount      : integer;
@@ -40,7 +36,6 @@ implementation
 uses
   IniFiles,
   UIBaseWndProc,
-  UIWinColor,
   Define_Message,
   Define_DealItem,
   define_stock_quotes_instant,
@@ -156,15 +151,15 @@ procedure Paint_AmountRateWindow_Layered(AmountRateWindow: PRT_AmountRateWindow)
 var
   tmpBlend: TBLENDFUNCTION;
   i, j: Integer;  
-  tmpColor: PColor32;
+  tmpColor: PColor32Array;
 begin
-  if 0 = AmountRateWindow.MemDC.Handle then
+  if 0 = AmountRateWindow.MemDC.DCHandle then
   begin
     UpdateMemDC(@AmountRateWindow.MemDC,
         AmountRateWindow.BaseWindow.ClientRect.Right,
         AmountRateWindow.BaseWindow.ClientRect.Bottom);
   end;                                   
-  tmpColor := AmountRateWindow.MemDC.MemData;
+  tmpColor := AmountRateWindow.MemDC.MemBitmap.BitsData;
   if tmpColor <> nil then
   begin
     for i := 0 to AmountRateWindow.MemDC.Height - 1 do
@@ -178,8 +173,8 @@ begin
       end;
     end;
   end;
-  Paint_AmountRateWindow(AmountRateWindow.MemDC.Handle, AmountRateWindow);  
-  tmpColor := AmountRateWindow.MemDC.MemData;
+  Paint_AmountRateWindow(AmountRateWindow.MemDC.DCHandle, AmountRateWindow);  
+  tmpColor := AmountRateWindow.MemDC.MemBitmap.BitsData;
   if tmpColor <> nil then
   begin
     for i := 0 to AmountRateWindow.MemDC.Height - 1 do
@@ -205,7 +200,7 @@ begin
     AmountRateWindow.BaseWindow.UIWndHandle, 0,
         @AmountRateWindow.BaseWindow.WindowRect.TopLeft,
         @AmountRateWindow.BaseWindow.ClientRect.BottomRight,
-        AmountRateWindow.MemDC.Handle,
+        AmountRateWindow.MemDC.DCHandle,
         @AmountRateWindow.BaseWindow.ClientRect.TopLeft,
         0, // crKey: COLORREF
         @tmpBlend,// pblend: PBLENDFUNCTION;
@@ -392,9 +387,10 @@ end;
 
 procedure CreateRefreshDataThread(AmountRateWindow: PRT_AmountRateWindow);
 begin
-  AmountRateWindow.DataThread.ThreadHandle := Windows.CreateThread(nil, 0, @ThreadProc_RefreshData,
-      AmountRateWindow, Create_Suspended, AmountRateWindow.DataThread.ThreadID);
-  Windows.ResumeThread(AmountRateWindow.DataThread.ThreadHandle);
+  AmountRateWindow.DataThread.Core.ThreadHandle := Windows.CreateThread(nil, 0, @ThreadProc_RefreshData,
+      AmountRateWindow, Create_Suspended,
+      AmountRateWindow.DataThread.Core.ThreadID);
+  Windows.ResumeThread(AmountRateWindow.DataThread.Core.ThreadHandle);
 end;
 
 function CreateAmountRateWindow(App: TBaseApp; AmountRateWindow: PRT_AmountRateWindow; AWndProc: TFNWndProc): Boolean; overload;

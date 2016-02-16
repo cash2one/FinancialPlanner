@@ -108,7 +108,7 @@ procedure TAmountRateApp.Run;
 begin
   inherited;
   ShowAmountRateWindow;
-  RunMessageLoop;
+  RunAppMsgLoop;
 end;
 
 end.

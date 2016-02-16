@@ -8,6 +8,7 @@ uses
   QuickList_int in '..\..\..\devwintech\comps\list\QuickList_int.pas',
   QuickList_double in '..\..\..\devwintech\comps\list\QuickList_double.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
+  VirtualTrees in '..\..\..\devdcomps\virtualtree\VirtualTrees.pas',
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
   BaseApp in '..\..\..\devwintech\v0000\app_base\BaseApp.pas',
   BasePath in '..\..\..\devwintech\v0000\app_base\BasePath.pas',
