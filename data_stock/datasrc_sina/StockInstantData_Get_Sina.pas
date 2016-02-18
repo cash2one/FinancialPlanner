@@ -3,7 +3,8 @@ unit StockInstantData_Get_Sina;
 interface
 
 uses                
-  define_stock_quotes_instant,
+  define_stock_quotes_instant,    
+  UtilsHttp,
   BaseApp;
                                           
 type
@@ -12,16 +13,14 @@ type
     Data: array[0..10 - 1] of PRT_InstantQuote;
   end;
                 
-  procedure GetStockDataInstant_Sina_All(App: TBaseApp);
   procedure GetStockDataReal_Sina_All(App: TBaseApp);         
-  procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray);
+  procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; ANetSession: PNetClientSession);
 
 implementation
 
 uses
   Sysutils,
   Classes,
-  UtilsHttp,
   win.iobuffer,
   Define_Price,
   define_dealItem,
@@ -167,7 +166,7 @@ begin
   end;
 end;
 
-procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray);
+procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; ANetSession: PNetClientSession);
 var  
   tmpUrl: string;
   tmpRetData: PIOBuffer;
@@ -187,7 +186,7 @@ begin
   if '' <> tmpUrl then
   begin
     tmpUrl := BaseSinaInstantUrl1 + tmpUrl;
-    tmpRetData := GetHttpUrlData(tmpUrl, nil);
+    tmpRetData := GetHttpUrlData(tmpUrl, ANetSession);
     if nil <> tmpRetData then
     begin
       FillChar(tmpHttpParse, SizeOf(tmpHttpParse), 0);
@@ -200,53 +199,6 @@ begin
         end;
       end;
     end;
-  end;
-end;
-
-procedure GetStockDataInstant_Sina_All(App: TBaseApp);
-var
-  tmpDBStockItem: TDBDealItem;
-  tmpDBStockInstant: TDBStockInstant;
-  tmpInstantArray: TInstantArray;
-  i: integer;
-  tmpIdx: integer;
-  //tmpPathUrl: AnsiString;
-  //tmpFileUrl: AnsiString;
-begin
-  tmpDBStockItem := TDBDealItem.Create;
-  tmpDBStockInstant := TDBStockInstant.Create(DataSrc_Sina);
-  try
-    LoadDBStockItem(App, tmpDBStockItem);
-                       
-    //=================
-//    tmpPathUrl := App.Path.DataBasePath[Define_Store_File.FilePath_DBType_InstantData, 0];
-//    tmpFileUrl := tmpPathUrl + Copy(FormatDateTime('yyyymmdd', now()), 7, MaxInt) + '.' + FileExt_StockInstant;
-//    LoadDBStockInstant(tmpDBStockItem, tmpDBStockInstant, tmpFileUrl);
-//    exit;
-    //=================
-
-    tmpIdx := 0;
-    FillChar(tmpInstantArray, SizeOf(tmpInstantArray), 0);
-    for i := 0 to tmpDBStockItem.RecordCount - 1 do
-    begin
-      if 0 <> tmpDBStockItem.Items[i].EndDealDate then
-        Continue;
-      tmpInstantArray.Data[tmpIdx] := tmpDBStockInstant.AddItem(tmpDBStockItem.Items[i]);
-      Inc(tmpIdx);
-      if tmpIdx >= Length(tmpInstantArray.Data) then
-      begin
-        DataGet_InstantArray_Sina(App, @tmpInstantArray);
-        FillChar(tmpInstantArray, SizeOf(tmpInstantArray), 0);        
-        tmpIdx := 0;  
-        Sleep(100);
-      end;
-    end;      
-    DataGet_InstantArray_Sina(App, @tmpInstantArray);
-
-    SaveDBStockInstant(App, tmpDBStockInstant);
-  finally
-    tmpDBStockItem.Free;
-    tmpDBStockInstant.Free;
   end;
 end;
 
