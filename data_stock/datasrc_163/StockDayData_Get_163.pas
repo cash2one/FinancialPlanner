@@ -61,6 +61,11 @@ type
       
 const
   Base163DayUrl1 = 'http://quotes.money.163.com/service/chddata.html?';
+
+  // 上证指数
+  // http://quotes.money.163.com/service/chddata.html?
+  // code=0000001&start=19901219&end=20160219&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER;VATURNOVER';
+  // code=1399300 沪深 300
             
   DealDayDataHeadNames_163: array[TDealDayDataHeadName_163] of string = ('',
     '日期', '股票代码', '名称',
