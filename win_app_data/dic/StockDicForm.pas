@@ -3,12 +3,13 @@ unit StockDicForm;
 interface
 
 uses
-  Windows, Messages, ActiveX, SysUtils, ShellApi,
-  Classes, Controls, Forms, StdCtrls, ExtCtrls, VirtualTrees, 
-  BaseApp, BaseWinApp, db_dealitem, BaseStockApp;
+  Windows, Messages, ActiveX, SysUtils, ShellApi, Dialogs,
+  Classes, Controls, Forms, StdCtrls, ExtCtrls, VirtualTrees,   
+  define_dealitem, DealItemsTreeView,
+  BaseApp, BaseWinApp, db_dealitem, BaseStockApp, BaseForm;
 
-type
-  TfrmStockDic = class(TForm)
+type        
+  TfrmStockDic = class(TfrmBase)
     pnlTop: TPanel;
     pnlBottom: TPanel;
     pnlLeft: TPanel;
@@ -16,13 +17,16 @@ type
     spl1: TSplitter;
     pnlRight: TPanel;
     mmo1: TMemo;
+    btnOpen: TButton;
     procedure btnSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure tmrAppStartTimer(Sender: TObject);
+    procedure btnOpenClick(Sender: TObject);
   protected
-    fVtDealItems: TVirtualStringTree;
-    procedure WMDropFiles(var msg : TWMDropFiles) ; message WM_DROPFILES;  
-    procedure vtDealItemGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-      Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
+    fDealItemTree: TDealItemTree;   
+    fAppStartTimer: TTimer;
+    procedure WMDropFiles(var msg : TWMDropFiles) ; message WM_DROPFILES;
+    procedure SaveDealItemDB(AFileUrl: string);
   public
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
@@ -49,12 +53,6 @@ uses
 
 {$R *.dfm}
 
-type
-  PDealItemNode = ^TDealItemNode; 
-  TDealItemNode = record
-
-  end;
-
 constructor TStockDicApp.Create(AppClassId: AnsiString);
 begin
   inherited;     
@@ -78,12 +76,12 @@ end;
 constructor TfrmStockDic.Create(AOwner: TComponent);
 begin
   inherited;
-  Self.OnCreate := FormCreate;      
-  fVtDealItems := TVirtualStringTree.Create(Self);
-  fVtDealItems.Parent := pnlLeft;
-  fVtDealItems.Align := alClient;   
-  fVtDealItems.NodeDataSize := SizeOf(TDealItemNode);
-  fVtDealItems.OnGetText := vtDealItemGetText;
+  Self.OnCreate := FormCreate;
+  App := GlobalApp;
+  fAppStartTimer := TTimer.Create(Application);
+  fAppStartTimer.Interval := 100;
+  fAppStartTimer.OnTimer := tmrAppStartTimer;
+  fAppStartTimer.Enabled := true;
   //fVtDealItems.Columns = <>;
 end;
 
@@ -93,13 +91,23 @@ begin
 //
 end;
 
-procedure TfrmStockDic.vtDealItemGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
-  Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
+procedure TfrmStockDic.tmrAppStartTimer(Sender: TObject);
 begin
-  CellText := '1234';
-//
+  if nil <> Sender then
+  begin
+    if Sender is TTimer then
+    begin
+      TTimer(Sender).Enabled := false;
+      TTimer(Sender).OnTimer := nil;
+    end;
+    fAppStartTimer.Enabled := false;
+    fAppStartTimer.OnTimer := nil;
+  end;
+  fDealItemTree := TDealItemTree.Create(pnlLeft);
+  fDealItemTree.InitializeDealItemsTree;
+  fDealItemTree.BuildDealItemsTreeNodes;
 end;
-
+                
 procedure TfrmStockDic.WMDropFiles(var msg: TWMDropFiles);
 const
   MAXFILENAME = 255;
@@ -128,12 +136,11 @@ begin
     if 1 = tmpfileCount then
     begin
       if 0 < GlobalApp.StockItemDB.RecordCount then
-      begin                            
-        GlobalApp.StockItemDB.Sort;
+      begin
         tmpNewFileUrl := ChangeFileExt(tmpFileUrl, '.dic');
         if not FileExists(tmpNewFileUrl) then
         begin
-          db_dealItem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.StockItemDB, tmpNewFileUrl);
+          SaveDealItemDB(tmpNewFileUrl);
         end;
       end;
     end;
@@ -142,17 +149,45 @@ begin
   begin                           
     if 0 < GlobalApp.StockItemDB.RecordCount then
     begin
-      GlobalApp.StockItemDB.Sort;
-      db_dealitem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.StockItemDB, tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic');
+      SaveDealItemDB(tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic');
     end;
   end;
   //release memory
   DragFinish(msg.Drop) ;
 end;
 
-procedure TfrmStockDic.btnSaveClick(Sender: TObject);
+procedure TfrmStockDic.SaveDealItemDB(AFileUrl: string);
+begin                     
+  GlobalApp.StockItemDB.Sort;
+  db_dealItem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.StockItemDB, AFileUrl);
+end;
+
+procedure TfrmStockDic.btnOpenClick(Sender: TObject);
 begin
 //
+end;
+
+procedure TfrmStockDic.btnSaveClick(Sender: TObject);
+var
+  tmpFileUrl: string;
+  tmpSaveDlg: TSaveDialog;
+begin
+  tmpFileUrl := '';                    
+  tmpSaveDlg := TSaveDialog.Create(Self);
+  try
+    tmpSaveDlg.InitialDir := ExtractFilePath(ParamStr(0));
+    tmpSaveDlg.DefaultExt := '.dic';
+    tmpSaveDlg.Filter := 'dic file|*.dic'; 
+    if not tmpSaveDlg.Execute then
+      exit;
+    tmpFileUrl := tmpSaveDlg.FileName;
+    if '' <> Trim(tmpFileUrl) then
+    begin
+      SaveDealItemDB(tmpFileUrl);
+    end;
+  finally
+    tmpSaveDlg.Free;
+  end;
 end;
 
 end.

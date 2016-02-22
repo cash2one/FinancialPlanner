@@ -11,7 +11,8 @@ uses
   BaseFile in '..\..\..\devwintech\v0000\app_base\BaseFile.pas',
   BaseWinApp in '..\..\..\devwintech\v0000\win_base\BaseWinApp.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
-  Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
+  Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',  
+  BaseForm in '..\..\..\devwintech\v0000\win_ui\BaseForm.pas' {frmBase},
   BaseStockApp in '..\..\base\BaseStockApp.pas',
   StockAppPath in '..\..\base\StockAppPath.pas',
   define_price in '..\..\basedefine\define_price.pas',
@@ -24,6 +25,7 @@ uses
   db_dealitem_Save in '..\..\dealitem\db_dealitem_Save.pas',
   db_dealitem_loadIni in '..\..\dealitem\db_dealitem_loadIni.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
+  DealItemsTreeView in '..\..\stockview\DealItemsTreeView.pas',
   StockDicForm in 'StockDicForm.pas' {frmStockDic};
 
 {$R *.res}

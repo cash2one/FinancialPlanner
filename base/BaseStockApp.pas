@@ -21,6 +21,9 @@ type
     property StockItemDB: TDBDealItem read fBaseStockAppData.StockItemDB;
   end;
 
+var
+  GlobalBaseStockApp: TBaseStockApp = nil;
+    
 implementation
 
 uses
@@ -31,10 +34,13 @@ constructor TBaseStockApp.Create(AppClassId: AnsiString);
 begin
   inherited;
   FillChar(fBaseStockAppData, SizeOf(fBaseStockAppData), 0);
+  GlobalBaseStockApp := Self;
 end;
 
 destructor TBaseStockApp.Destroy;
 begin
+  if GlobalBaseStockApp = Self then
+    GlobalBaseStockApp := nil;
   if nil <> fBaseStockAppData.StockItemDB then
   begin
     fBaseStockAppData.StockItemDB.Free;
