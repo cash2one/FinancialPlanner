@@ -11,13 +11,41 @@ type
     DealItem: PRT_DealItem;
   end;
 
-  TDealItemTreeData = record
-    TreeView: TVirtualStringTree;  
+  TDealItemColumns_BaseInfo = record
     Col_Code: TVirtualTreeColumn;
     Col_Name: TVirtualTreeColumn;
     Col_FirstDealDate: TVirtualTreeColumn;
     Col_LastDealDate: TVirtualTreeColumn;
     Col_EndDealDate: TVirtualTreeColumn;
+  end;
+                          
+  TDealItemColumns_BaseInfoEx = record
+    Col_VolumeTotal : TVirtualTreeColumn; // 当前总股本
+    Col_VolumeDeal  : TVirtualTreeColumn; // 当前流通股本
+    Col_VolumeDate  : TVirtualTreeColumn; // 当前股本结构开始时间    
+
+    Col_Industry    : TVirtualTreeColumn; // 行业     
+    Col_Area        : TVirtualTreeColumn; // 地区
+    Col_PERatio     : TVirtualTreeColumn; // 市盈率    
+  end;
+
+  TDealItemColumns_Quote = record
+    Col_PrePriceClose: TVirtualTreeColumn;
+    Col_PreDealVolume: TVirtualTreeColumn;
+    Col_PreDealAmount: TVirtualTreeColumn;
+
+    Col_PriceOpen: TVirtualTreeColumn;  // 开盘价
+    Col_PriceHigh: TVirtualTreeColumn;  // 最高价
+    Col_PriceLow: TVirtualTreeColumn;   // 最低价
+    Col_PriceClose: TVirtualTreeColumn; // 收盘价
+    Col_DealVolume: TVirtualTreeColumn; // 成交量
+    Col_DealAmount: TVirtualTreeColumn; // 成交金额  (总金额)
+    Col_DealVolumeRate: TVirtualTreeColumn; // 换手率                        
+  end;
+  
+  TDealItemTreeData = record
+    TreeView: TVirtualStringTree;
+    Columns_BaseInfo: TDealItemColumns_BaseInfo;
     ParentControl: TWinControl;
   end;
 
@@ -27,10 +55,15 @@ type
     procedure vtDealItemGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
   public
-    constructor Create(AParent: TWinControl);          
-    destructor Destroy; override;   
+    constructor Create(AParent: TWinControl);
+    destructor Destroy; override;
     procedure BuildDealItemsTreeNodes;
     procedure InitializeDealItemsTree;
+
+    function AddDealItemsTreeColumn_Code: TVirtualTreeColumn;
+    function AddDealItemsTreeColumn_Name: TVirtualTreeColumn;
+    function AddDealItemsTreeColumn_FirstDeal: TVirtualTreeColumn;
+    function AddDealItemsTreeColumn_EndDeal: TVirtualTreeColumn;
   end;
   
 implementation
@@ -59,21 +92,10 @@ begin
   // -----------------------------------
   fDealItemTreeData.TreeView.Header.Options := [hoVisible, hoColumnResize];
   // -----------------------------------
-  fDealItemTreeData.Col_Code := fDealItemTreeData.TreeView.Header.Columns.Add;
-  fDealItemTreeData.Col_Code.Width := 70;
-  fDealItemTreeData.Col_Code.Text := 'Code';
-  
-  fDealItemTreeData.Col_Name := fDealItemTreeData.TreeView.Header.Columns.Add;
-  fDealItemTreeData.Col_Name.Width := 80;
-  fDealItemTreeData.Col_Name.Text := 'Name';
-
-  fDealItemTreeData.Col_FirstDealDate := fDealItemTreeData.TreeView.Header.Columns.Add;
-  fDealItemTreeData.Col_FirstDealDate.Width := 80;
-  fDealItemTreeData.Col_FirstDealDate.Text := 'FirstDate';
-
-  fDealItemTreeData.Col_EndDealDate := fDealItemTreeData.TreeView.Header.Columns.Add;
-  fDealItemTreeData.Col_EndDealDate.Width := 80;
-  fDealItemTreeData.Col_EndDealDate.Text := 'EndDate';
+  AddDealItemsTreeColumn_Code;
+  AddDealItemsTreeColumn_Name;
+  AddDealItemsTreeColumn_FirstDeal;
+  AddDealItemsTreeColumn_EndDeal;
   // -----------------------------------
   fDealItemTreeData.TreeView.TreeOptions.AnimationOptions := []; 
   fDealItemTreeData.TreeView.TreeOptions.SelectionOptions := [toExtendedFocus,toFullRowSelect];
@@ -84,6 +106,50 @@ begin
     toAutoTristateTracking,
     toAutoDeleteMovedNodes,
     toAutoChangeScale}];
+end;
+                                                                    
+function TDealItemTree.AddDealItemsTreeColumn_Code: TVirtualTreeColumn;
+begin
+  if nil = fDealItemTreeData.Columns_BaseInfo.Col_Code then
+  begin
+    fDealItemTreeData.Columns_BaseInfo.Col_Code := fDealItemTreeData.TreeView.Header.Columns.Add;
+    fDealItemTreeData.Columns_BaseInfo.Col_Code.Width := 70;
+    fDealItemTreeData.Columns_BaseInfo.Col_Code.Text := 'Code';
+  end;
+  Result := fDealItemTreeData.Columns_BaseInfo.Col_Code;
+end;
+
+function TDealItemTree.AddDealItemsTreeColumn_Name: TVirtualTreeColumn;
+begin
+  if nil = fDealItemTreeData.Columns_BaseInfo.Col_Name then
+  begin
+    fDealItemTreeData.Columns_BaseInfo.Col_Name := fDealItemTreeData.TreeView.Header.Columns.Add;
+    fDealItemTreeData.Columns_BaseInfo.Col_Name.Width := 80;
+    fDealItemTreeData.Columns_BaseInfo.Col_Name.Text := 'Name';
+  end;
+  Result := fDealItemTreeData.Columns_BaseInfo.Col_Name;
+end;
+
+function TDealItemTree.AddDealItemsTreeColumn_FirstDeal: TVirtualTreeColumn;
+begin
+  if nil = fDealItemTreeData.Columns_BaseInfo.Col_FirstDealDate then
+  begin
+    fDealItemTreeData.Columns_BaseInfo.Col_FirstDealDate := fDealItemTreeData.TreeView.Header.Columns.Add;
+    fDealItemTreeData.Columns_BaseInfo.Col_FirstDealDate.Width := 80;
+    fDealItemTreeData.Columns_BaseInfo.Col_FirstDealDate.Text := 'FirstDate';
+  end;
+  Result := fDealItemTreeData.Columns_BaseInfo.Col_FirstDealDate;
+end;
+
+function TDealItemTree.AddDealItemsTreeColumn_EndDeal: TVirtualTreeColumn;
+begin
+  if nil = fDealItemTreeData.Columns_BaseInfo.Col_EndDealDate then
+  begin
+    fDealItemTreeData.Columns_BaseInfo.Col_EndDealDate := fDealItemTreeData.TreeView.Header.Columns.Add;
+    fDealItemTreeData.Columns_BaseInfo.Col_EndDealDate.Width := 80;
+    fDealItemTreeData.Columns_BaseInfo.Col_EndDealDate.Text := 'EndDate';
+  end;
+  Result := fDealItemTreeData.Columns_BaseInfo.Col_EndDealDate;
 end;
 
 procedure TDealItemTree.BuildDealItemsTreeNodes;
@@ -126,38 +192,53 @@ begin
   begin
     if nil <> tmpVData.DealItem then
     begin
-      if nil <> fDealItemTreeData.Col_Code then
+      if nil <> fDealItemTreeData.Columns_BaseInfo.Col_Code then
       begin
-        if Column = fDealItemTreeData.Col_Code.Index then
+        if Column = fDealItemTreeData.Columns_BaseInfo.Col_Code.Index then
         begin
           CellText := tmpVData.DealItem.sCode;
+          exit;
         end;
       end;
-      if nil <> fDealItemTreeData.Col_Name then
+      if nil <> fDealItemTreeData.Columns_BaseInfo.Col_Name then
       begin
-        if Column = fDealItemTreeData.Col_Name.Index then
+        if Column = fDealItemTreeData.Columns_BaseInfo.Col_Name.Index then
         begin
           CellText := tmpVData.DealItem.Name;
+          exit;
         end;
       end;
-      if nil <> fDealItemTreeData.Col_FirstDealDate then
+      if nil <> fDealItemTreeData.Columns_BaseInfo.Col_FirstDealDate then
       begin
-        if Column = fDealItemTreeData.Col_FirstDealDate.Index then
+        if Column = fDealItemTreeData.Columns_BaseInfo.Col_FirstDealDate.Index then
         begin
           if 0 < tmpVData.DealItem.FirstDealDate then
           begin
             CellText := FormatDateTime('yyyy-mm-dd', tmpVData.DealItem.FirstDealDate);
           end;
+          exit;
         end;
-      end;               
-      if nil <> fDealItemTreeData.Col_EndDealDate then
+      end;
+      if nil <> fDealItemTreeData.Columns_BaseInfo.Col_EndDealDate then
       begin
-        if Column = fDealItemTreeData.Col_EndDealDate.Index then
+        if Column = fDealItemTreeData.Columns_BaseInfo.Col_EndDealDate.Index then
         begin
           if 0 < tmpVData.DealItem.EndDealDate then
           begin
             CellText := FormatDateTime('yyyy-mm-dd', tmpVData.DealItem.EndDealDate);
           end;
+          exit;
+        end;
+      end;
+      if nil <> fDealItemTreeData.Columns_BaseInfo.Col_LastDealDate then
+      begin
+        if Column = fDealItemTreeData.Columns_BaseInfo.Col_LastDealDate.Index then
+        begin
+          if 0 < tmpVData.DealItem.LastDealDate then
+          begin
+            CellText := FormatDateTime('yyyy-mm-dd', tmpVData.DealItem.LastDealDate);
+          end;
+          exit;
         end;
       end;
     end;
