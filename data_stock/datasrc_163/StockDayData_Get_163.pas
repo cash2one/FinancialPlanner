@@ -73,7 +73,7 @@ const
     '涨跌额', '涨跌幅', '换手率', '成交量',
     '成交金额', '总市值', '流通市值');
                   
-function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean;
+function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; AHttpSession: PHttpClientSession): Boolean;
 
 implementation
 
@@ -296,16 +296,17 @@ begin
   end;
 end;
                                                                                                                
-function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean;
+function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; AHttpSession: PHttpClientSession): Boolean;
 var
   tmpStockDataAccess: TStockDayDataAccess;
   tmpUrl: string;
   tmpLastDealDate: Word;
   tmpInt: integer;
   tmpQuoteDay: PRT_Quote_M1_Day;
+  tmpHttpData: PIOBuffer;
 begin
   Result := false;
-  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_163);
+  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_163, AIsWeight);
   try
     tmpLastDealDate := Trunc(now());
     tmpInt := DayOfWeek(tmpLastDealDate);
@@ -334,7 +335,8 @@ begin
     end else
       exit;
     // parse result data
-    if ParseStockDataDay_163(tmpStockDataAccess, GetHttpUrlData(tmpUrl, ANetSession)) then
+    tmpHttpData := GetHttpUrlData(tmpUrl, AHttpSession);
+    if ParseStockDataDay_163(tmpStockDataAccess, tmpHttpData) then
     begin        
       Result := true;
       SaveStockDayData(App, tmpStockDataAccess);

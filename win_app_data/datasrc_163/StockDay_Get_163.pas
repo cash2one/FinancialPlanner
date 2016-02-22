@@ -31,10 +31,13 @@ procedure GetStockDataDay_163_All(App: TBaseApp);
 var
   tmpDBStockItem: TDBDealItem;
   tmpIsNeedSaveStockItemDB: Boolean;
-  tmpNetClientSession: TNetClientSession;
+  tmpHttpClientSession: THttpClientSession;
   i: integer;
+  tmpDealItem: PRT_DealItem;
 begin
-  FillChar(tmpNetClientSession, SizeOf(tmpNetClientSession), 0);
+  FillChar(tmpHttpClientSession, SizeOf(tmpHttpClientSession), 0);
+  tmpHttpClientSession.IsKeepAlive := true;
+  
   tmpIsNeedSaveStockItemDB := false;
   tmpDBStockItem := TDBDealItem.Create;
   try
@@ -44,18 +47,19 @@ begin
     LoadDBStockItem(App, tmpDBStockItem);
     for i := 0 to tmpDBStockItem.RecordCount - 1 do
     begin
-      if 0 = tmpDBStockItem.Items[i].EndDealDate then
+      tmpDealItem := tmpDBStockItem.Items[i];
+      if 0 = tmpDealItem.EndDealDate then
       begin              
-        if 0 = tmpDBStockItem.Items[i].FirstDealDate then
+        if 0 = tmpDealItem.FirstDealDate then
         begin
           tmpIsNeedSaveStockItemDB := true;
         end;
-        tmpDBStockItem.Items[i].IsDataChange := 0;
-        if GetStockDataDay_163(App, tmpDBStockItem.Items[i], false, @tmpNetClientSession) then
+        tmpDealItem.IsDataChange := 0;
+        if GetStockDataDay_163(App, tmpDealItem, false, @tmpHttpClientSession) then
         begin
           Sleep(2000);
         end;                                      
-        if 0 <> tmpDBStockItem.Items[i].IsDataChange then
+        if 0 <> tmpDealItem.IsDataChange then
         begin
           tmpIsNeedSaveStockItemDB := true;
         end;

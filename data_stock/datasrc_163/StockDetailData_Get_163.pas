@@ -35,7 +35,7 @@ const
     '成交时间', '成交价', '价格变动',
     '成交量', '成交额', '性质');
 
-  function GetStockDataDetail_163(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PNetClientSession): Boolean;
+  function GetStockDataDetail_163(App: TBaseApp; AStockItem: PRT_DealItem; AHttpClientSession: PHttpClientSession): Boolean;
 
 implementation
 
@@ -44,7 +44,7 @@ uses
   define_dealstore_file,
   define_datasrc;
   
-function GetStockDayDetailData_163(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PNetClientSession; ADealDay: Word): Boolean;
+function GetStockDayDetailData_163(App: TBaseApp; AStockItem: PRT_DealItem; AHttpClientSession: PHttpClientSession; ADealDay: Word): Boolean;
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;  
@@ -68,7 +68,7 @@ begin
 
   // 2016/20160216/1002414.xls
   tmpUrl := Base163DetailUrl1 + FormatDateTime('yyyy', ADealDay) + '/' + FormatDateTime('yyyymmdd', ADealDay) + '/' + GetStockCode_163(AStockItem) + '.xls';
-  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession);
+  tmpHttpData := GetHttpUrlData(tmpUrl, AHttpClientSession);
   if nil <> tmpHttpData then
   begin
     FillChar(tmpHttpHeadParse, SizeOf(tmpHttpHeadParse), 0);
@@ -79,10 +79,10 @@ begin
   end;
 end;
 
-function GetStockDataDetail_163(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PNetClientSession): Boolean;
+function GetStockDataDetail_163(App: TBaseApp; AStockItem: PRT_DealItem; AHttpClientSession: PHttpClientSession): Boolean;
 begin             
   Result := false;
-  GetStockDayDetailData_163(App, AStockItem, ANetSession, Trunc(now) - 2);
+  GetStockDayDetailData_163(App, AStockItem, AHttpClientSession, Trunc(now) - 2);
 end;
 
 end.

@@ -20,15 +20,15 @@ uses
   StockDayData_Load,
   StockDetailData_Get_Sina;                 
                     
-procedure DownloadDealItemDayDetailData(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PNetClientSession);
+procedure DownloadDealItemDayDetailData(App: TBaseApp; AStockItem: PRT_DealItem; AHttpClientSession: PHttpClientSession);
 var
   tmpDayData: TStockDayDataAccess;
 begin                   
-  tmpDayData := TStockDayDataAccess.Create(AStockItem, DataSrc_163);
+  tmpDayData := TStockDayDataAccess.Create(AStockItem, DataSrc_163, false);
   try                   
     if LoadStockDayData(App, tmpDayData) then
     begin
-      GetStockDataDetail_Sina(App, AStockItem, ANetSession);
+      GetStockDataDetail_Sina(App, AStockItem, AHttpClientSession);
     end;
   except
     tmpDayData.Free;
@@ -38,10 +38,12 @@ end;
 procedure GetStockDataDetail_Sina_All(App: TBaseApp);
 var
   tmpDBStockItem: TDBDealItem;
-  tmpNetClientSession: TNetClientSession;
+  tmpHttpClientSession: THttpClientSession;
   i: integer;
 begin
-  FillChar(tmpNetClientSession, SizeOf(tmpNetClientSession), 0);
+  FillChar(tmpHttpClientSession, SizeOf(tmpHttpClientSession), 0);
+  tmpHttpClientSession.IsKeepAlive := true;
+  
   tmpDBStockItem := TDBDealItem.Create;
   try
     LoadDBStockItem(App, tmpDBStockItem);
@@ -49,7 +51,7 @@ begin
     begin
       if 0 = tmpDBStockItem.Items[i].EndDealDate then
       begin
-        DownloadDealItemDayDetailData(App, tmpDBStockItem.Items[i], @tmpNetClientSession);
+        DownloadDealItemDayDetailData(App, tmpDBStockItem.Items[i], @tmpHttpClientSession);
       end;
     end;
   finally

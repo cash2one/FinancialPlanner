@@ -27,7 +27,7 @@ var
   tmpInstantArray: TInstantArray;
   i: integer;
   tmpIdx: integer;     
-  tmpNetSession: TNetClientSession;
+  tmpHttpClientSession: THttpClientSession;
   //tmpPathUrl: AnsiString;
   //tmpFileUrl: AnsiString;
 begin
@@ -46,7 +46,9 @@ begin
     begin
       tmpIdx := 0;
       FillChar(tmpInstantArray, SizeOf(tmpInstantArray), 0); 
-      FillChar(tmpNetSession, SizeOf(tmpNetSession), 0);
+      FillChar(tmpHttpClientSession, SizeOf(tmpHttpClientSession), 0);
+      tmpHttpClientSession.IsKeepAlive := true;
+      
       for i := 0 to tmpDBStockItem.RecordCount - 1 do
       begin
         if 0 <> tmpDBStockItem.Items[i].EndDealDate then
@@ -55,13 +57,13 @@ begin
         Inc(tmpIdx);
         if tmpIdx >= Length(tmpInstantArray.Data) then
         begin
-          DataGet_InstantArray_Sina(App, @tmpInstantArray, @tmpNetSession);
+          DataGet_InstantArray_Sina(App, @tmpInstantArray, @tmpHttpClientSession);
           FillChar(tmpInstantArray, SizeOf(tmpInstantArray), 0);        
           tmpIdx := 0;  
           Sleep(100);
         end;
       end;      
-      DataGet_InstantArray_Sina(App, @tmpInstantArray, @tmpNetSession);
+      DataGet_InstantArray_Sina(App, @tmpInstantArray, @tmpHttpClientSession);
 
       SaveDBStockInstant(App, tmpDBStockInstant);
     end;

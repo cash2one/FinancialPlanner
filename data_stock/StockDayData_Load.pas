@@ -7,7 +7,7 @@ uses
   StockDayDataAccess;
   
   function LoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess): Boolean;
-  function CheckNeedLoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; ALastDate: Word; AIsWeight: Boolean): Boolean;
+  function CheckNeedLoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; ALastDate: Word): Boolean;
   
 implementation
 
@@ -110,7 +110,7 @@ begin
   end;
 end;
 
-function CheckNeedLoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; ALastDate: Word; AIsWeight: Boolean): Boolean;  
+function CheckNeedLoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; ALastDate: Word): Boolean;  
 var
   tmpWinFile: TWinFile;
   tmpFileUrl: string;

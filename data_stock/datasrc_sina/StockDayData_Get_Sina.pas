@@ -63,7 +63,7 @@ var
     LongDateFormat : 'yyyy-mm-dd';
   );//*)
              
-function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean;
+function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
 
 implementation
 
@@ -287,30 +287,24 @@ var
   tmpStrs: TStringList;
   tmpHttpHeadSession: THttpHeadParseSession;
 begin
-  Result := False; 
+  Result := False;
+  if nil = AResultData then
+    exit;
   FillChar(tmpParseRec, SizeOf(tmpParseRec), 0);
   FIllChar(tmpHttpHeadSession, SizeOf(tmpHttpHeadSession), 0);
   
   HttpBufferHeader_Parser(AResultData, @tmpHttpHeadSession);
-                         
-  tmpStrs := TStringList.Create;
-  try
-    tmpStrs.Text := PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1]);
-    tmpStrs.SaveToFile('e:\html' +
-        FormatDateTime('yyyymmdd', now) + '_' +
-        IntToStr(GetTickCount) + '.txt');
-  finally
-    tmpStrs.Free;
-  end;
-  tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
-  
-  if tmpParseRec.HtmlRoot <> nil then
+  if (199 < tmpHttpHeadSession.RetCode) and (300 > tmpHttpHeadSession.RetCode)then
   begin
-    Result := HtmlParse_DayData_Sina(ADataAccess, @tmpParseRec, tmpParseRec.HtmlRoot); 
+    tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
+    if tmpParseRec.HtmlRoot <> nil then
+    begin
+      Result := HtmlParse_DayData_Sina(ADataAccess, @tmpParseRec, tmpParseRec.HtmlRoot);
+    end;
   end;
 end;
 
-function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean; overload;
+function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpurl: string;      
 begin
@@ -322,7 +316,7 @@ begin
   Result := DataParse_DayData_Sina(ADataAccess, GetHttpUrlData(tmpUrl, ANetSession));
 end;
 
-function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean; overload;
+function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;      
@@ -342,11 +336,15 @@ begin
   tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession);
   if nil <> tmpHttpData then
   begin
-    Result := DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+    try
+      Result := DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+    finally
+      CheckInIOBuffer(tmpHttpData);
+    end;
   end;
 end;
 
-function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean;
+function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
 var
   tmpStockDataAccess: TStockDayDataAccess; 
   tmpLastDealDate: Word;
@@ -366,7 +364,7 @@ begin
     if 7 = tmpInt then
       tmpLastDealDate := tmpLastDealDate - 1;
                                                
-    if CheckNeedLoadStockDayData(App, tmpStockDataAccess, tmpLastDealDate, AIsWeight) then
+    if CheckNeedLoadStockDayData(App, tmpStockDataAccess, tmpLastDealDate) then
     begin
     
     end else

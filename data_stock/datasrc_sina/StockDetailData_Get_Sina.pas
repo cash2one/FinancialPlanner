@@ -34,7 +34,7 @@ const
     '成交时间', '成交价', '价格变动',
     '成交量', '成交额', '性质');
 
-  function GetStockDataDetail_Sina(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PNetClientSession): Boolean;
+  function GetStockDataDetail_Sina(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PHttpClientSession): Boolean;
 
 implementation
 
@@ -43,7 +43,7 @@ uses
   define_dealstore_file,
   define_datasrc;
   
-function GetStockDayDetailData_Sina(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PNetClientSession; ADealDay: Word): Boolean;
+function GetStockDayDetailData_Sina(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PHttpClientSession; ADealDay: Word): Boolean;
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;  
@@ -136,7 +136,7 @@ begin
   end;
 end;
 
-function GetStockDataDetail_Sina(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PNetClientSession): Boolean;
+function GetStockDataDetail_Sina(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PHttpClientSession): Boolean;
 begin             
   Result := false;
   GetStockDayDetailData_Sina(App, AStockItem, ANetSession, Trunc(now) - 2);

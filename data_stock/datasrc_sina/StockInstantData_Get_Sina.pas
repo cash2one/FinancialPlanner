@@ -13,7 +13,7 @@ type
     Data: array[0..10 - 1] of PRT_InstantQuote;
   end;
                 
-  procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; ANetSession: PNetClientSession);
+  procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; AHttpClientSession: PHttpClientSession);
 
 implementation
 
@@ -165,7 +165,7 @@ begin
   end;
 end;
 
-procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; ANetSession: PNetClientSession);
+procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; AHttpClientSession: PHttpClientSession);
 var  
   tmpUrl: string;
   tmpRetData: PIOBuffer;
@@ -185,7 +185,7 @@ begin
   if '' <> tmpUrl then
   begin
     tmpUrl := BaseSinaInstantUrl1 + tmpUrl;
-    tmpRetData := GetHttpUrlData(tmpUrl, ANetSession);
+    tmpRetData := GetHttpUrlData(tmpUrl, AHttpClientSession);
     if nil <> tmpRetData then
     begin
       FillChar(tmpHttpParse, SizeOf(tmpHttpParse), 0);

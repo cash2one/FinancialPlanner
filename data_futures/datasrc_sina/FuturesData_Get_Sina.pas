@@ -24,13 +24,13 @@ const
   BaseSinaFuturesDayUrl = 'http://stock2.finance.sina.com.cn/futures/api/json.php/CffexFuturesService.getCffexFuturesDailyKLine?symbol=';//IF1606
   { ["2015-10-19","3177","3219.8","3106.2","3131.2","107"] }
                      
-  function GetFuturesData_Sina_5m(App: TBaseApp; ADealItem: PRT_DealItem; ANetSession: PNetClientSession): Boolean;
+  function GetFuturesData_Sina_5m(App: TBaseApp; ADealItem: PRT_DealItem; ANetSession: PHttpClientSession): Boolean;
 
 implementation
 
 uses
   Classes;
-//function GetFuturesData_Sina(App: TBaseApp; AUrl: string; ANetSession: PNetClientSession): Boolean;
+//function GetFuturesData_Sina(App: TBaseApp; AUrl: string; ANetSession: PHttpClientSession): Boolean;
 //begin
 //end;
 
@@ -66,7 +66,7 @@ begin
   end;
 end;
 
-function GetFuturesData_Sina_5m(App: TBaseApp; ADealItem: PRT_DealItem; ANetSession: PNetClientSession): Boolean;
+function GetFuturesData_Sina_5m(App: TBaseApp; ADealItem: PRT_DealItem; ANetSession: PHttpClientSession): Boolean;
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;
