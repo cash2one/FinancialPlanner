@@ -4,26 +4,33 @@ interface
 
 uses
   Windows, Messages, ActiveX, SysUtils, ShellApi,
-  Classes, Controls, Forms, StdCtrls,
-  BaseApp, BaseWinApp, db_dealitem;
+  Classes, Controls, Forms, StdCtrls, ExtCtrls, VirtualTrees, 
+  BaseApp, BaseWinApp, db_dealitem, BaseStockApp;
 
 type
   TfrmStockDic = class(TForm)
-    btn1: TButton;
+    pnlTop: TPanel;
+    pnlBottom: TPanel;
+    pnlLeft: TPanel;
+    btnSave: TButton;
+    spl1: TSplitter;
+    pnlRight: TPanel;
     mmo1: TMemo;
-    procedure btn1Click(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   protected
-    procedure WMDropFiles(var msg : TWMDropFiles) ; message WM_DROPFILES;
+    fVtDealItems: TVirtualStringTree;
+    procedure WMDropFiles(var msg : TWMDropFiles) ; message WM_DROPFILES;  
+    procedure vtDealItemGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+      Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
   public
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
   end;
 
-  TStockDicApp = class(TBaseWinApp)
+  TStockDicApp = class(TBaseStockApp)
   protected
     frmStockDic: TfrmStockDic;
-    fDBStockItem: TDBDealItem;
   public                     
     constructor Create(AppClassId: AnsiString); override;
     function Initialize: Boolean; override;
@@ -36,14 +43,21 @@ var
 implementation
 
 uses
+  db_dealitem_load,
   db_dealItem_LoadIni,
   db_dealItem_Save;
 
 {$R *.dfm}
-                      
+
+type
+  PDealItemNode = ^TDealItemNode; 
+  TDealItemNode = record
+
+  end;
+
 constructor TStockDicApp.Create(AppClassId: AnsiString);
 begin
-  inherited;
+  inherited;     
 end;
 
 function TStockDicApp.Initialize: Boolean; 
@@ -51,8 +65,8 @@ begin
   inherited Initialize;
   Result := true;
   Application.Initialize;
-  Application.MainFormOnTaskbar := True;  
-  fDBStockItem := TDBDealItem.Create;
+  Application.MainFormOnTaskbar := True;
+  InitializeDBStockItem;
 end;
 
 procedure TStockDicApp.Run;
@@ -64,12 +78,25 @@ end;
 constructor TfrmStockDic.Create(AOwner: TComponent);
 begin
   inherited;
-  Self.OnCreate := FormCreate;
+  Self.OnCreate := FormCreate;      
+  fVtDealItems := TVirtualStringTree.Create(Self);
+  fVtDealItems.Parent := pnlLeft;
+  fVtDealItems.Align := alClient;   
+  fVtDealItems.NodeDataSize := SizeOf(TDealItemNode);
+  fVtDealItems.OnGetText := vtDealItemGetText;
+  //fVtDealItems.Columns = <>;
 end;
 
 procedure TfrmStockDic.FormCreate(Sender: TObject);
 begin
   DragAcceptFiles(Handle, True) ;
+//
+end;
+
+procedure TfrmStockDic.vtDealItemGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
+begin
+  CellText := '1234';
 //
 end;
 
@@ -95,35 +122,35 @@ begin
     mmo1.Lines.Insert(0, tmpfileName);
     tmpFileUrl := tmpfileName;
     //DB_StockItem_LoadIni.LoadDBStockItemIni(GlobalApp, GlobalApp.fDBStockItem);
-    db_dealItem_LoadIni.LoadDBStockItemIniFromFile(GlobalApp, GlobalApp.fDBStockItem, tmpFileUrl);
+    db_dealItem_LoadIni.LoadDBStockItemIniFromFile(GlobalApp, GlobalApp.StockItemDB, tmpFileUrl);
     if '' = tmpPath then
       tmpPath := ExtractFilePath(tmpFileUrl);
     if 1 = tmpfileCount then
     begin
-      if 0 < GlobalApp.fDBStockItem.RecordCount then
+      if 0 < GlobalApp.StockItemDB.RecordCount then
       begin                            
-        GlobalApp.fDBStockItem.Sort;
+        GlobalApp.StockItemDB.Sort;
         tmpNewFileUrl := ChangeFileExt(tmpFileUrl, '.dic');
         if not FileExists(tmpNewFileUrl) then
         begin
-          db_dealItem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.fDBStockItem, tmpNewFileUrl);
+          db_dealItem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.StockItemDB, tmpNewFileUrl);
         end;
       end;
     end;
   end;    
   if 1 < tmpfileCount then
   begin                           
-    if 0 < GlobalApp.fDBStockItem.RecordCount then
+    if 0 < GlobalApp.StockItemDB.RecordCount then
     begin
-      GlobalApp.fDBStockItem.Sort;
-      db_dealitem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.fDBStockItem, tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic');
+      GlobalApp.StockItemDB.Sort;
+      db_dealitem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.StockItemDB, tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic');
     end;
   end;
   //release memory
   DragFinish(msg.Drop) ;
 end;
 
-procedure TfrmStockDic.btn1Click(Sender: TObject);
+procedure TfrmStockDic.btnSaveClick(Sender: TObject);
 begin
 //
 end;
