@@ -7,7 +7,7 @@ uses
   StockDayDataAccess;
   
   function LoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess): Boolean;
-  function CheckNeedLoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; ALastDate: Word): Boolean;
+  function CheckNeedLoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; ALastDate: Word; AIsWeight: Boolean): Boolean;
   
 implementation
 
@@ -27,7 +27,13 @@ var
   tmpFileMapView: Pointer;   
 begin
   Result := false;
-  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  if ADataAccess.IsWeight then
+  begin
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  end else
+  begin
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  end;
   if App.Path.IsFileExists(tmpFileUrl) then
   begin
     tmpWinFile := TWinFile.Create;
@@ -104,15 +110,21 @@ begin
   end;
 end;
 
-function CheckNeedLoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; ALastDate: Word): Boolean;  
+function CheckNeedLoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; ALastDate: Word; AIsWeight: Boolean): Boolean;  
 var
   tmpWinFile: TWinFile;
   tmpFileUrl: string;
   tmpFileMapView: Pointer;     
   tmpHead: PStore_Quote_M1_Day_Header_V1Rec;
 begin
-  Result := true; 
-  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  Result := true;
+  if ADataAccess.IsWeight then
+  begin
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  end else
+  begin
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  end;
   if App.Path.IsFileExists(tmpFileUrl) then
   begin      
     tmpWinFile := TWinFile.Create;

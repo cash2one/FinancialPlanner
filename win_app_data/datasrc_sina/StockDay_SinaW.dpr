@@ -1,4 +1,4 @@
-﻿program StockDay_Sina;
+﻿program StockDay_SinaW;
 
 uses
   Windows,
@@ -18,7 +18,6 @@ uses
   xlNetwork in '..\..\..\devwintech\v0000\win_net\xlNetwork.pas',
   xlClientSocket in '..\..\..\devwintech\v0000\win_net\xlClientSocket.pas',
   UtilsHttp in '..\..\..\devwintech\v0000\win_utils\UtilsHttp.pas',
-  UtilsHtmlParser in '..\..\..\devwintech\v0000\win_utils\UtilsHtmlParser.pas',
   UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
   UtilsDateTime in '..\..\..\devwintech\v0000\win_utils\UtilsDateTime.pas',
   win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
@@ -40,12 +39,13 @@ uses
   StockDayData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina.pas',
   StockDetailData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDetailData_Get_Sina.pas',
   FuturesData_Get_Sina in '..\..\data_futures\datasrc_sina\FuturesData_Get_Sina.pas',
-  StockDay_Get_Sina in 'StockDay_Get_Sina.pas';
+  StockDay_Get_Sina in 'StockDay_Get_Sina.pas',
+  UtilsHtmlParser in '..\..\..\devwintech\v0000\win_utils\UtilsHtmlParser.pas';
 
 {$R *.res}
 
 type
-  TStockDaySinaApp = class(TBaseStockApp)
+  TStockDaySinaWApp = class(TBaseStockApp)
   protected
   public     
     constructor Create(AppClassId: AnsiString); override;
@@ -54,20 +54,20 @@ type
 
 { TStockDay163App }
 
-constructor TStockDaySinaApp.Create(AppClassId: AnsiString);
+constructor TStockDaySinaWApp.Create(AppClassId: AnsiString);
 begin
   inherited;
 end;
 
-procedure TStockDaySinaApp.Run;
+procedure TStockDaySinaWApp.Run;
 begin
-  GetStockDataDay_Sina_All(Self, false);
+  GetStockDataDay_Sina_All(Self, true);
 end;
 
 var
-  GlobalApp: TStockDaySinaApp;
+  GlobalApp: TStockDaySinaWApp;
 begin
-  GlobalApp := TStockDaySinaApp.Create('');
+  GlobalApp := TStockDaySinaWApp.Create('');
   try
     if GlobalApp.Initialize then
       GlobalApp.Run;

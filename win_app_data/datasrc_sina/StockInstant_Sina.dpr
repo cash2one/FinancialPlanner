@@ -32,14 +32,13 @@ uses
   define_dealstore_header in '..\..\basedefine\define_dealstore_header.pas',
   define_dealstore_file in '..\..\basedefine\define_dealstore_file.pas',
   define_stock_quotes in '..\..\basedefine\define_stock_quotes.pas',
+  define_stock_quotes_instant in '..\..\basedefine\define_stock_quotes_instant.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   db_dealitem_save in '..\..\dealitem\db_dealitem_save.pas',
-  StockDetailData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDetailData_Get_Sina.pas',
-  StockInstant_Get_Sina in 'StockInstant_Get_Sina.pas',
+  StockInstantDataAccess in '..\..\data_stock\StockInstantDataAccess.pas',
   StockInstantData_Get_Sina in '..\..\data_stock\datasrc_sina\StockInstantData_Get_Sina.pas',
-  define_stock_quotes_instant in '..\..\basedefine\define_stock_quotes_instant.pas',
-  StockInstantDataAccess in '..\..\data_stock\StockInstantDataAccess.pas';
+  StockInstant_Get_Sina in 'StockInstant_Get_Sina.pas';
 
 {$R *.res}
 

@@ -5,7 +5,7 @@ interface
 uses
   BaseApp;
 
-  procedure GetStockDataDay_Sina_All(App: TBaseApp);
+  procedure GetStockDataDay_Sina_All(App: TBaseApp; AIsWeight: Boolean);
 
 implementation
 
@@ -30,7 +30,7 @@ uses
   DB_DealItem_Save;                 
                     
 
-procedure GetStockDataDay_Sina_All(App: TBaseApp);
+procedure GetStockDataDay_Sina_All(App: TBaseApp; AIsWeight: Boolean);
 var
   tmpDBStockItem: TDBDealItem;
   tmpNetClientSession: TNetClientSession;
@@ -43,8 +43,8 @@ begin
     for i := 0 to tmpDBStockItem.RecordCount - 1 do
     begin
       if 0 = tmpDBStockItem.Items[i].EndDealDate then
-      begin
-        if GetStockDataDay_Sina(App, tmpDBStockItem.Items[i], true, @tmpNetClientSession) then
+      begin                                        
+        if GetStockDataDay_Sina(App, tmpDBStockItem.Items[i], AIsWeight, @tmpNetClientSession) then
         begin
           Sleep(2000);
         end;

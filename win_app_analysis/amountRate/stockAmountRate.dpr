@@ -12,6 +12,7 @@ uses
   BaseRun in '..\..\..\devwintech\v0000\app_base\BaseRun.pas',
   BaseFile in '..\..\..\devwintech\v0000\app_base\BaseFile.pas',
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
+  ui.color in '..\..\..\devwintech\v0000\uibase\ui.color.pas',
   UIBaseWin in '..\..\..\devwintech\v0000\win_base\UIBaseWin.pas',
   BaseWinApp in '..\..\..\devwintech\v0000\win_base\BaseWinApp.pas',
   UIBaseWndProc in '..\..\..\devwintech\v0000\win_base\UIBaseWndProc.pas',
@@ -22,11 +23,11 @@ uses
   xlClientSocket in '..\..\..\devwintech\v0000\win_net\xlClientSocket.pas',
   xlNetwork in '..\..\..\devwintech\v0000\win_net\xlNetwork.pas',
   xlTcpClient in '..\..\..\devwintech\v0000\win_net\xlTcpClient.pas',
-  win.thread in '..\..\..\devwintech\v0000\win_system\win.thread.pas',
+  win.thread in '..\..\..\devwintech\v0000\win_system\win.thread.pas',      
+  uiwin.memdc in '..\..\..\devwintech\v0000\win_ui\uiwin.memdc.pas',
+  uiwin.gdi in '..\..\..\devwintech\v0000\win_ui\uiwin.gdi.pas',
   UtilsHttp in '..\..\..\devwintech\v0000\win_utils\UtilsHttp.pas',
   UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
-  StockInstantDataAccess in '..\..\data_stock\StockInstantDataAccess.pas',
-  StockInstantData_Get_Sina in '..\..\data_stock\datasrc_sina\StockInstantData_Get_Sina.pas',
   BaseStockApp in '..\..\base\BaseStockApp.pas',
   StockAppPath in '..\..\base\StockAppPath.pas',
   define_stock_quotes_instant in '..\..\basedefine\define_stock_quotes_instant.pas',
@@ -35,14 +36,13 @@ uses
   define_dealstore_header in '..\..\basedefine\define_dealstore_header.pas',
   define_dealstore_file in '..\..\basedefine\define_dealstore_file.pas',
   define_dealmarket in '..\..\basedefine\define_dealmarket.pas',
-  define_datasrc in '..\..\basedefine\define_datasrc.pas',
+  define_datasrc in '..\..\basedefine\define_datasrc.pas',        
+  StockInstantDataAccess in '..\..\data_stock\StockInstantDataAccess.pas',
+  StockInstantData_Get_Sina in '..\..\data_stock\datasrc_sina\StockInstantData_Get_Sina.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   AmountRateWinApp in 'AmountRateWinApp.pas',
-  AmountRateWindow in 'AmountRateWindow.pas',
-  uiwin.memdc in '..\..\..\devwintech\v0000\win_ui\uiwin.memdc.pas',
-  uiwin.gdi in '..\..\..\devwintech\v0000\win_ui\uiwin.gdi.pas',
-  ui.color in '..\..\..\devwintech\v0000\uibase\ui.color.pas';
+  AmountRateWindow in 'AmountRateWindow.pas';
 
 {$R *.res}
 

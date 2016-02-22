@@ -324,8 +324,10 @@ end;
 
 function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean; overload;
 var
-  tmpUrl: string;          
+  tmpUrl: string;
+  tmpHttpData: PIOBuffer;      
 begin
+  Result := false;
   if AIsWeight then
     tmpUrl := BaseSinaDayUrl2
   else
@@ -337,7 +339,11 @@ begin
     tmpUrl := tmpUrl + '&' + 'jidu=' + inttostr(ASeason);
   end;
   // parse html data
-  Result := DataParse_DayData_Sina(ADataAccess, GetHttpUrlData(tmpUrl, ANetSession));
+  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession);
+  if nil <> tmpHttpData then
+  begin
+    Result := DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+  end;
 end;
 
 function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PNetClientSession): Boolean;
@@ -351,7 +357,7 @@ var
   tmpJidu: integer;
 begin
   Result := false;
-  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina);
+  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AIsWeight);
   try                   
     tmpLastDealDate := Trunc(now());
     tmpInt := DayOfWeek(tmpLastDealDate);
@@ -360,7 +366,7 @@ begin
     if 7 = tmpInt then
       tmpLastDealDate := tmpLastDealDate - 1;
                                                
-    if CheckNeedLoadStockDayData(App, tmpStockDataAccess, tmpLastDealDate) then
+    if CheckNeedLoadStockDayData(App, tmpStockDataAccess, tmpLastDealDate, AIsWeight) then
     begin
     
     end else

@@ -13,7 +13,6 @@ type
     Data: array[0..10 - 1] of PRT_InstantQuote;
   end;
                 
-  procedure GetStockDataReal_Sina_All(App: TBaseApp);         
   procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; ANetSession: PNetClientSession);
 
 implementation
@@ -200,10 +199,6 @@ begin
       end;
     end;
   end;
-end;
-
-procedure GetStockDataReal_Sina_All(App: TBaseApp);
-begin
 end;
 
 end.

@@ -27,7 +27,13 @@ var
   tmpFileMapView: Pointer; 
   tmpFileNewSize: integer;
 begin
-  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  if ADataAccess.IsWeight then
+  begin
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  end else
+  begin
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  end;
   tmpWinFile := TWinFile.Create;
   try
     if tmpWinFile.OpenFile(tmpFileUrl, true) then

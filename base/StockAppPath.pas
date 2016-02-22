@@ -36,9 +36,11 @@ begin
   end;
   if ('' = fDataBasePath) then
   begin
-    tmpDataSrcCode := GetDataSrcCode(ADataSrc);   
+    tmpDataSrcCode := GetDataSrcCode(ADataSrc);
     if FilePath_DBType_DayData = ADBType then
       fDataBasePath := GetInstallPath + FilePath_StockData + '\' + FileExt_StockDay + tmpDataSrcCode + '\';
+    if FilePath_DBType_DayDataWeight  = ADBType then
+      fDataBasePath := GetInstallPath + FilePath_StockData + '\' + FileExt_StockDayWeight + tmpDataSrcCode + '\';
     if FilePath_DBType_InstantData = ADBType then
       fDataBasePath := GetInstallPath + FilePath_StockData + '\' + FileExt_StockInstant + tmpDataSrcCode + '\';
     if FilePath_DBType_DetailData = ADBType then
@@ -76,6 +78,13 @@ begin
     exit;
   end;
   if FilePath_DBType_DayData = ADBType then
+  begin
+    if nil <> AParam then
+    begin
+      Result := DataBasePath[ADBType, ADataSrc];
+    end;
+  end;           
+  if FilePath_DBType_DayDataWeight  = ADBType then
   begin
     if nil <> AParam then
     begin
@@ -127,7 +136,15 @@ begin
       Result := PRT_DealItem(AParam).sCode + '.' + FileExt_StockDay;
     end;
     exit;
-  end;           
+  end;
+  if FilePath_DBType_DayDataWeight = ADBType then
+  begin
+    if nil <> AParam then
+    begin
+      Result := PRT_DealItem(AParam).sCode + '.' + FileExt_StockDayWeight;
+    end;
+    exit;
+  end;
   if FilePath_DBType_InstantData = ADBType then
   begin
     exit;

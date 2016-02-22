@@ -11,12 +11,13 @@ uses
 type
   { 行情日线数据访问 }
   TStockDayData = record
-    DealItem: PRT_DealItem;
+    DealItem          : PRT_DealItem;
     IsDataChangedStatus: Byte;
-    DayDealData: TALIntegerList;
+    IsWeight          : Byte;
+    DayDealData       : TALIntegerList;
     FirstDealDate     : Word;   // 2
     LastDealDate      : Word;   // 2 最后记录交易时间
-    DataSourceId: integer;
+    DataSourceId      : integer;
   end;
   
   TStockDayDataAccess = class(TBaseDataSetAccess)
@@ -32,11 +33,13 @@ type
     procedure SetEndDealDate(const Value: Word);
 
     procedure SetStockItem(AStockItem: PRT_DealItem);
+
+    function GetIsWeight: Boolean;
     
     function GetRecordItem(AIndex: integer): Pointer; override;
     function GetRecordCount: Integer; override;
   public
-    constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
+    constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer; AIsWeight: Boolean);
     destructor Destroy; override;
     
     function FindRecord(ADate: Integer): PRT_Quote_M1_Day;
@@ -47,6 +50,7 @@ type
     property EndDealDate: Word read GetEndDealDate write SetEndDealDate;
     property StockItem: PRT_DealItem read fStockDayData.DealItem write SetStockItem;
     property DataSourceId: integer read fStockDayData.DataSourceId write fStockDayData.DataSourceId;
+    property IsWeight: Boolean read GetIsWeight;
   end;
                             
   procedure AddDealDayData(ADataAccess: TStockDayDataAccess; ATempDealDayData: PRT_Quote_M1_Day);
@@ -78,7 +82,7 @@ begin
   end;
 end;
         
-constructor TStockDayDataAccess.Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
+constructor TStockDayDataAccess.Create(AStockItem: PRT_DealItem; ADataSrcId: integer; AIsWeight: Boolean);
 begin
   //inherited;
   FillChar(fStockDayData, SizeOf(fStockDayData), 0);
@@ -87,6 +91,7 @@ begin
   fStockDayData.FirstDealDate     := 0;   // 2
   fStockDayData.LastDealDate      := 0;   // 2 最后记录交易时间
   fStockDayData.DataSourceId := ADataSrcId;
+  fStockDayData.IsWeight := Byte(AIsWeight);
 end;
 
 destructor TStockDayDataAccess.Destroy;
@@ -125,6 +130,11 @@ begin
   Result := fStockDayData.FirstDealDate;
 end;
                   
+function TStockDayDataAccess.GetIsWeight: Boolean;
+begin
+  Result := fStockDayData.IsWeight <> 0;
+end;
+
 procedure TStockDayDataAccess.SetFirstDealDate(const Value: Word);
 begin
   fStockDayData.FirstDealDate := Value;

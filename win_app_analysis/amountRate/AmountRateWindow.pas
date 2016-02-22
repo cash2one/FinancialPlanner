@@ -8,6 +8,7 @@ uses
   Sysutils,
   BaseApp,
   QuickList_double,
+  UtilsHttp,
   win.thread,
   UIBaseWin,
   ui.color,
@@ -298,8 +299,10 @@ var
   tmpInstantArray: TInstantArray;  
   tmpIdx: integer;
   tmpCount: integer;
+  tmpNetSession: TNetClientSession;
 begin
   Result := 0;
+  FillChar(tmpNetSession, SizeOf(tmpNetSession), 0); 
   while true do
   begin           
     Sleep(20);
@@ -344,7 +347,7 @@ begin
             Inc(tmpIdx);
             if tmpIdx >= Length(tmpInstantArray.Data) then
             begin
-              DataGet_InstantArray_Sina(GlobalApp, @tmpInstantArray);
+              DataGet_InstantArray_Sina(GlobalApp, @tmpInstantArray, @tmpNetSession);
               FillChar(tmpInstantArray, SizeOf(tmpInstantArray), 0);
               tmpIdx := 0;  
               Sleep(100);
@@ -364,7 +367,7 @@ begin
       begin
         if 0 <> AParam.BaseApp.IsActiveStatus then
         begin
-          DataGet_InstantArray_Sina(GlobalApp, @tmpInstantArray);
+          DataGet_InstantArray_Sina(GlobalApp, @tmpInstantArray, @tmpNetSession);
           PostMessage(AParam.BaseWindow.UIWndHandle, CM_INVALIDATE, 0, 0);
         end;
       end;
