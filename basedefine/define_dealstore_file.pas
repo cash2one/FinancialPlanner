@@ -14,7 +14,7 @@ const
   FilePath_DBType_ValueData     = 6;
 
   FileExt_StockDay        = 'sday';
-  FileExt_StockDayWeight  = 'sdtw';
+  FileExt_StockDayWeight  = 'sdaw';
 
   FileExt_StockDetail     = 'sdet';
   FileExt_StockAnalysis   = 'sana';
