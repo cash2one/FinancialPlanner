@@ -2,7 +2,7 @@ program industry_sina_chromium;
 
 uses
   Windows,
-  cef_apilib in '..\..\..\devwintech\v0000\ex_chromium\cef_apilib.pas',
+  cef_apilib in 'cef_apilib.pas',
   cef_api in '..\..\..\devwintech\v0000\ex_chromium\cef_api.pas',
   cef_type in '..\..\..\devwintech\v0000\ex_chromium\cef_type.pas',
   cef_app in '..\..\..\devwintech\v0000\ex_chromium\cef_app.pas',
@@ -15,12 +15,12 @@ uses
   UIBaseWin in '..\..\..\devwintech\v0000\win_base\UIBaseWin.pas',
   BaseWinHook in '..\..\..\devwintech\v0000\win_base\BaseWinHook.pas',
   UIBaseWndProc in '..\..\..\devwintech\v0000\win_base\UIBaseWndProc.pas',
+  BaseForm in '..\..\..\devwintech\v0000\win_ui\BaseForm.pas' {frmBase},
   win.thread in '..\..\..\devwintech\v0000\win_system\win.thread.pas',
   HostWnd_chromium in 'HostWnd_chromium.pas',
   chromium_dom in 'chromium_dom.pas',
   chromium_script in 'chromium_script.pas',
-  Form_ChromiumHost in 'Form_ChromiumHost.pas' {frmChromiumHost},
-  BaseForm in '..\..\..\devwintech\v0000\win_ui\BaseForm.pas' {frmBase};
+  Form_ChromiumHost in 'Form_ChromiumHost.pas' {frmChromiumHost};
 
 {$R *.res}
 
@@ -28,7 +28,8 @@ type
   TChromiumTestApp = class(TBaseWinApp)
   protected      
     fCefClientObject: TCefClientObject;
-    fHostWindow: THostWndChromium; 
+    fHostWindow: THostWndChromium;
+    fConsoleForm: TfrmChromiumHost;
     procedure CreateBrowser;
     procedure CreateHostWindow;
   public
@@ -84,6 +85,10 @@ begin
   if IsWindow(fHostWindow.BaseWnd.UIWndHandle) then
   begin
     ShowWindow(fHostWindow.BaseWnd.UIWndHandle, SW_SHOW);
+    fConsoleForm := TfrmChromiumHost.Create(nil);
+    fConsoleForm.Show;
+    fConsoleForm.Left := 0;
+    fConsoleForm.Top := 0;    
     CreateBrowser;
     RunAppMsgLoop;
   end;

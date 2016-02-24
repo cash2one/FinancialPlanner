@@ -43,7 +43,7 @@ uses
 {$R *.res}
 
 type
-  TIndustryClass163App = class(TBaseStockApp)
+  TIndustryClassSinaApp = class(TBaseStockApp)
   protected
   public     
     constructor Create(AppClassId: AnsiString); override;
@@ -52,20 +52,20 @@ type
 
 { TStockDay163App }
 
-constructor TIndustryClass163App.Create(AppClassId: AnsiString);
+constructor TIndustryClassSinaApp.Create(AppClassId: AnsiString);
 begin
   inherited;
 end;
 
-procedure TIndustryClass163App.Run;
+procedure TIndustryClassSinaApp.Run;
 begin
-  GetIndustryClass_163(Self);
+  GetIndustryClass_Sina(Self);
 end;
 
 var
-  GlobalApp: TIndustryClass163App;
+  GlobalApp: TIndustryClassSinaApp;
 begin
-  GlobalApp := TIndustryClass163App.Create('');
+  GlobalApp := TIndustryClassSinaApp.Create('');
   try
     if GlobalApp.Initialize then
       GlobalApp.Run;

@@ -5,7 +5,7 @@ interface
 uses
   BaseApp;
 
-  procedure GetIndustryClass_163(App: TBaseApp);
+  procedure GetIndustryClass_Sina(App: TBaseApp);
 
 implementation
 
@@ -13,6 +13,7 @@ uses
   Windows,
   Sysutils,
   Classes,
+  win.iobuffer,
   UtilsHttp,
   Define_Price,
   Define_DealItem,
@@ -63,8 +64,41 @@ uses
   µØÓò°å¿é
   ======================================================
 *)
-procedure GetIndustryClass_163(App: TBaseApp);
+procedure GetIndustryClass_Sina(App: TBaseApp);
+var
+  tmpUrl: AnsiString;
+  tmpHttpClientSession: THttpClientSession;
+  tmpHttpData: PIOBuffer;
+  tmpHttpHead: THttpHeadParseSession;
+  tmpStrs: TStringList;
 begin
+  // http://vip.stock.finance.sina.com.cn/mkt            
+  tmpUrl := 'http://vip.stock.finance.sina.com.cn/mkt'; // --> 301
+  tmpUrl := 'http://vip.stock.finance.sina.com.cn/mkt/'; // --> 200
+  tmpUrl := 'http://vip.stock.finance.sina.com.cn/mkt/#sw_qgzz';
+  tmpUrl := 'http://vip.stock.finance.sina.com.cn/quotes_service/' +
+      'api/json_v2.php/Market_Center.getHQNodeStockCount?node=gn_jght';
+  tmpUrl := 'http://vip.stock.finance.sina.com.cn/quotes_service/' +
+      'api/json_v2.php/Market_Center.getHQNodeData?page=1&num=40&sort=symbol&asc=1&node=gn_jght&symbol=&_s_r_a=init';
+  (*//
+  //tmpUrl := 'http://stock.finance.sina.com.cn/yuanchuang/api/jsonp.json/IO.XSRV2.CallbackList[''5CULssnjh8Scn80w'']/
+  StockMarket_Service.getSelectInfo?num=20';
+  //*)
+  FillChar(tmpHttpClientSession, SizeOf(tmpHttpClientSession), 0);
+  tmpHttpClientSession.IsKeepAlive := True;
+  tmpHttpData := GetHttpUrlData(tmpUrl, @tmpHttpClientSession);
+
+  HttpBufferHeader_Parser(tmpHttpData, @tmpHttpHead);
+  if 200 = tmpHttpHead.RetCode then
+  begin
+    tmpStrs := TStringList.Create;
+    try
+      tmpStrs.Text := AnsiString(PAnsiChar(@tmpHttpData.Data[tmpHttpHead.HeadEndPos + 1]));
+      tmpStrs.SaveToFile('e:\sina_mkt.html');
+    finally
+      tmpStrs.Free;
+    end;  
+  end;
 end;
 
 end.
