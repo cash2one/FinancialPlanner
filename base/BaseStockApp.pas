@@ -61,7 +61,7 @@ begin
   if nil = fBaseStockAppData.StockItemDB then
   begin              
     fBaseStockAppData.StockItemDB := TDBDealItem.Create;
-    db_dealitem_Load.LoadDBStockItem(Self, fBaseStockAppData.StockItemDB);
+    db_dealitem_Load.LoadDBStockItemDic(Self, fBaseStockAppData.StockItemDB);
   end;
 end;
 

@@ -134,27 +134,34 @@ begin
     //do something with the file(s)
     mmo1.Lines.Insert(0, tmpfileName);
     tmpFileUrl := tmpfileName;
-    //DB_StockItem_LoadIni.LoadDBStockItemIni(GlobalApp, GlobalApp.fDBStockItem);
-    db_dealItem_LoadIni.LoadDBStockItemIniFromFile(GlobalApp, GlobalApp.StockItemDB, tmpFileUrl);
+    if 0 < Pos('.ini', tmpFileUrl) then
+    begin
+      //DB_StockItem_LoadIni.LoadDBStockItemIni(GlobalApp, GlobalApp.fDBStockItem);
+      db_dealItem_LoadIni.LoadDBStockItemIniFromFile(GlobalApp, GlobalApp.StockItemDB, tmpFileUrl);
+    end;             
+    if 0 < Pos('.dic', tmpFileUrl) then
+    begin
+      LoadDBStockItemDicFromFile(GlobalApp, GlobalApp.StockItemDB, tmpFileUrl);
+    end;
     if '' = tmpPath then
       tmpPath := ExtractFilePath(tmpFileUrl);
-    if 1 = tmpfileCount then
+  end;                       
+  if 0 < GlobalApp.StockItemDB.RecordCount then
+  begin
+    tmpNewFileUrl := '';
+    if 1 < tmpfileCount then
     begin
-      if 0 < GlobalApp.StockItemDB.RecordCount then
-      begin
-        tmpNewFileUrl := ChangeFileExt(tmpFileUrl, '.dic');
-        if not FileExists(tmpNewFileUrl) then
-        begin
-          SaveDealItemDBAsDic(tmpNewFileUrl);
-        end;
-      end;
+      tmpNewFileUrl := tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic';
+    end else
+    begin
+      tmpNewFileUrl := ChangeFileExt(tmpFileUrl, '.dic');
     end;
-  end;    
-  if 1 < tmpfileCount then
-  begin                           
-    if 0 < GlobalApp.StockItemDB.RecordCount then
+    if '' <> tmpNewFileUrl then
     begin
-      SaveDealItemDBAsDic(tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic');
+      if not FileExists(tmpNewFileUrl) then
+      begin
+        SaveDealItemDBAsDic(tmpNewFileUrl);
+      end;
     end;
   end;
   //release memory

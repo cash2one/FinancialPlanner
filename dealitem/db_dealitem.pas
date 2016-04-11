@@ -50,6 +50,7 @@ type
 implementation
 
 uses
+  SysUtils,
   QuickSortList;
   
 constructor TDBDealItem.Create;
@@ -103,12 +104,26 @@ begin
 end;
 
 function TDBDealItem.AddItem(AMarketCode, AStockCode: AnsiString): PRT_DealItem;
-begin
-  Result := System.New(PRT_DealItem);
-  FillChar(Result^, SizeOf(TRT_DealItem), 0);
-  Result.sMarketCode := AMarketCode;
-  Result.sCode := AStockCode;
-  fDealItemList.AddObject(getStockCodePack(AStockCode), TObject(Result));
+var   
+  tmpPackStockCode: integer;
+  tmpIndex: integer;
+begin                        
+  tmpPackStockCode := getStockCodePack(AStockCode);
+  tmpIndex := fDealItemList.IndexOf(tmpPackStockCode);
+  if tmpIndex < 0 then
+  begin
+    Result := System.New(PRT_DealItem);
+    FillChar(Result^, SizeOf(TRT_DealItem), 0);
+    fDealItemList.AddObject(tmpPackStockCode, TObject(Result));    
+    Result.sMarketCode := AMarketCode;
+    Result.sCode := AStockCode;
+  end else
+  begin
+    Result := PRT_DealItem(fDealItemList.Objects[tmpIndex]);
+    Result.sMarketCode := AMarketCode;
+    Result.sCode := AStockCode;
+  end;                         
+  Result.iCode := StrToIntDef(Result.sCode, 0);
 end;
                     
 function TDBDealItem.FindItem(AStockCode: AnsiString): PRT_DealItem;   

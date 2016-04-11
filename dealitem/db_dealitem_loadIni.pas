@@ -14,7 +14,7 @@ uses
   define_dealItem,
   Windows,
   Classes,
-  Sysutils,
+  SysUtils,
   IniFiles;
 
 procedure LoadDBStockItemIni(App: TBaseApp; ADB: TDBDealItem);
@@ -28,7 +28,7 @@ var
 begin
   tmpFilePath := App.Path.DataBasePath[0, 0] + 'sdic\';
   tmpFileUrl := tmpFilePath + 'items.ini';
-  if FileExists(tmpFileUrl) then
+  if App.Path.IsFileExists(tmpFileUrl) then
   begin
     tmpDicIni := TIniFile.Create(tmpFileUrl);
     try
@@ -37,7 +37,7 @@ begin
       begin
         tmpFileName := tmpDicIni.ReadString('items', 'item' + IntToStr(idxFile + 1), '');
         tmpFileUrl := tmpFilePath + tmpFileName;
-        if FileExists(tmpFileUrl) then
+        if App.Path.IsFileExists(tmpFileUrl) then
         begin
           LoadDBStockItemIniFromFile(App, ADB, tmpFileUrl);      
         end;
@@ -57,7 +57,7 @@ var
   tmpStockCode: string;
   tmpMarket: string;
 begin
-  if not FileExists(AFileUrl) then
+  if not App.Path.IsFileExists(AFileUrl) then
     exit;
   tmpSections := TStringList.Create;
   tmpItemsIni := TIniFile.Create(AFileUrl);

@@ -8,7 +8,8 @@ uses
   define_price,
   define_dealstore_header;
   
-  procedure LoadDBStockItem(App: TBaseApp; ADB: TDBDealItem);
+  procedure LoadDBStockItemDic(App: TBaseApp; ADB: TDBDealItem);  
+  procedure LoadDBStockItemDicFromFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
 
 implementation
 
@@ -95,31 +96,39 @@ begin
   end;
 end;
 
-procedure LoadDBStockItem(App: TBaseApp; ADB: TDBDealItem);
+procedure LoadDBStockItemDicFromFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
 var
-  tmpFileUrl: string; 
   tmpWinFile: TWinFile;
   tmpFileMapView: Pointer;
 begin
   // ≤‚ ‘ 601857 ÷–π˙ Ø”Õ           
   //ADB.AddItem('sh', '601857');
-  //Exit;
+  //Exit;      
+  if not App.Path.IsFileExists(AFileUrl) then
+    exit;
+  tmpWinFile := TWinFile.Create;
+  try
+    if tmpWinFile.OpenFile(AFileUrl, false) then
+    begin
+      tmpFileMapView := tmpWinFile.OpenFileMap;
+      if nil <> tmpFileMapView then
+      begin
+        LoadDBStockItemFromBuffer(App, ADB, tmpFileMapView);
+      end;
+    end;
+  finally
+    tmpWinFile.Free;
+  end;
+end;
+
+procedure LoadDBStockItemDic(App: TBaseApp; ADB: TDBDealItem);
+var   
+  tmpFileUrl: string;
+begin
   tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_ItemDB, 0, 2, nil);
   if App.Path.IsFileExists(tmpFileUrl) then
   begin
-    tmpWinFile := TWinFile.Create;
-    try
-      if tmpWinFile.OpenFile(tmpFileUrl, false) then
-      begin
-        tmpFileMapView := tmpWinFile.OpenFileMap;
-        if nil <> tmpFileMapView then
-        begin
-          LoadDBStockItemFromBuffer(App, ADB, tmpFileMapView);
-        end;
-      end;
-    finally
-      tmpWinFile.Free;
-    end;
+    LoadDBStockItemDicFromFile(App, ADB, tmpFileUrl);  
   end;
 end;
 
