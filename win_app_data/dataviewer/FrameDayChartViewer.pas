@@ -10,13 +10,15 @@ uses
 
 type             
   TDataChartViewerData = record
-    StockDayDataAccess: StockDayDataAccess.TStockDayDataAccess;
+    StockDayDataAccess: StockDayDataAccess.TStockDayDataAccess;  
+    IsWeight: Boolean;
+    
     //fRule_Boll_Price: TRule_Boll_Price;
     Rule_CYHT_Price: TRule_CYHT_Price;
     Rule_BDZX_Price: TRule_BDZX_Price;   
     Rule_Boll: TRule_Boll_Price;
 
-    DataSrcId: integer;    
+    DataSrcId: integer;
   end;
                        
   TfmeDayChartViewer = class(TfrmBase)
@@ -68,7 +70,7 @@ begin
   fDataChartData.StockDayDataAccess := AStockItem.StockDayDataAccess;
 
   if nil = fDataChartData.StockDayDataAccess then
-    fDataChartData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataChartData.DataSrcId);  
+    fDataChartData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataChartData.DataSrcId, fDataChartData.IsWeight);  
   fDataChartData.Rule_BDZX_Price := AStockItem.Rule_BDZX_Price;
   fDataChartData.Rule_CYHT_Price := AStockItem.Rule_CYHT_Price;
   fDataChartData.Rule_Boll := AStockItem.Rule_Boll;

@@ -14,10 +14,12 @@ type
     FrameDataViewer: TfmeDataViewer;
     FrameChartViewer: TfmeDayChartViewer;
     ActiveFrame: TfrmBase;
-    StockDayDataAccess: TStockDayDataAccess; 
     Rule_CYHT_Price: TRule_CYHT_Price;
     Rule_BDZX_Price: TRule_BDZX_Price;
     Rule_Boll: TRule_Boll_Price;
+    
+    StockDayDataAccess: TStockDayDataAccess; 
+    IsWeight: Boolean;
   end;
 
   TfrmDataViewer = class(TfrmBase)
@@ -156,7 +158,7 @@ begin
     begin                                        
       if nil <> fDataViewerData.StockDayDataAccess then
         FreeAndNil(fDataViewerData.StockDayDataAccess);
-      fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(tmpNodeData.StockItem, DataSrc_163);    
+      fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(tmpNodeData.StockItem, DataSrc_163, fDataViewerData.IsWeight);    
       StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess);
       tmpNodeData.StockDayDataAccess := fDataViewerData.StockDayDataAccess;
                                                                  

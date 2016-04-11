@@ -14,9 +14,11 @@ uses
 type
   TDataViewerData = record
     StockDayDataAccess: StockDayDataAccess.TStockDayDataAccess;
+    IsWeight: Boolean;
+        
     Rule_BDZX_Price: TRule_BDZX_Price;  
     Rule_CYHT_Price: TRule_CYHT_Price;
-    DataSrcId: integer;    
+    DataSrcId: integer;
   end;
 
   TfmeDataViewer = class(TfrmBase)
@@ -138,7 +140,7 @@ begin
     exit;
   fDataViewerData.StockDayDataAccess := AStockItem.StockDayDataAccess;
   if nil = fDataViewerData.StockDayDataAccess then
-    fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DataSrcId);
+    fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DataSrcId, fDataViewerData.IsWeight);
   fDataViewerData.Rule_BDZX_Price := AStockItem.Rule_BDZX_Price;
   fDataViewerData.Rule_CYHT_Price := AStockItem.Rule_CYHT_Price;
 
