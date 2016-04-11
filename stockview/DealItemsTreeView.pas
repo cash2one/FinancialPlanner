@@ -59,6 +59,7 @@ type
     destructor Destroy; override;
     procedure BuildDealItemsTreeNodes;
     procedure InitializeDealItemsTree;
+    procedure Clear;    
 
     function AddDealItemsTreeColumn_Code: TVirtualTreeColumn;
     function AddDealItemsTreeColumn_Name: TVirtualTreeColumn;
@@ -150,6 +151,14 @@ begin
     fDealItemTreeData.Columns_BaseInfo.Col_EndDealDate.Text := 'EndDate';
   end;
   Result := fDealItemTreeData.Columns_BaseInfo.Col_EndDealDate;
+end;
+
+procedure TDealItemTree.Clear;
+begin
+  if nil <> fDealItemTreeData.TreeView then
+  begin
+    fDealItemTreeData.TreeView.Clear;
+  end;
 end;
 
 procedure TDealItemTree.BuildDealItemsTreeNodes;

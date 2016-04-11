@@ -11,12 +11,15 @@ uses
   
              
   procedure SaveDBStockItem(App: TBaseApp; ADB: TDBDealItem);    
-  procedure SaveDBStockItemToFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
+  procedure SaveDBStockItemToDicFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
+  procedure SaveDBStockItemToIniFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
 
 implementation
 
 uses
   Windows,
+  IniFiles,
+  SysUtils,
   define_dealstore_file,           
   BaseWinFile;
                         
@@ -105,10 +108,10 @@ end;
 
 procedure SaveDBStockItem(App: TBaseApp; ADB: TDBDealItem);
 begin
-  SaveDBStockItemToFile(App, ADB, App.Path.GetFileUrl(FilePath_DBType_ItemDB, 0, 2, nil));
+  SaveDBStockItemToDicFile(App, ADB, App.Path.GetFileUrl(FilePath_DBType_ItemDB, 0, 2, nil));
 end;
 
-procedure SaveDBStockItemToFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
+procedure SaveDBStockItemToDicFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
 var
   tmpWinFile: TWinFile;
   tmpFileMapView: Pointer; 
@@ -130,6 +133,47 @@ begin
     end;
   finally
     tmpWinFile.Free;
+  end;
+end;
+
+procedure SaveDBStockItemToIniFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
+var
+  tmpIniFile: TIniFile;
+  i: integer;
+  tmpRTItem: PRT_DealItem;
+  tmpSection: string;
+begin
+  tmpIniFile := TIniFile.Create(AFileUrl);
+  try
+    for i := 0 to ADB.RecordCount - 1 do
+    begin
+      tmpRTItem := ADB.Items[i];
+      if 0 < tmpRTItem.iCode then
+      begin
+        tmpSection := tmpRTItem.sMarketCode + IntToStr(tmpRTItem.iCode);
+      end else
+      begin
+        tmpSection := Trim(tmpRTItem.sCode);
+        if 6 = Length(tmpSection) then
+        begin
+          tmpSection := tmpRTItem.sMarketCode + tmpSection;
+        end;
+      end;
+      if '' <> tmpSection then
+      begin
+        tmpIniFile.WriteString(tmpSection, 'n', tmpRTItem.Name);
+        if 0 < tmpRTItem.FirstDealDate then
+        begin
+          tmpIniFile.WriteString(tmpSection, 'f', IntToStr(tmpRTItem.FirstDealDate));
+        end;
+        if 0 < tmpRTItem.EndDealDate then
+        begin
+          tmpIniFile.WriteString(tmpSection, 'e', IntToStr(tmpRTItem.EndDealDate));
+        end;
+      end;
+    end;
+  finally
+    tmpIniFile.Free;
   end;
 end;
 

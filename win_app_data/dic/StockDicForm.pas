@@ -13,20 +13,25 @@ type
     pnlTop: TPanel;
     pnlBottom: TPanel;
     pnlLeft: TPanel;
-    btnSave: TButton;
+    btnSaveDic: TButton;
     spl1: TSplitter;
     pnlRight: TPanel;
     mmo1: TMemo;
     btnOpen: TButton;
-    procedure btnSaveClick(Sender: TObject);
+    btnClear: TButton;
+    btnSaveIni: TButton;
+    procedure btnSaveDicClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure tmrAppStartTimer(Sender: TObject);
     procedure btnOpenClick(Sender: TObject);
+    procedure btnClearClick(Sender: TObject);
+    procedure btnSaveIniClick(Sender: TObject);
   protected
     fDealItemTree: TDealItemTree;   
     fAppStartTimer: TTimer;
     procedure WMDropFiles(var msg : TWMDropFiles) ; message WM_DROPFILES;
-    procedure SaveDealItemDB(AFileUrl: string);
+    procedure SaveDealItemDBAsDic(AFileUrl: string); 
+    procedure SaveDealItemDBAsIni(AFileUrl: string);
   public
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
@@ -140,7 +145,7 @@ begin
         tmpNewFileUrl := ChangeFileExt(tmpFileUrl, '.dic');
         if not FileExists(tmpNewFileUrl) then
         begin
-          SaveDealItemDB(tmpNewFileUrl);
+          SaveDealItemDBAsDic(tmpNewFileUrl);
         end;
       end;
     end;
@@ -149,25 +154,74 @@ begin
   begin                           
     if 0 < GlobalApp.StockItemDB.RecordCount then
     begin
-      SaveDealItemDB(tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic');
+      SaveDealItemDBAsDic(tmpPath + 'items' + FormatDateTime('yyyymmdd', now) + '.dic');
     end;
   end;
   //release memory
   DragFinish(msg.Drop) ;
+  fDealItemTree.BuildDealItemsTreeNodes;
 end;
 
-procedure TfrmStockDic.SaveDealItemDB(AFileUrl: string);
+procedure TfrmStockDic.SaveDealItemDBAsDic(AFileUrl: string);
 begin                     
   GlobalApp.StockItemDB.Sort;
-  db_dealItem_Save.SaveDBStockItemToFile(GlobalApp, GlobalApp.StockItemDB, AFileUrl);
+  db_dealItem_Save.SaveDBStockItemToDicFile(GlobalApp, GlobalApp.StockItemDB, AFileUrl);
 end;
 
-procedure TfrmStockDic.btnOpenClick(Sender: TObject);
+procedure TfrmStockDic.SaveDealItemDBAsIni(AFileUrl: string);
+begin                     
+  GlobalApp.StockItemDB.Sort;
+  db_dealItem_Save.SaveDBStockItemToIniFile(GlobalApp, GlobalApp.StockItemDB, AFileUrl);
+end;
+
+procedure TfrmStockDic.btnClearClick(Sender: TObject);
 begin
-//
+  inherited;
+  fDealItemTree.Clear;    
+  GlobalApp.StockItemDB.Clear;
 end;
 
-procedure TfrmStockDic.btnSaveClick(Sender: TObject);
+procedure TfrmStockDic.btnOpenClick(Sender: TObject);   
+var
+  tmpFileUrl: string;
+  tmpOpenDlg: TOpenDialog;
+  i: integer;
+  tmpIsDone: Boolean;
+begin
+  tmpOpenDlg := TOpenDialog.Create(Self);
+  try
+    tmpOpenDlg.InitialDir := ExtractFilePath(ParamStr(0));
+    tmpOpenDlg.DefaultExt := '.dic';
+    tmpOpenDlg.Filter := 'dic file|*.dic|ini file|*.ini';
+    tmpOpenDlg.Options := tmpOpenDlg.Options + [ofAllowMultiSelect];
+    //tmpOpenDlg.OptionsEx := [];   
+    if not tmpOpenDlg.Execute then
+      exit;
+    tmpIsDone := false;
+    for i := 0 to tmpOpenDlg.Files.Count - 1 do
+    begin
+      tmpFileUrl := tmpOpenDlg.Files[i];
+      if 0 < Pos('.ini', lowercase(tmpFileUrl)) then
+      begin
+        db_dealItem_LoadIni.LoadDBStockItemIniFromFile(GlobalApp, GlobalApp.StockItemDB, tmpFileUrl);
+        tmpIsDone := true;
+      end;                        
+      if 0 < Pos('.dic', lowercase(tmpFileUrl)) then
+      begin
+        db_dealItem_LoadIni.LoadDBStockItemIniFromFile(GlobalApp, GlobalApp.StockItemDB, tmpFileUrl);
+        tmpIsDone := true;
+      end;
+    end;
+    if tmpIsDone then
+    begin
+      fDealItemTree.BuildDealItemsTreeNodes;
+    end;
+  finally
+    tmpOpenDlg.Free;
+  end;
+end;
+
+procedure TfrmStockDic.btnSaveDicClick(Sender: TObject);
 var
   tmpFileUrl: string;
   tmpSaveDlg: TSaveDialog;
@@ -183,7 +237,30 @@ begin
     tmpFileUrl := tmpSaveDlg.FileName;
     if '' <> Trim(tmpFileUrl) then
     begin
-      SaveDealItemDB(tmpFileUrl);
+      SaveDealItemDBAsDic(tmpFileUrl);
+    end;
+  finally
+    tmpSaveDlg.Free;
+  end;
+end;
+
+procedure TfrmStockDic.btnSaveIniClick(Sender: TObject);
+var
+  tmpFileUrl: string;
+  tmpSaveDlg: TSaveDialog;
+begin
+  tmpFileUrl := '';                    
+  tmpSaveDlg := TSaveDialog.Create(Self);
+  try
+    tmpSaveDlg.InitialDir := ExtractFilePath(ParamStr(0));
+    tmpSaveDlg.DefaultExt := '.ini';
+    tmpSaveDlg.Filter := 'ini file|*.ini'; 
+    if not tmpSaveDlg.Execute then
+      exit;
+    tmpFileUrl := tmpSaveDlg.FileName;
+    if '' <> Trim(tmpFileUrl) then
+    begin
+      SaveDealItemDBAsIni(tmpFileUrl);
     end;
   finally
     tmpSaveDlg.Free;

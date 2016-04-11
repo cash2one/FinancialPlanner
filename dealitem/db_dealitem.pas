@@ -16,7 +16,8 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure Sort; override;     
+    procedure Sort; override;
+    procedure Clear; override;
     function AddItem(AMarketCode, AStockCode: AnsiString): PRT_DealItem;  
     function FindItem(AStockCode: AnsiString): PRT_DealItem;
     function CheckOutItem(AMarketCode, AStockCode: AnsiString): PRT_DealItem;
@@ -87,7 +88,20 @@ procedure TDBDealItem.Sort;
 begin
   fDealItemList.Sort;
 end;
-                       
+          
+procedure TDBDealItem.Clear;
+var
+  i: integer;
+  tmpDealItem: PRT_DealItem;
+begin
+  for i := fDealItemList.Count - 1 downto 0 do
+  begin
+    tmpDealItem := PRT_DealItem(fDealItemList.Objects[i]);
+    FreeMem(tmpDealItem);
+  end;
+  fDealItemList.Clear;
+end;
+
 function TDBDealItem.AddItem(AMarketCode, AStockCode: AnsiString): PRT_DealItem;
 begin
   Result := System.New(PRT_DealItem);
