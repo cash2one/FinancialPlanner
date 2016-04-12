@@ -44,7 +44,7 @@ begin
     //LoadDBStockItemIni(App, tmpDBStockItem1);
     //SaveDBStockItem(App, tmpDBStockItem1);
     //exit;
-    LoadDBStockItem(App, tmpDBStockItem);
+    LoadDBStockItemDic(App, tmpDBStockItem);
     for i := 0 to tmpDBStockItem.RecordCount - 1 do
     begin
       tmpDealItem := tmpDBStockItem.Items[i];

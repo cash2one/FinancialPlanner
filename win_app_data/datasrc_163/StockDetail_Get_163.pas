@@ -45,7 +45,7 @@ begin
   tmpHttpClientSession.IsKeepAlive := true;
   tmpDBStockItem := TDBDealItem.Create;
   try
-    LoadDBStockItem(App, tmpDBStockItem);
+    LoadDBStockItemDic(App, tmpDBStockItem);
     for i := 0 to tmpDBStockItem.RecordCount - 1 do
     begin
       if 0 = tmpDBStockItem.Items[i].EndDealDate then
