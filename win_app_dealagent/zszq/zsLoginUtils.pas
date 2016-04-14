@@ -5,8 +5,9 @@ interface
 uses                          
   zsAttach,
   Graphics;
-
-  procedure AutoLogin(AZsDealSession: PZsDealSession);
+                                                            
+  procedure LaunchZSProgram(AZsDealSession: PZsDealSession);
+  procedure AutoLogin(AZsDealSession: PZsDealSession; AUserId, APassword: Integer);
 
 implementation
 
@@ -107,11 +108,12 @@ begin
   end;
 end;
 
-function HandleZsLogin(AZsDealSession: PZsDealSession): Boolean;
+function HandleZsLogin(AZsDealSession: PZsDealSession; AUserId, APassword: integer): Boolean;
 var
   i: integer;                  
   tmpVerifyCodeBitmap: Graphics.TBitmap;
   tmpVerifyCode: AnsiString;
+  tmpAnsi: AnsiString;
 begin
   Result := true;
   for i := 0 to 3 * 50 do
@@ -129,7 +131,17 @@ begin
   end;
   if IsWindow(AZsDealSession.LoginWindow.HostWindowPtr.WindowHandle) then
   begin                 
-    ReadZsConfig(AZsDealSession);   
+    ReadZsConfig(AZsDealSession);
+    if '' = AZsDealSession.ZsAccount then
+    begin
+      tmpAnsi := IntToStr(AUserId);
+      CopyMemory(@AZsDealSession.ZsAccount[0], @tmpAnsi[1], Length(tmpAnsi));
+    end;
+    if '' = AZsDealSession.ZsPassword then
+    begin
+      tmpAnsi := IntToStr(APassword);
+      CopyMemory(@AZsDealSession.ZsPassword[0], @tmpAnsi[1], Length(tmpAnsi));
+    end;
     SleepWait(20);
     CheckZSLoginWindow(@AZsDealSession.LoginWindow);
     ForceBringFrontWindow(AZsDealSession.LoginWindow.HostWindowPtr.WindowHandle);
@@ -255,7 +267,7 @@ begin
   end;
 end;
             
-procedure AutoLogin(AZsDealSession: PZsDealSession);
+procedure AutoLogin(AZsDealSession: PZsDealSession; AUserId, APassword: Integer);
 var
   i: Integer;
 begin
@@ -263,14 +275,14 @@ begin
   if 0 = AZsDealSession.ProcessAttach.Process.ProcessId then
   begin             
     LaunchZSProgram(AZsDealSession);    
-    HandleZsLogin(AZsDealSession);
+    HandleZsLogin(AZsDealSession, AUserId, APassword);
   end else
   begin
     if nil <> AZsDealSession.LoginWindow.HostWindowPtr then
     begin
       if IsWindow(AZsDealSession.LoginWindow.HostWindowPtr.WindowHandle) then
       begin
-        HandleZsLogin(AZsDealSession);
+        HandleZsLogin(AZsDealSession, AUserId, APassword);
       end;
     end;
   end;
@@ -323,7 +335,7 @@ begin
           end;
         end;
       end;
-      if not HandleZsLogin(AZsDealSession) then
+      if not HandleZsLogin(AZsDealSession, AUserId, APassword) then
       begin
         exit;
       end;

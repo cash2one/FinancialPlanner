@@ -68,12 +68,14 @@ begin
           SimulateKeyPress(VK_BACK, 20);
           SimulateKeyPress(VK_DELETE, 20);
         end;
-        tmpAccount := UpperCase(tmpAccount);
+        tmpAccount := UpperCase(Account);
         for i := 1 to Length(tmpAccount) do
         begin
           tmpKeyCode := Byte(tmpAccount[i]);
           SimulateKeyPress(tmpKeyCode, 20);
-        end;
+        end;      
+        SimulateKeyPress(VK_RETURN, 20); 
+        SimulateKeyPress(VK_TAB, 20);
       end;
     end;
   end;
