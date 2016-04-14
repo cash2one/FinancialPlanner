@@ -5,8 +5,11 @@ interface
 uses                          
   zsAttach;
                                                             
+  procedure FindZSProgram(AZsDealSession: PZsDealSession);
   procedure LaunchZSProgram(AZsDealSession: PZsDealSession);
-  procedure AutoLogin(AZsDealSession: PZsDealSession; AUserId, APassword: Integer);
+  
+  procedure AutoLogin(AZsDealSession: PZsDealSession; AUserId, APassword: Integer); 
+  procedure ReadZsConfig(AZsDealSession: PZsDealSession);
 
 implementation
 

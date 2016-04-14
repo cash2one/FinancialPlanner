@@ -13,6 +13,7 @@ uses
   UtilsWindows,
   zsLoginWindow,
   zsMainWindow,
+  zsLoginVerifyCode,
   Graphics;
   
 function HandleZsLogin(AZsDealSession: PZsDealSession; AUserId, APassword: integer): Boolean;
