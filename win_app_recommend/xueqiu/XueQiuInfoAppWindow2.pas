@@ -3,7 +3,7 @@ unit XueQiuInfoAppWindow2;
 interface
 
 uses
-  Windows, Messages, BaseFloatWindow, BaseApp, BaseWinThread;
+  Windows, Messages, BaseFloatWindow, BaseApp, win.thread;
   
 type              
   PRT_FloatWindow = ^TRT_FloatWindow;

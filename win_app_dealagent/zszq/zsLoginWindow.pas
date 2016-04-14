@@ -20,7 +20,7 @@ implementation
 
 uses
   Classes, Sysutils, 
-  UtilsWindows, UtilsApplication;
+  UtilsWindows;
 
                             
 procedure ClickLoginButton(ALoginWindow: PZSLoginWindow);

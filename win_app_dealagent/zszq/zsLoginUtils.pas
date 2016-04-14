@@ -12,7 +12,6 @@ implementation
 
 uses
   Windows, Sysutils, Messages,
-  UtilsApplication,
   UtilsWindows,
   IniFiles,
   zsMainWindow,

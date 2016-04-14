@@ -43,7 +43,7 @@ uses
 implementation
 
 uses
-  SysUtils, UtilsWindows, UtilsApplication, CommCtrl;
+  SysUtils, UtilsWindows, CommCtrl;
 
 {
   CommCtrl, SysTreeView32

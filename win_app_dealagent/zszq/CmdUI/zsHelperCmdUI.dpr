@@ -11,9 +11,10 @@ uses
   UtilsWindows in '..\..\..\..\devwintech\v0000\win_utils\UtilsWindows.pas',
   UtilsApplication in '..\..\..\..\devwintech\v0000\win_utils\UtilsApplication.pas',
   define_price in '..\..\..\basedefine\define_price.pas',
+  zsHelperMessage in '..\zsHelperMessage.pas',
+  zsHelperDefine in '..\zsHelperDefine.pas',
   zsHelperForm in 'zsHelperForm.pas' {frmZSHelper},
-  zsHelperCmdUIApp in 'zsHelperCmdUIApp.pas',
-  zsHelperMessage in '..\zsHelperMessage.pas';
+  zsHelperCmdUIApp in 'zsHelperCmdUIApp.pas';
 
 {$R *.res}
 

@@ -40,9 +40,9 @@ type
     procedure SaveBuyConfig;
     procedure LoadBuyConfig;    
     procedure CreateParams(var Params: TCreateParams); override;    
-    procedure WMStockBuy(var Message: TMessage); message WM_StockBuy;
-    procedure WMStockBuy_XueQiu(var Message: TMessage); message WM_StockBuy_XueQiu;
-    procedure WMStockSale_XueQiu(var Message: TMessage); message WM_StockSale_XueQiu;
+    procedure WMStockBuy(var Message: TMessage); message WM_C2S_StockBuy;
+    procedure WMStockBuy_XueQiu(var Message: TMessage); message WM_C2S_StockBuy_XueQiu;
+    procedure WMStockSale_XueQiu(var Message: TMessage); message WM_C2S_StockSale_XueQiu;
   public
     constructor Create(Owner: TComponent); override;
   end;
@@ -178,10 +178,10 @@ begin
     tmpPrice := Message.LParam / 1000;
     tmpNewPrice := GetBuyPriceStep1(tmpPrice);
     if 0 < tmpNewPrice then
-      PostMessage(Handle, WM_StockBuy, Message.WParam, Trunc(tmpNewPrice * 1000));   
+      PostMessage(Handle, WM_C2S_StockBuy, Message.WParam, Trunc(tmpNewPrice * 1000));   
     tmpNewPrice := GetBuyPriceStep2(tmpPrice);
     if 0 < tmpNewPrice then
-      PostMessage(Handle, WM_StockBuy, Message.WParam, Trunc(tmpNewPrice * 1000));
+      PostMessage(Handle, WM_C2S_StockBuy, Message.WParam, Trunc(tmpNewPrice * 1000));
   end;
 end;
 
