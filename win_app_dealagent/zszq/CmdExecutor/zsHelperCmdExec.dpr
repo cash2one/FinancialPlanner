@@ -22,7 +22,14 @@ uses
   zsHelperMessage in '..\zsHelperMessage.pas',
   zsHelperDefine in '..\zsHelperDefine.pas',
   zsDialogUtils in '..\zsDialogUtils.pas',
-  zsHelperCmdExecApp in 'zsHelperCmdExecApp.pas';
+  zsHelperCmdExecApp in 'zsHelperCmdExecApp.pas',
+  zsDealBuy in '..\zsDealBuy.pas',
+  zsDealSale in '..\zsDealSale.pas',
+  zsDealCancel in '..\zsDealCancel.pas',
+  zsDealQueryHold in '..\zsDealQueryHold.pas',
+  zsUserUnlock in '..\zsUserUnlock.pas',
+  zsUserLogin in '..\zsUserLogin.pas',
+  zsLoginVerifyCode in '..\zsLoginVerifyCode.pas';
 
 {$R *.res}
 

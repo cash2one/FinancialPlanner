@@ -28,6 +28,7 @@ uses
   zsVariants,
   zsHelperDefine,
   Define_Message,
+  zsUserUnlock,
   zsHelperMessage;
   
 function AppCmdWndProcA(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): HRESULT; stdcall;
@@ -40,6 +41,7 @@ begin
       zsLoginUtils.AutoLogin(@zsVariants.GZsDealSession, wParam, lParam);
     end;
     WM_C2S_Unlock: begin //           = WM_CustomAppBase + 22;
+      HandleZsUserUnlock(@zsVariants.GZsDealSession, lParam);
     end;
     WM_C2S_StockBuy_Mode_1: begin //         = WM_CustomAppBase + 41;
     end;
@@ -101,9 +103,12 @@ end;
 procedure TzsHelperCmdExecApp.Run;
 var
   dealParam: TWMDeal_LParam;
+  tmpPass: integer;
 begin
   //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_LaunchProgram, 0, 0);
-  PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_LoginUser, 39008990, 123456);
+  tmpPass := 123456;
+  //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_LoginUser, 39008990, tmpPass);
+  PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_Unlock, 0, tmpPass);
   //dealParam.Price := 2300;
   //dealParam.Hand := 5;  
   //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_StockBuy_Mode_1, 1002414, lParam(dealParam));  
