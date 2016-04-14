@@ -1,6 +1,7 @@
 program zsHelperCmdExec;
 
 uses
+  Messages,
   BaseApp in '..\..\..\..\devwintech\v0000\app_base\BaseApp.pas',
   BasePath in '..\..\..\..\devwintech\v0000\app_base\BasePath.pas',
   BaseThread in '..\..\..\..\devwintech\v0000\app_base\BaseThread.pas',
@@ -20,6 +21,7 @@ uses
   zsAttach in '..\zsAttach.pas',
   zsHelperMessage in '..\zsHelperMessage.pas',
   zsHelperDefine in '..\zsHelperDefine.pas',
+  zsDialogUtils in '..\zsDialogUtils.pas',
   zsHelperCmdExecApp in 'zsHelperCmdExecApp.pas';
 
 {$R *.res}

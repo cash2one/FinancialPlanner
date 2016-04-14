@@ -16,7 +16,8 @@ uses
   UtilsWindows,
   IniFiles,
   zsMainWindow,
-  zsLoginWindow,
+  zsLoginWindow, 
+  zsDialogUtils,
   zsProcess;
                            
 procedure FindZSProgram(AZsDealSession: PZsDealSession);
@@ -212,61 +213,6 @@ begin
   end;
 end;
 
-function HandleZsDialog(AZsDealSession: PZsDealSession): Boolean;
-var
-  i: integer;
-  tmpCount: integer;
-  j: integer;
-  tmpDialogWindow: PExProcessWindow;
-begin
-  Result := false;
-  tmpCount := 0;
-  for i := 1 to 2 * 50 do
-  begin
-    SleepWait(20);
-    if FindZSDialogWindow(AZsDealSession) then
-    begin
-      tmpCount := 0;
-      Result := true;
-    end else
-    begin
-      Inc(tmpCount);
-    end;
-    if 20 < tmpCount then
-      Break;
-    if 0 = tmpCount then
-    begin
-      for j := Low(AZsDealSession.DialogWindow) to High(AZsDealSession.DialogWindow) do
-      begin
-        if nil <> AZsDealSession.DialogWindow[j] then
-        begin
-          tmpDialogWindow := AZsDealSession.DialogWindow[j];
-          if IsWindow(tmpDialogWindow.WindowHandle) then
-          begin
-            if IsWindowVisible(tmpDialogWindow.WindowHandle) then
-            begin
-              CheckZSDialogWindow(tmpDialogWindow);
-              if IsWindow(tmpDialogWindow.CancelButton) then
-              begin
-                ForceBringFrontWindow(tmpDialogWindow.WindowHandle);
-                SleepWait(20);
-                ForceBringFrontWindow(tmpDialogWindow.WindowHandle);
-                SleepWait(20);
-                ClickButtonWnd(tmpDialogWindow.CancelButton);
-              end else
-              begin
-                PostMessage(tmpDialogWindow.WindowHandle, WM_Close, 0, 0);   
-                SleepWait(20);
-              end;
-              Break;
-            end;
-          end;
-        end;
-      end;
-    end;
-  end;
-end;
-            
 procedure AutoLogin(AZsDealSession: PZsDealSession; AUserId, APassword: Integer);
 var
   i: Integer;
@@ -347,6 +293,7 @@ begin
       if IsWindow(AZsDealSession.MainWindow.WndFunctionTree) then
         Break;
     end;
+    (*//
     if IsWindow(AZsDealSession.MainWindow.WndFunctionTree) then
     begin
       i := 0;
@@ -362,8 +309,8 @@ begin
       //ClickTreeQueryHoldNode(@MainWindow);
     end else
     begin
-    
     end;
+    //*)
   end;
 end;
 

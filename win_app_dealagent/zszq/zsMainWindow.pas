@@ -15,10 +15,6 @@ uses
 
   function FindZSLockPanelWindow(AZsDealSession: PZsDealSession): Boolean;
 
-  function FindZSDialogWindow(AZsDealSession: PZsDealSession): Boolean;
-
-  procedure CheckZSDialogWindow(AWindow: PExProcessWindow);
-
   procedure CheckZSMainWindow(AMainWindow: PZSMainWindow);
   procedure CheckZSOrderWindow(AMainWindow: PZSMainWindow);
   procedure CheckZSMoneyWindow(AMainWindow: PZSMainWindow);
@@ -43,7 +39,10 @@ uses
 implementation
 
 uses
-  SysUtils, UtilsWindows, CommCtrl;
+  SysUtils,
+  UtilsWindows,
+  zsDialogUtils,
+  CommCtrl;
 
 {
   CommCtrl, SysTreeView32
@@ -455,39 +454,6 @@ begin
   end;
 end;
 
-function FuncCheckDialogWnd(AWnd: HWND): Boolean;
-var
-  tmpChildWnd: HWND;
-begin
-  Result := true;
-  tmpChildWnd := Windows.GetWindow(AWnd, GW_CHILD);
-  if 0 = tmpChildWnd then
-  begin
-    Result := false;
-  end;
-end;
-
-function FindZSDialogWindow(AZsDealSession: PZsDealSession): Boolean;
-var
-  i: integer;
-begin
-  InitFindSession(@AZsDealSession.ProcessAttach.FindSession);
-  AZsDealSession.ProcessAttach.FindSession.NeedWinCount := 255;
-  AZsDealSession.ProcessAttach.FindSession.WndClassKey := '#32770';
-  AZsDealSession.ProcessAttach.FindSession.CheckFunc := FuncCheckDialogWnd;
-  //Result := FindDesktopWindow(AWindow);
-  Windows.EnumWindows(@EnumFindDesktopWindowProc, Integer(AZsDealSession));
-  Result := AZsDealSession.ProcessAttach.FindSession.FindCount > 0;
-  if Result then
-  begin
-    FillChar(AZsDealSession.DialogWindow, SizeOf(AZsDealSession.DialogWindow), 0);
-    for i := 0 to AZsDealSession.ProcessAttach.FindSession.FindCount - 1 do
-    begin
-      AZsDealSession.DialogWindow[i] := AZsDealSession.ProcessAttach.FindSession.FindWindow[i];
-    end;
-  end;
-end;
-                   
 function FindZSHintDialogWindow(AZsDealSession: PZsDealSession): Boolean;
 var
   i: integer;
@@ -664,57 +630,6 @@ begin
     end;
     tmpChildWnd := Windows.GetWindow(tmpChildWnd, GW_HWNDNEXT);
   end;
-end;
-
-procedure TraverseCheckChildWindowA(AWnd: HWND; AWindow: PExProcessWindow); 
-var
-  tmpChildWnd: HWND; 
-  tmpStr: Widestring;
-  tmpIsHandled: Boolean;
-begin
-  tmpChildWnd := Windows.GetWindow(AWnd, GW_CHILD);
-  while 0 <> tmpChildWnd do
-  begin
-    tmpIsHandled := false;
-    tmpStr := Trim(GetWndTextName(tmpChildWnd));
-    if '' <> tmpStr then
-    begin
-      if SameText('关闭', tmpStr) then
-      begin
-        AWindow.CancelButton := tmpChildWnd;
-        tmpIsHandled := true;
-      end;          
-      if not tmpIsHandled then
-      begin
-        if SameText('取消', tmpStr) then
-        begin
-          AWindow.CancelButton := tmpChildWnd;
-          tmpIsHandled := true;
-        end;
-      end;
-      if not tmpIsHandled then
-      begin
-        if Length(tmpStr) < 5 then
-        begin
-          if Pos('确', tmpStr) > 0 then
-          begin
-            AWindow.OKButton := tmpChildWnd;
-            tmpIsHandled := true;
-          end;
-        end;
-      end;
-    end;
-    if not tmpIsHandled then
-    begin
-      TraverseCheckChildWindowA(tmpChildWnd, AWindow);
-    end;
-    tmpChildWnd := Windows.GetWindow(tmpChildWnd, GW_HWNDNEXT);
-  end;
-end;
-
-procedure CheckZSDialogWindow(AWindow: PExProcessWindow);
-begin
-  TraverseCheckChildWindowA(AWindow.WindowHandle, AWindow);
 end;
 
 function FindZSDealPanel(AMainWindow: PZSMainWindow): Boolean;
