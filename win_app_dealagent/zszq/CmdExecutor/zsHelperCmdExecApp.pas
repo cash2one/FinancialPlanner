@@ -23,12 +23,15 @@ implementation
 
 uses
   Windows,
+  SysUtils,
   zsLoginUtils,
   win.wnd_cmd,
   zsVariants,
   zsHelperDefine,
   Define_Message,
   zsUserUnlock,
+  zsDealBuy,
+  zsDealSale,
   zsHelperMessage;
   
 function AppCmdWndProcA(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): HRESULT; stdcall;
@@ -44,8 +47,10 @@ begin
       HandleZsUserUnlock(@zsVariants.GZsDealSession, lParam);
     end;
     WM_C2S_StockBuy_Mode_1: begin //         = WM_CustomAppBase + 41;
+      BuyStockByNum(@zsVariants.GZsDealSession, IntToStr(wParam), TWMDeal_LParam(lParam).Price / 100, TWMDeal_LParam(lParam).Hand * 100);
     end;
     WM_C2S_StockSale_Mode_1: begin
+      SaleStock(@zsVariants.GZsDealSession, IntToStr(wParam), TWMDeal_LParam(lParam).Price / 100, TWMDeal_LParam(lParam).Hand * 100);
     end;
     WM_C2S_Query: begin
     end;
@@ -108,10 +113,12 @@ begin
   //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_LaunchProgram, 0, 0);
   tmpPass := 123456;
   //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_LoginUser, 39008990, tmpPass);
-  PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_Unlock, 0, tmpPass);
-  //dealParam.Price := 2300;
-  //dealParam.Hand := 5;  
-  //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_StockBuy_Mode_1, 1002414, lParam(dealParam));  
+  //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_Unlock, 0, tmpPass);
+  dealParam.Price := 2300;
+  dealParam.Hand := 5;
+  PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_StockBuy_Mode_1, 1002414, lParam(dealParam));
+  PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_StockSale_Mode_1, 1002414, lParam(dealParam));
+    
   RunAppMsgLoop;
 end;
 

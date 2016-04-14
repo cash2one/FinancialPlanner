@@ -8,8 +8,10 @@ uses
   
   procedure ClickTreeBuyNode(AMainWindow: PZSMainWindow);
                                                                               
-  function BuyStock(AZsDealSession: PZsDealSession;
+  function BuyStockByMoney(AZsDealSession: PZsDealSession;
     AStockCode: AnsiString; APrice: double; AMoney: Integer): Boolean;
+  function BuyStockByNum(AZsDealSession: PZsDealSession;
+    AStockCode: AnsiString; APrice: double; ANum: Integer): Boolean;
     
 implementation
 
@@ -41,17 +43,28 @@ begin
   end;
 end;
 
-function BuyStock(AZsDealSession: PZsDealSession; AStockCode: AnsiString; APrice: double; AMoney: Integer): Boolean;
-var
+
+function BuyStockByMoney(AZsDealSession: PZsDealSession; AStockCode: AnsiString; APrice: double; AMoney: Integer): Boolean;
+var  
   tmpNum: integer;
+begin
+  Result := false;  
+  tmpNum := (Trunc(AMoney / APrice) div 100) * 100;
+  if 0 < tmpNum then
+  begin
+    Result := BuyStockByNum(AZsDealSession, AStockCode, APrice, tmpNum);
+  end;    
+end;
+
+function BuyStockByNum(AZsDealSession: PZsDealSession; AStockCode: AnsiString; APrice: double; ANum: Integer): Boolean;
+var
   tmpWnd: HWND;
   i: integer;
 begin
   Result := false;
   if 0 < APrice then
   begin
-    tmpNum := (Trunc(AMoney / APrice) div 100) * 100;
-    if 0 < tmpNum then
+    if 0 < ANum then
     begin    
       if nil = AZsDealSession.MainWindow.HostWindowPtr then
       begin
@@ -100,7 +113,7 @@ begin
           SleepWait(20);
           InputEditWnd(AZsDealSession.MainWindow.BuyWindowPtr.WndPriceEdit, FormatFloat('0.00', APrice));
           SleepWait(20);
-          InputEditWnd(AZsDealSession.MainWindow.BuyWindowPtr.WndNumEdit, IntToStr(tmpNum));
+          InputEditWnd(AZsDealSession.MainWindow.BuyWindowPtr.WndNumEdit, IntToStr(ANum));
           SleepWait(20);
           Result := ClickButtonWnd(AZsDealSession.MainWindow.BuyWindowPtr.WndOrderButton);
           if Result then
