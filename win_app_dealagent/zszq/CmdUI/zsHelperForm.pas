@@ -4,27 +4,26 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms, StdCtrls, ExtCtrls,
-  BaseForm, zsHelperMessage;
+  BaseForm, zsHelperMessage, zsHelperDefine;
 
 type
+  TZSHelperFormData = record
+    ZsHelperCmdWnd: HWND;               
+  end;
+  
   TfrmZSHelper = class(TfrmBase)
     btnbuy: TButton;
     mmo1: TMemo;
-    pb1: TPaintBox;
-    edtLeft: TEdit;
-    edtTop: TEdit;
-    btnMain: TButton;
     btnlaunch: TButton;
     edStock: TEdit;
     edPrice: TEdit;
-    btnConfirmDeal: TButton;
     edMoney: TEdit;
-    btnConfirmPwd: TButton;
-    btnUnlock: TButton;
-    btnCheckMoney: TButton;
     edNum: TEdit;
     btnSale: TButton;
-    btnCheckDealPanelSize: TButton;
+    btnUnlock: TButton;
+    btnLogin: TButton;
+    edtUserId: TEdit;
+    edtPassword: TEdit;
     procedure btnMainClick(Sender: TObject);
     procedure btnlaunchClick(Sender: TObject);
     procedure btnbuyClick(Sender: TObject);
@@ -34,15 +33,15 @@ type
     procedure btnCheckMoneyClick(Sender: TObject);
     procedure btnSaleClick(Sender: TObject);
     procedure btnCheckDealPanelSizeClick(Sender: TObject);
-  protected                         
+    procedure btnLoginClick(Sender: TObject);
+  protected
+    fZSHelperFormData: TZSHelperFormData;   
+    function FindZsHelperCmdWnd: Boolean; 
     function GetBuyPriceStep1(APrice: double): double;
     function GetBuyPriceStep2(APrice: double): double;    
     procedure SaveBuyConfig;
     procedure LoadBuyConfig;    
     procedure CreateParams(var Params: TCreateParams); override;    
-    procedure WMStockBuy(var Message: TMessage); message WM_C2S_StockBuy;
-    procedure WMStockBuy_XueQiu(var Message: TMessage); message WM_C2S_StockBuy_XueQiu;
-    procedure WMStockSale_XueQiu(var Message: TMessage); message WM_C2S_StockSale_XueQiu;
   public
     constructor Create(Owner: TComponent); override;
   end;
@@ -60,6 +59,7 @@ uses
 constructor TfrmZSHelper.Create(Owner: TComponent);
 begin
   inherited;
+  FillChar(fZSHelperFormData, SizeOf(fZSHelperFormData), 0);
   LoadBuyConfig;
 end;
 
@@ -69,6 +69,15 @@ begin
   Params.WinClassName := 'WndZSHelper';
   Params.Caption := '';
   Self.Caption := '';
+end;
+
+function TfrmZSHelper.FindZsHelperCmdWnd: Boolean;
+begin
+  if not IsWindow(fZSHelperFormData.ZsHelperCmdWnd) then
+  begin
+    fZSHelperFormData.ZsHelperCmdWnd := Windows.FindWindow(zsHelperCmdExecApp_AppCmdWndClassName, '');
+  end;
+  Result := IsWindow(fZSHelperFormData.ZsHelperCmdWnd);
 end;
 
 procedure TfrmZSHelper.btnMainClick(Sender: TObject);
@@ -83,22 +92,6 @@ begin
     end;
     mmo1.Lines.Add('tree wnd:' + IntToHex(GZsDealSession.MainWindow.WndFunctionTree, 2));
     ClickMenuOrderMenuItem(@GZsDealSession.MainWindow);
-  end;
-  //*)
-end;
-
-procedure TfrmZSHelper.WMStockBuy(var Message: TMessage);
-var  
-  tmpStock: AnsiString;
-begin
-  tmpStock := IntToStr(Message.WParam);
-  if 7 = Length(tmpStock) then
-    tmpStock := Copy(tmpStock, 2, maxint);
-  (*//
-  if BuyStock(@GZsDealSession, tmpStock, Message.LParam / 1000, 10000) then
-  begin
-        // 出错 可能未 开通创业板权限
-    ConfirmDeal(@GZsDealSession);
   end;
   //*)
 end;
@@ -167,7 +160,7 @@ begin
     exit;
   end;
 end;
-
+(*//
 procedure TfrmZSHelper.WMStockBuy_XueQiu(var Message: TMessage);
 var
   tmpNewPrice: double;
@@ -178,21 +171,13 @@ begin
     tmpPrice := Message.LParam / 1000;
     tmpNewPrice := GetBuyPriceStep1(tmpPrice);
     if 0 < tmpNewPrice then
-      PostMessage(Handle, WM_C2S_StockBuy, Message.WParam, Trunc(tmpNewPrice * 1000));   
+      PostMessage(Handle, WM_C2S_StockBuy_Mode_1, Message.WParam, Trunc(tmpNewPrice * 1000));   
     tmpNewPrice := GetBuyPriceStep2(tmpPrice);
     if 0 < tmpNewPrice then
-      PostMessage(Handle, WM_C2S_StockBuy, Message.WParam, Trunc(tmpNewPrice * 1000));
+      PostMessage(Handle, WM_C2S_StockBuy_Mode_1, Message.WParam, Trunc(tmpNewPrice * 1000));
   end;
 end;
-
-procedure TfrmZSHelper.WMStockSale_XueQiu(var Message: TMessage);
-begin
-  if 0 <> Message.WParam then
-  begin
-  
-  end;
-end;
-
+//*)
 procedure TfrmZSHelper.LoadBuyConfig;  
 var
   tmpIni: TIniFile;
@@ -219,41 +204,6 @@ begin
   finally
     tmpIni.Free;
   end;
-end;
-
-procedure TfrmZSHelper.btnbuyClick(Sender: TObject);
-var
-  tmpStock: AnsiString;
-  tmpPrice: double;
-begin
-  tmpStock := Trim(edStock.Text);
-  tmpPrice := StrToFloatDef(Trim(edPrice.Text), 0);
-  SaveBuyConfig();
-  (*//
-  if BuyStock(@GZsDealSession, tmpStock, tmpPrice, StrToIntDef(edMoney.Text, 5000)) then
-  begin
-    // 出错 可能未 开通创业板权限
-    ConfirmDeal(@GZsDealSession);
-  end;
-  //*)
-end;
-             
-procedure TfrmZSHelper.btnSaleClick(Sender: TObject); 
-var
-  tmpStock: AnsiString;
-  tmpPrice: double;
-  tmpNum: integer;
-begin
-  tmpStock := Trim(edStock.Text);
-  tmpPrice := StrToFloatDef(Trim(edPrice.Text), 0);
-  tmpNum := StrToIntDef(edNum.Text, 100);
-  (*//
-  if SaleStock(@GZsDealSession, tmpStock, tmpPrice, tmpNum) then
-  begin
-    // 出错 非交易时间内 下单
-    ConfirmDeal(@GZsDealSession);
-  end;
-  //*)
 end;
 
 procedure TfrmZSHelper.btnCheckDealPanelSizeClick(Sender: TObject);
@@ -283,8 +233,8 @@ begin
 end;
 
 procedure TfrmZSHelper.btnConfirmDealClick(Sender: TObject);
-var
-  tmpWnd: HWND;
+//var
+//  tmpWnd: HWND;
 begin
   (*//
   FindZSDealConfirmDialogWindow(@GZsDealSession);
@@ -307,23 +257,10 @@ begin
   //*)
 end;
 
-procedure TfrmZSHelper.btnUnlockClick(Sender: TObject);
-begin
-  { 各种可能出现的 对话框 }
-  (*//
-  if nil = GZsDealSession.MainWindow.HostWindowPtr then
-  begin
-    if not FindZSMainWindow(@GZsDealSession) then
-      exit;
-  end;    
-  FindZSLockPanelWindow(@GZsDealSession);
-  //*)
-end;
-
 procedure TfrmZSHelper.btnConfirmPwdClick(Sender: TObject);
-var
-  tmpWnd: HWND;
-  tmpIsChecked: Integer;
+//var
+//  tmpWnd: HWND;
+//  tmpIsChecked: Integer;
 begin
   { 各种可能出现的 对话框 }
   (*//
@@ -362,6 +299,121 @@ end;
 procedure TfrmZSHelper.btnlaunchClick(Sender: TObject);
 begin
   //AutoLogin(@GZsDealSession);
+  if FindZsHelperCmdWnd then
+  begin
+    PostMessage(fZSHelperFormData.ZsHelperCmdWnd, WM_C2S_LaunchProgram, 0, 0);
+  end;
+end;
+
+procedure TfrmZSHelper.btnLoginClick(Sender: TObject);
+var
+  tmpPassword: integer;
+  tmpNewOneId: Integer;
+begin
+  if FindZsHelperCmdWnd then
+  begin
+    tmpPassword := StrToIntDef(edtPassword.Text, 0);
+    if 0 < tmpPassword then
+    begin
+      tmpNewOneId := StrToIntDef(edtUserId.Text, 0);
+      if 0 = tmpNewOneId then
+        tmpNewOneId := 39008990;
+      PostMessage(fZSHelperFormData.ZsHelperCmdWnd, WM_C2S_LoginUser, tmpNewOneId, tmpPassword);
+    end;
+  end;
+end;
+
+procedure TfrmZSHelper.btnUnlockClick(Sender: TObject);
+var    
+  tmpPassword: integer;
+begin              
+  if FindZsHelperCmdWnd then
+  begin
+    tmpPassword := StrToIntDef(edtPassword.Text, 0);
+    if 0 < tmpPassword then
+    begin
+      PostMessage(fZSHelperFormData.ZsHelperCmdWnd, WM_C2S_Unlock, 0, tmpPassword);
+    end;
+  end;
+  { 各种可能出现的 对话框 }
+  (*//
+  if nil = GZsDealSession.MainWindow.HostWindowPtr then
+  begin
+    if not FindZSMainWindow(@GZsDealSession) then
+      exit;
+  end;    
+  FindZSLockPanelWindow(@GZsDealSession);
+  //*)
+end;
+
+procedure TfrmZSHelper.btnbuyClick(Sender: TObject);
+var
+  tmpStock: AnsiString; 
+  tmpStockId: Integer;
+  tmpPrice: double;       
+  dealBuyParam: TWMDeal_LParam;
+begin
+  SaveBuyConfig();   
+  if FindZsHelperCmdWnd then
+  begin                               
+    tmpStock := Trim(edStock.Text);
+    tmpStockId := StrToIntDef(tmpStock, 0);
+    if 0 < tmpStockId then
+    begin                     
+      tmpPrice := StrToFloatDef(Trim(edPrice.Text), 0);
+      if 0 < tmpPrice then
+      begin
+        dealBuyParam.Price := Trunc(tmpPrice * 100);
+        dealBuyParam.Hand := Trunc(StrToIntDef(edNum.Text, 0) / 100);
+        if 0 < dealBuyParam.Hand then
+        begin
+          PostMessage(fZSHelperFormData.ZsHelperCmdWnd, WM_C2S_StockBuy_Mode_1, tmpStockId, Integer(dealBuyParam));
+        end;
+      end;
+    end;
+  end;
+  (*//
+  if BuyStock(@GZsDealSession, tmpStock, tmpPrice, StrToIntDef(edMoney.Text, 5000)) then
+  begin
+    // 出错 可能未 开通创业板权限
+    ConfirmDeal(@GZsDealSession);
+  end;
+  //*)
+end;
+             
+procedure TfrmZSHelper.btnSaleClick(Sender: TObject); 
+var
+  tmpStock: AnsiString; 
+  tmpStockId: Integer;
+  tmpPrice: double;       
+  dealSaleParam: TWMDeal_LParam;
+begin
+  SaveBuyConfig();   
+  if FindZsHelperCmdWnd then
+  begin                               
+    tmpStock := Trim(edStock.Text);
+    tmpStockId := StrToIntDef(tmpStock, 0);
+    if 0 < tmpStockId then
+    begin                     
+      tmpPrice := StrToFloatDef(Trim(edPrice.Text), 0);
+      if 0 < tmpPrice then
+      begin
+        dealSaleParam.Price := Trunc(tmpPrice * 100);
+        dealSaleParam.Hand := Trunc(StrToIntDef(edNum.Text, 0) / 100);
+        if 0 < dealSaleParam.Hand then
+        begin
+          PostMessage(fZSHelperFormData.ZsHelperCmdWnd, WM_C2S_StockSale_Mode_1, tmpStockId, Integer(dealSaleParam));
+        end;
+      end;
+    end;
+  end;
+  (*//
+  if SaleStock(@GZsDealSession, tmpStock, tmpPrice, tmpNum) then
+  begin
+    // 出错 非交易时间内 下单
+    ConfirmDeal(@GZsDealSession);
+  end;
+  //*)
 end;
 
 end.
