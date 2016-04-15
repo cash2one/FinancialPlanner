@@ -14,6 +14,7 @@ uses
 implementation
 
 uses
+  zsDialogDeal,
   UtilsWindows,
   zsMainWindow;
   

@@ -111,8 +111,8 @@ end;
 
 procedure TzsHelperCmdExecApp.Run;
 var
-  dealBuyParam: TWMDeal_LParam;
-  dealSaleParam: TWMDeal_LParam;  
+//  dealBuyParam: TWMDeal_LParam;
+//  dealSaleParam: TWMDeal_LParam;  
   tmpPass: integer;
 begin
   //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_LaunchProgram, 0, 0);

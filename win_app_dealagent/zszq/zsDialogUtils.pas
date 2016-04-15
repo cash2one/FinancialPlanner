@@ -12,6 +12,7 @@ uses
   function FindZSDialogWindow(AZsDealSession: PZsDealSession): Boolean;
   function FuncCheckDialogWnd(AWnd: HWND): Boolean;   
   procedure CheckZSDialogWindow(AWindow: PExProcessWindow);
+  function FindZSHintDialogWindow(AZsDealSession: PZsDealSession): Boolean;
 
 implementation
 
@@ -154,6 +155,30 @@ begin
           end;
         end;
       end;
+    end;
+  end;
+end;
+
+function FindZSHintDialogWindow(AZsDealSession: PZsDealSession): Boolean;
+var
+  i: integer;
+begin
+  InitFindSession(@AZsDealSession.ProcessAttach.FindSession);   
+  AZsDealSession.DealConfirmDialog := nil;
+  AZsDealSession.ProcessAttach.FindSession.NeedWinCount := 255;
+  AZsDealSession.ProcessAttach.FindSession.WndClassKey := '#32770';  
+  AZsDealSession.ProcessAttach.FindSession.WndCaptionKey := 'ÌבÊ¾';
+  AZsDealSession.ProcessAttach.FindSession.CheckFunc := FuncCheckDialogWnd;
+  //Result := FindDesktopWindow(AWindow);
+  Windows.EnumWindows(@EnumFindDesktopWindowProc, Integer(AZsDealSession));
+  Result := AZsDealSession.ProcessAttach.FindSession.FindCount > 0;
+  if Result then
+  begin
+    FillChar(AZsDealSession.DialogWindow, SizeOf(AZsDealSession.DialogWindow), 0);
+    for i := 0 to AZsDealSession.ProcessAttach.FindSession.FindCount - 1 do
+    begin
+      AZsDealSession.DialogWindow[i] := AZsDealSession.ProcessAttach.FindSession.FindWindow[i];
+      AZsDealSession.DealConfirmDialog := AZsDealSession.DialogWindow[i];
     end;
   end;
 end;

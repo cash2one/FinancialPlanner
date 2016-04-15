@@ -29,7 +29,8 @@ uses
   zsDealQueryHold in '..\zsDealQueryHold.pas',
   zsUserUnlock in '..\zsUserUnlock.pas',
   zsUserLogin in '..\zsUserLogin.pas',
-  zsLoginVerifyCode in '..\zsLoginVerifyCode.pas';
+  zsLoginVerifyCode in '..\zsLoginVerifyCode.pas',
+  zsDialogDeal in '..\zsDialogDeal.pas';
 
 {$R *.res}
 

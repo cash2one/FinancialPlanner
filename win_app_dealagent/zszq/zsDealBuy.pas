@@ -17,6 +17,7 @@ implementation
 
 uses
   UtilsWindows,
+  zsDialogDeal,
   zsMainWindow;
   
 procedure ClickTreeBuyNode(AMainWindow: PZSMainWindow);
