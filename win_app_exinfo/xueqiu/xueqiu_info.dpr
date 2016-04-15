@@ -23,6 +23,7 @@ uses
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
   UIBaseWndProc in '..\..\..\devwintech\v0000\win_base\UIBaseWndProc.pas',
   Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
+  Define_Message in '..\..\..\devwintech\v0000\win_basedefine\Define_Message.pas',
   win.thread in '..\..\..\devwintech\v0000\win_system\win.thread.pas',
   UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',
   BaseStockApp in '..\..\base\BaseStockApp.pas',
@@ -37,96 +38,13 @@ uses
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   HostWnd_chromium in 'HostWnd_chromium.pas',
   chromium_dom in 'chromium_dom.pas',
-  chromium_script in 'chromium_script.pas';
+  chromium_script in 'chromium_script.pas',
+  xueqiu_InfoApp in 'xueqiu_InfoApp.pas';
 
 {$R *.res}
 
-type
-  TXueQiuInfoApp = class(TBaseWinApp)
-  protected      
-    fCefClientObject: TCefClientObject;
-    fHostWindow: THostWndChromium; 
-    procedure CreateBrowser;
-    procedure CreateHostWindow;
-  public
-    procedure Run; override;    
-  end;
-  
 { TChromiumTestApp }
 
-const
-  Url_StockHome = 'https://xueqiu.com/S/'; // https://xueqiu.com/S/SZ300134
-  // 股本结构
-  Url_StockStruct = 'https://xueqiu.com/S/SZ300134/GBJG';
-
-  //https://xueqiu.com/S/SZ300134/ZYGD // 主要股东
-  //https://xueqiu.com/S/SZ300134/LTGD // 流通股东
-  //https://xueqiu.com/S/SZ300134/GDHS // 股东户数
-  //https://xueqiu.com/S/SZ300134/XSGDMD // 限售股东
-  //https://xueqiu.com/S/SZ300134/LHB // 龙虎榜数据
-
-  // 交易明细
-  // http://stockhtm.finance.qq.com/sstock/quotpage/q/300134.htm#detail
-  // 分价表
-  // http://stockhtm.finance.qq.com/sstock/quotpage/q/300134.htm#price
-  // 大单统计
-  // http://quotes.money.163.com/trade/ddtj_300134.html
-  // 基金持股
-  // http://stock.jrj.com.cn/share,300134,jjcg.shtml
-
-  
-procedure TXueQiuInfoApp.CreateBrowser;
-begin
-  if CefApp.CefLibrary.LibHandle = 0 then
-  begin
-    CefApp.CefLibrary.CefCoreSettings.multi_threaded_message_loop := False;
-    CefApp.CefLibrary.CefCoreSettings.multi_threaded_message_loop := True;
-    InitCefLib(@CefApp.CefLibrary, @CefApp.CefAppObject);
-    if CefApp.CefLibrary.LibHandle <> 0 then
-    begin
-      fCefClientObject.HostWindow := fHostWindow.BaseWnd.UIWndHandle;
-      fCefClientObject.CefIsCreateWindow := true;
-      fCefClientObject.Rect.Left := 0;
-      fCefClientObject.Rect.Top := 0; 
-      fCefClientObject.Width := fHostWindow.BaseWnd.ClientRect.Right; //Self.Width - pnlRight.Width - 4 * 2;
-      fCefClientObject.Height := fHostWindow.BaseWnd.ClientRect.Bottom; //Self.Height - pnlTop.Height - 4 * 2;
-      fCefClientObject.CefUrl := 'https://xueqiu.com/S/SZ300134';      
-      fCefClientObject.Rect.Right := fCefClientObject.Rect.Left + fCefClientObject.Width;
-      fCefClientObject.Rect.Bottom := fCefClientObject.Rect.Top + fCefClientObject.Height;
-      CreateBrowserCore(@fCefClientObject, @CefApp.CefLibrary, fHostWindow.BaseWnd.UIWndHandle);//Self.WindowHandle);
-    end;
-  end;
-end;
-
-procedure TXueQiuInfoApp.CreateHostWindow;
-begin                                          
-  fHostWindow.BaseWnd.WindowRect.Top := 30;
-  fHostWindow.BaseWnd.WindowRect.Left := 50;
-
-  fHostWindow.BaseWnd.ClientRect.Right := 800;
-  fHostWindow.BaseWnd.ClientRect.Bottom := 600;
-  fHostWindow.BaseWnd.Style := WS_POPUP;
-  fHostWindow.BaseWnd.ExStyle := WS_EX_TOPMOST;  
-  CreateHostWndChromium(@fHostWindow);
-end;
-
-procedure TXueQiuInfoApp.Run;
-begin
-  inherited;      
-  FillChar(fCefClientObject, SizeOf(fCefClientObject), 0);
-  FillChar(fHostWindow, SizeOf(fHostWindow), 0);
-
-  CreateHostWindow;
-  if IsWindow(fHostWindow.BaseWnd.UIWndHandle) then
-  begin
-    ShowWindow(fHostWindow.BaseWnd.UIWndHandle, SW_SHOW);
-    CreateBrowser;
-    RunAppMsgLoop;
-  end;
-end;
-
-var
-  GlobalApp: TXueQiuInfoApp;
 //  tmpAnsi: AnsiString;
 //  tmpOutputAnsi: AnsiString;
 //  tmpDecodeAnsi: AnsiString;
