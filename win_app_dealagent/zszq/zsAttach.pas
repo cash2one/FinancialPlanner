@@ -91,8 +91,8 @@ type
     DealPasswordConfirmDialogWindow: TZSDealPasswordConfirmDialogWindow; 
     DealConfirmDialog : PExProcessWindow;
     DialogWindow  : array[0..255] of PExProcessWindow; 
-    ZsProgramFileUrl  : array[0..31] of AnsiChar;
-    ZsProgramPathUrl  : array[0..31] of AnsiChar;
+    ZsProgramFileUrl  : array[0..64 - 1] of AnsiChar;
+    ZsProgramPathUrl  : array[0..64 - 1] of AnsiChar;
     ZsAccount         : array[0..15] of AnsiChar;
     ZsPassword        : array[0..15] of AnsiChar;
     ZsIsConfigReaded  : Boolean;

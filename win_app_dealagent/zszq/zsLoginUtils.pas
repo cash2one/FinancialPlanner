@@ -16,6 +16,7 @@ implementation
 uses
   Windows, Sysutils, Messages,
   UtilsWindows,
+  //UtilsLog,
   IniFiles,
   zsMainWindow,
   zsLoginWindow, 
@@ -62,8 +63,10 @@ begin
       //ZsProgramFileUrl := ZsProgramPathUrl + 'TdxW.exe';
       //ZsProgramPathUrl := 'D:\stock\zd_zszq\';
       tmpAnsi := tmpIni.ReadString('ZS', 'Host', '');
+      //Log('', 'ReadZsConfig host1:' + tmpAnsi);
       CopyMemory(@AZsDealSession.ZsProgramFileUrl[0], @tmpAnsi[1], Length(tmpAnsi));
-      
+      //Log('', 'ReadZsConfig host2:' + AZsDealSession.ZsProgramFileUrl);
+            
       tmpAnsi := tmpIni.ReadString('ZS', 'Acc', '');
       CopyMemory(@AZsDealSession.ZsAccount[0], @tmpAnsi[1], Length(tmpAnsi));
       tmpAnsi := tmpIni.ReadString('ZS', 'Pwd', '');
@@ -85,12 +88,16 @@ end;
 procedure LaunchZSProgram(AZsDealSession: PZsDealSession);
 var
   i: integer;
+  tmpAnsi: AnsiString;
 begin          
   ReadZsConfig(AZsDealSession);
-  if '' <> AZsDealSession.ZsProgramFileUrl then
-  begin
-    if FileExists(AZsDealSession.ZsProgramFileUrl) then
-    begin
+  tmpAnsi := AnsiString(PAnsiChar(@AZsDealSession.ZsProgramFileUrl[0]));
+  if '' <> tmpAnsi then
+  begin  
+    //Log('', 'LaunchZSProgram:' + tmpAnsi);
+    if FileExists(tmpAnsi) then
+    begin                  
+      //Log('', 'LaunchZSProgram Run');
       FillChar(AZsDealSession.ProcessAttach.Process.StartInfo, SizeOf(AZsDealSession.ProcessAttach.Process.StartInfo), 0);
       FillChar(AZsDealSession.ProcessAttach.Process.ProcInfo, SizeOf(AZsDealSession.ProcessAttach.Process.ProcInfo), 0);
       Windows.CreateProcessA(PAnsiChar(@AZsDealSession.ZsProgramFileUrl[0]),
