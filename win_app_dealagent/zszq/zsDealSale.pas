@@ -47,7 +47,9 @@ var
   tmpWnd: HWND;
   i: integer;
 begin
-  Result := false;
+  Result := false;  
+  if 6 < Length(AStockCode) then
+    AStockCode := Copy(AStockCode, Length(AStockCode) -  6 + 1, maxint);
   if 0 < APrice then
   begin
     if 0 < ANum then

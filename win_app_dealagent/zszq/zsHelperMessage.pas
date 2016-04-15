@@ -11,6 +11,8 @@ const
   WM_C2S_LoginUser        = WM_CustomAppBase + 21;
   WM_C2S_Unlock           = WM_CustomAppBase + 22;
 
+  WM_C2S_DialogCloseNormal  = WM_CustomAppBase + 31;
+  
   WM_C2S_StockBuy_Mode_1  = WM_CustomAppBase + 41;
 
   // wParam stock id

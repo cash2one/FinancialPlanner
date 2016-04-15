@@ -149,7 +149,7 @@ begin
     if not IsWindow(AZsDealSession.MainWindow.WndFunctionTree) then
     begin
       i := 0;
-      while HandleZsDialog(AZsDealSession) do
+      while FindAndCloseZsDialog(AZsDealSession) do
       begin
         SleepWait(20);
         Inc(i);

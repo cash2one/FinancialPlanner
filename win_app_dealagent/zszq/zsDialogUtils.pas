@@ -8,7 +8,7 @@ uses
   zsProcess,                       
   zsAttach;
 
-  function HandleZsDialog(AZsDealSession: PZsDealSession): Boolean;
+  function FindAndCloseZsDialog(AZsDealSession: PZsDealSession): Boolean;
   function FindZSDialogWindow(AZsDealSession: PZsDealSession): Boolean;
   function FuncCheckDialogWnd(AWnd: HWND): Boolean;   
   procedure CheckZSDialogWindow(AWindow: PExProcessWindow);
@@ -103,7 +103,7 @@ begin
   TraverseCheckChildWindowA(AWindow.WindowHandle, AWindow);
 end;
 
-function HandleZsDialog(AZsDealSession: PZsDealSession): Boolean;
+function FindAndCloseZsDialog(AZsDealSession: PZsDealSession): Boolean;
 var
   i: integer;
   tmpCount: integer;
