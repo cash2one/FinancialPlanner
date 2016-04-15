@@ -3,7 +3,7 @@ unit zsHelperCmdExecApp;
 interface
 
 uses
-  BaseApp, BaseWinApp;
+  BaseApp, BaseWinApp, Windows, Messages;
   
 type
   TzsHelperCmdExecApp = class(TBaseWinApp)
@@ -22,7 +22,7 @@ implementation
 { TzsHelperApp }
 
 uses
-  Windows,
+  UtilsWindows,
   SysUtils,
   zsLoginUtils,
   win.wnd_cmd,
@@ -118,7 +118,7 @@ begin
   //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_LaunchProgram, 0, 0);
   tmpPass := 123456;
   //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_LoginUser, 39008990, tmpPass);
-  PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_Unlock, 0, tmpPass);
+  //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_Unlock, 0, tmpPass);
   //PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_DialogCloseNormal, 0, 0);
   (*//
   dealBuyParam.Price := 2278;
@@ -131,6 +131,15 @@ begin
   dealSaleParam.Hand := 5; 
   PostMessage(fBaseWinAppData.AppCmdWnd, WM_C2S_StockSale_Mode_1, 1002414, lParam(dealSaleParam));  
   //*)
+            
+  ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
+  ChangeWindowMessageFilter(WM_C2S_LaunchProgram, MSGFLT_ADD);
+  ChangeWindowMessageFilter(WM_C2S_LoginUser, MSGFLT_ADD);
+  ChangeWindowMessageFilter(WM_C2S_Unlock, MSGFLT_ADD);
+  ChangeWindowMessageFilter(WM_C2S_DialogCloseNormal, MSGFLT_ADD);  
+  ChangeWindowMessageFilter(WM_C2S_StockBuy_Mode_1, MSGFLT_ADD);
+  ChangeWindowMessageFilter(WM_C2S_StockSale_Mode_1, MSGFLT_ADD);
+  ChangeWindowMessageFilter(WM_C2S_Query, MSGFLT_ADD);
   
   RunAppMsgLoop;
 end;
