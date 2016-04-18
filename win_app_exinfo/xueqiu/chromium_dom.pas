@@ -15,7 +15,9 @@ type
 implementation
 
 uses
-  cef_apilib;
+  UtilsLog,
+  cef_apilib,
+  cef_apilib_domvisitor;
   
 type
   PDomTraverseParam = ^TDomTraverseParam;
@@ -23,7 +25,7 @@ type
     Level: integer;
   end;
 
-procedure TraverseDomNode_Proc(ANode: PCefDomNode; ADomTraverseParam: PDomTraverseParam);
+procedure TraverseDomNode_Proc(ANode: PCefDomNode; ADomTraverseParam: PDomTraverseParam; ALevel: Integer);
 var
   tmpName: ustring;
   tmpAttrib: ustring;
@@ -32,10 +34,11 @@ var
   tmpChild: PCefDomNode; 
 begin
   { 处理当前节点 }
-  tmpName := CefStringFreeAndGet(ANode.get_name(ANode));  
+  tmpName := CefStringFreeAndGet(ANode.get_name(ANode));
   if SameText(tmpName, '#text') then
   begin
-  end;
+  end;                  
+  Log('TraverseDomNode', 'Level' + IntToStr(ALevel) + ':' + tmpName);
   tmpCefStr := CefString('href');
   tmpAttrib := CefStringFreeAndGet(ANode.get_element_attribute(ANode, @tmpCefStr)); 
   tmpStr := CefStringFreeAndGet(ANode.get_element_inner_text(ANode));
@@ -45,7 +48,7 @@ begin
   tmpChild := ANode.get_first_child(ANode);
   while tmpChild <> nil do
   begin
-    TraverseDomNode_Proc(tmpChild, ADomTraverseParam);
+    TraverseDomNode_Proc(tmpChild, ADomTraverseParam, ALevel + 1);
     tmpChild := tmpChild.get_next_sibling(tmpChild);
   end;
   ADomTraverseParam.Level := ADomTraverseParam.Level - 1;
@@ -62,16 +65,20 @@ begin
     if tmpNode <> nil then
     begin
       FillChar(tmpDomTraverseParam, SizeOf(tmpDomTraverseParam), 0);
-      TraverseDomNode_Proc(tmpNode, @tmpDomTraverseParam);
+      TraverseDomNode_Proc(tmpNode, @tmpDomTraverseParam, 0);
     end;
   end;
 end;
 
+var
+  tmpCefDomVisitor: TCefIntfDomVisitor;
+  
 procedure TestTraverseChromiumDom(AClientObject: PCefClientObject; ACefDomVisitProc: TCefDomVisitProc);
 var
   tmpMainFrame: PCefFrame;
-  tmpCefDomVisitor: TCefIntfDomVisitor;
 begin
+  FillChar(tmpCefDomVisitor, SizeOf(tmpCefDomVisitor), 0);
+  
   tmpMainFrame := AClientObject.CefBrowser.get_main_frame(AClientObject.CefBrowser);
   if tmpMainFrame <> nil then
   begin

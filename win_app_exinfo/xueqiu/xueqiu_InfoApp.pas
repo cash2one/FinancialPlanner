@@ -26,6 +26,8 @@ implementation
 
 uses
   Windows,
+  Sysutils,
+  chromium_dom,
   Define_Message,
   cef_type,
   cef_app,
@@ -88,6 +90,14 @@ begin
   CreateHostWndChromium(@fHostWindow);
 end;
 
+procedure DoLoadEnd(ACefClient: PCefClientObject; AUrl: string);
+begin
+  if SameText(ACefClient.CefUrl, AUrl) then
+  begin
+    chromium_dom.TestTraverseChromiumDom(ACefClient, nil);
+  end;
+end;
+
 procedure TXueQiuInfoApp.LoadUrl;        
 var
   tmpMainFrame: PCefFrame;
@@ -98,7 +108,11 @@ begin
     tmpMainFrame := fCefClientObject.CefBrowser.get_main_frame(fCefClientObject.CefBrowser);
     if nil <> tmpMainFrame then
     begin
-      tmpUrl := CefString('https://xueqiu.com/S/SZ300134');
+      fCefClientObject.CefOnLoadEnd := DoLoadEnd;
+
+      fCefClientObject.CefUrl := 'https://xueqiu.com/S/SZ300134';
+      tmpUrl := CefString(fCefClientObject.CefUrl);
+      
       tmpMainFrame.load_url(tmpMainFrame, @tmpUrl);
     end;
   end;
