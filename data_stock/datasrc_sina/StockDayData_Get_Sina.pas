@@ -75,6 +75,7 @@ uses
   define_stock_quotes,
   UtilsHtmlParser,
   UtilsDateTime,
+  UtilsLog,  
   StockDayData_Load,
   StockDayData_Save;
 
@@ -296,7 +297,11 @@ begin
   HttpBufferHeader_Parser(AResultData, @tmpHttpHeadSession);
   if (199 < tmpHttpHeadSession.RetCode) and (300 > tmpHttpHeadSession.RetCode)then
   begin
-    tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
+    try
+      tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
+    except
+      Log('ParserSinaDataError:', ADataAccess.StockItem.sCode + 'error html:' + AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
+    end;
     if tmpParseRec.HtmlRoot <> nil then
     begin
       Result := HtmlParse_DayData_Sina(ADataAccess, @tmpParseRec, tmpParseRec.HtmlRoot);
@@ -306,14 +311,24 @@ end;
 
 function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
 var
-  tmpurl: string;      
-begin
+  tmpurl: string;  
+  tmpHttpData: PIOBuffer;        
+begin          
+  Result := false;
   if AIsWeight then
     tmpUrl := BaseSinaDayUrl2
   else
     tmpUrl := BaseSinaDayUrl1;
   tmpurl := tmpurl + ADataAccess.StockItem.sCode + '.phtml';
-  Result := DataParse_DayData_Sina(ADataAccess, GetHttpUrlData(tmpUrl, ANetSession, SizeMode_64k));
+  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_128k);
+  if nil <> tmpHttpData then
+  begin
+    try
+      Result := DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+    finally
+      CheckInIOBuffer(tmpHttpData);
+    end;
+  end;
 end;
 
 function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
@@ -333,7 +348,7 @@ begin
     tmpUrl := tmpUrl + '&' + 'jidu=' + inttostr(ASeason);
   end;
   // parse html data
-  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_64k);
+  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_128k);
   if nil <> tmpHttpData then
   begin
     try

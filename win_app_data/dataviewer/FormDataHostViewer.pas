@@ -7,7 +7,7 @@ uses
   BaseApp, BaseForm, VirtualTrees, ExtCtrls, Tabs,
   db_dealItem, StockDayDataAccess,
   FrameDataViewer, FrameDayChartViewer, UIDealItemNode,
-  BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA;
+  BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, StdCtrls;
 
 type
   TDataViewerData = record
@@ -17,8 +17,9 @@ type
     Rule_CYHT_Price: TRule_CYHT_Price;
     Rule_BDZX_Price: TRule_BDZX_Price;
     Rule_Boll: TRule_Boll_Price;
-    
-    StockDayDataAccess: TStockDayDataAccess; 
+
+    StockDayDataAccess: TStockDayDataAccess;   
+    DataSrc: integer;
     IsWeight: Boolean;
   end;
 
@@ -30,13 +31,16 @@ type
     pnTop: TPanel;
     pnData: TPanel;
     ts1: TTabSet;
+    cbbDataSrc: TComboBox;
     procedure vtStocksGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
     procedure vtStocksClick(Sender: TObject);
     procedure ts1Change(Sender: TObject; NewTab: Integer;
       var AllowChange: Boolean);
+    procedure cbbDataSrcChange(Sender: TObject);
   protected
-    fDataViewerData: TDataViewerData;     
+    fDataViewerData: TDataViewerData;        
+    procedure RefreshStockData;
     function DoGetStockDealDays: integer;
     function DoGetStockClosePrice(AIndex: integer): double;     
     function DoGetStockOpenPrice(AIndex: integer): double;
@@ -70,6 +74,36 @@ end;
 
 { TfrmDataViewer }
                        
+procedure TfrmDataViewer.cbbDataSrcChange(Sender: TObject);
+var
+  tmpOldDataSrc: integer;
+  tmpOldIsWeight: Boolean;
+begin
+  inherited;
+  tmpOldDataSrc := fDataViewerData.DataSrc;
+  tmpOldIsWeight := fDataViewerData.IsWeight;
+  if 0 = cbbDataSrc.ItemIndex then
+  begin
+    fDataViewerData.DataSrc := DataSrc_163;
+    fDataViewerData.IsWeight := false;
+  end;
+  if 1 = cbbDataSrc.ItemIndex then
+  begin
+    fDataViewerData.DataSrc := DataSrc_Sina;
+    fDataViewerData.IsWeight := false;
+  end;
+  if 2 = cbbDataSrc.ItemIndex then
+  begin
+    fDataViewerData.DataSrc := DataSrc_Sina;
+    fDataViewerData.IsWeight := true;
+  end;              
+  if (tmpOldDataSrc <> fDataViewerData.DataSrc) or
+     (tmpOldIsWeight <> fDataViewerData.IsWeight) then
+  begin
+    RefreshStockData;
+  end;
+end;
+
 constructor TfrmDataViewer.Create(AOwner: TComponent);
 begin
   inherited;
@@ -147,7 +181,12 @@ begin
   end;
 end;
 
-procedure TfrmDataViewer.vtStocksClick(Sender: TObject);  
+procedure TfrmDataViewer.vtStocksClick(Sender: TObject);
+begin
+  RefreshStockData;
+end;
+
+procedure TfrmDataViewer.RefreshStockData;
 var
   tmpNodeData: PStockItemNode;
 begin
@@ -158,7 +197,12 @@ begin
     begin                                        
       if nil <> fDataViewerData.StockDayDataAccess then
         FreeAndNil(fDataViewerData.StockDayDataAccess);
-      fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(tmpNodeData.StockItem, DataSrc_163, fDataViewerData.IsWeight);    
+      if 0 = fDataViewerData.DataSrc then
+      begin
+        fDataViewerData.DataSrc := DataSrc_163;
+        fDataViewerData.IsWeight := false;
+      end;
+      fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(tmpNodeData.StockItem, fDataViewerData.DataSrc, fDataViewerData.IsWeight);    
       StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess);
       tmpNodeData.StockDayDataAccess := fDataViewerData.StockDayDataAccess;
                                                                  

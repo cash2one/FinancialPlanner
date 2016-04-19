@@ -57,11 +57,15 @@ type
   
 implementation
 
+uses
+  SysUtils;
+  
 { TStockDayDataAccess }
 
 procedure AddDealDayData(ADataAccess: TStockDayDataAccess; ATempDealDayData: PRT_Quote_M1_Day);
 var
   tmpAddDealDayData: PRT_Quote_M1_Day;
+  tmpDate: string;
 begin
   if (nil = ATempDealDayData) then
     exit;
@@ -71,6 +75,10 @@ begin
                  (ATempDealDayData.DealVolume > 0) and
                  (ATempDealDayData.DealAmount > 0) then
   begin
+//    tmpDate := FormatDateTime('', ATempDealDayData.DealDateTime.Value);
+//    if '' <> tmpDate then
+//    begin
+//    end;
     tmpAddDealDayData := ADataAccess.CheckOutRecord(ATempDealDayData.DealDateTime.Value);
     tmpAddDealDayData.PriceRange.PriceHigh := ATempDealDayData.PriceRange.PriceHigh;
     tmpAddDealDayData.PriceRange.PriceLow := ATempDealDayData.PriceRange.PriceLow;

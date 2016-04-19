@@ -21,6 +21,22 @@ object frmDataViewer: TfrmDataViewer
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
+    object cbbDataSrc: TComboBox
+      Left = 56
+      Top = 8
+      Width = 145
+      Height = 21
+      Style = csDropDownList
+      ItemHeight = 13
+      ItemIndex = 0
+      TabOrder = 0
+      Text = '163'
+      OnChange = cbbDataSrcChange
+      Items.Strings = (
+        '163'
+        'Sina'
+        'SinaW')
+    end
   end
   object pnMain: TPanel
     Left = 0
