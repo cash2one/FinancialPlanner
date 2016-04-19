@@ -1,0 +1,80 @@
+object fmeDataCompareViewer: TfmeDataCompareViewer
+  Left = 514
+  Top = 175
+  Caption = #25968#25454
+  ClientHeight = 335
+  ClientWidth = 547
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  PixelsPerInch = 96
+  TextHeight = 13
+  object pnTop: TPanel
+    Left = 0
+    Top = 0
+    Width = 547
+    Height = 41
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 1
+  end
+  object pnMain: TPanel
+    Left = 0
+    Top = 41
+    Width = 547
+    Height = 294
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 0
+    object pnData: TPanel
+      Left = 0
+      Top = 0
+      Width = 547
+      Height = 294
+      Align = alClient
+      BevelOuter = bvNone
+      TabOrder = 0
+      object pnDataTop: TPanel
+        Left = 0
+        Top = 0
+        Width = 547
+        Height = 17
+        Align = alTop
+        BevelOuter = bvNone
+        TabOrder = 0
+      end
+      object pnlDatas: TPanel
+        Left = 0
+        Top = 17
+        Width = 547
+        Height = 277
+        Align = alClient
+        TabOrder = 1
+        object vtDayDatas: TVirtualStringTree
+          Left = 1
+          Top = 1
+          Width = 545
+          Height = 275
+          Align = alClient
+          BevelInner = bvNone
+          BevelOuter = bvNone
+          BorderStyle = bsNone
+          Header.AutoSizeIndex = 0
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -11
+          Header.Font.Name = 'Tahoma'
+          Header.Font.Style = []
+          Header.MainColumn = -1
+          TabOrder = 0
+          OnGetText = vtDayDatasGetText
+          Columns = <>
+        end
+      end
+    end
+  end
+end

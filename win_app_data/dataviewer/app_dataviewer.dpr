@@ -42,6 +42,7 @@ uses
   StockDetailDataAccess in '..\..\data_stock\StockDetailDataAccess.pas',
   StockDetailData_Load in '..\..\data_stock\StockDetailData_Load.pas',
   FrameDataViewer in 'FrameDataViewer.pas' {fmeDataViewer},
+  FrameDataCompareViewer in 'FrameDataCompareViewer.pas' {fmeDataCompareViewer},
   FormDataHostViewer in 'FormDataHostViewer.pas' {frmDataViewer},
   FrameDayChartViewer in 'FrameDayChartViewer.pas' {fmeDayChartViewer},
   UIDealItemNode in 'UIDealItemNode.pas';

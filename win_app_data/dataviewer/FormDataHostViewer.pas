@@ -6,13 +6,18 @@ uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   BaseApp, BaseForm, VirtualTrees, ExtCtrls, Tabs,
   db_dealItem, StockDayDataAccess,
-  FrameDataViewer, FrameDayChartViewer, UIDealItemNode,
+  FrameDataViewer,
+  FrameDayChartViewer,
+  FrameDataCompareViewer,
+  UIDealItemNode,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, StdCtrls;
 
 type
   TDataViewerData = record
     FrameDataViewer: TfmeDataViewer;
     FrameChartViewer: TfmeDayChartViewer;
+    FrameDataCompareViewer: TfmeDataCompareViewer;
+
     ActiveFrame: TfrmBase;
     Rule_CYHT_Price: TRule_CYHT_Price;
     Rule_BDZX_Price: TRule_BDZX_Price;
@@ -41,6 +46,7 @@ type
   protected
     fDataViewerData: TDataViewerData;        
     procedure RefreshStockData;
+    procedure RefreshActiveFrame(AStockItemNode: PStockItemNode);
     function DoGetStockDealDays: integer;
     function DoGetStockClosePrice(AIndex: integer): double;     
     function DoGetStockOpenPrice(AIndex: integer): double;
@@ -144,11 +150,22 @@ begin
     fDataViewerData.FrameChartViewer.Initialize(App);
     ts1.Tabs.AddObject('日线', fDataViewerData.FrameChartViewer);
   end;
+  if nil = fDataViewerData.FrameDataCompareViewer then
+  begin
+    fDataViewerData.FrameDataCompareViewer := TfmeDataCompareViewer.Create(Self);  
+    fDataViewerData.FrameDataCompareViewer.Initialize(App);
+    fDataViewerData.FrameDataCompareViewer.Parent := pnData;
+    fDataViewerData.FrameDataCompareViewer.BorderStyle := bsNone;
+    fDataViewerData.FrameDataCompareViewer.Align := alClient;
+    fDataViewerData.FrameDataCompareViewer.Initialize(App);
+    ts1.Tabs.AddObject('数据比对', fDataViewerData.FrameDataCompareViewer);
+  end;
   ts1.TabIndex := 0;
 end;
 
-procedure TfrmDataViewer.ts1Change(Sender: TObject; NewTab: Integer;
-  var AllowChange: Boolean);
+procedure TfrmDataViewer.ts1Change(Sender: TObject; NewTab: Integer; var AllowChange: Boolean);
+var
+  tmpNodeData: PStockItemNode;
 begin
   if nil <> fDataViewerData.ActiveFrame then
   begin
@@ -158,6 +175,15 @@ begin
   if nil <> fDataViewerData.ActiveFrame then
   begin
     fDataViewerData.ActiveFrame.Visible := true;
+                          
+    if nil <> vtStocks.FocusedNode then
+    begin
+      tmpNodeData := vtStocks.GetNodeData(vtStocks.FocusedNode);
+      if nil <> tmpNodeData then
+      begin
+        RefreshActiveFrame(tmpNodeData);
+      end;
+    end;
   end;
 end;
 
@@ -244,15 +270,32 @@ begin
       tmpNodeData.Rule_BDZX_Price.OnGetPriceLow := DoGetStockLowPrice;
       tmpNodeData.Rule_BDZX_Price.Execute;
       //*)
-      
-      if nil <> fDataViewerData.FrameDataViewer then
-      begin
-        fDataViewerData.FrameDataViewer.SetStockItem(tmpNodeData);
-      end;
-      if nil <> fDataViewerData.FrameChartViewer then
-      begin
-        fDataViewerData.FrameChartViewer.SetStockItem(tmpNodeData);
-      end;
+      RefreshActiveFrame(tmpNodeData);
+    end;
+  end;
+end;
+
+procedure TfrmDataViewer.RefreshActiveFrame(AStockItemNode: PStockItemNode);
+begin
+  if nil <> fDataViewerData.FrameDataViewer then
+  begin
+    if fDataViewerData.ActiveFrame = fDataViewerData.FrameDataViewer then
+    begin
+      fDataViewerData.FrameDataViewer.SetStockItem(AStockItemNode);
+    end;
+  end;
+  if nil <> fDataViewerData.FrameDataCompareViewer then
+  begin                           
+    if fDataViewerData.ActiveFrame = fDataViewerData.FrameDataCompareViewer then
+    begin
+      fDataViewerData.FrameDataCompareViewer.SetStockItem(AStockItemNode);
+    end;
+  end;
+  if nil <> fDataViewerData.FrameChartViewer then
+  begin              
+    if fDataViewerData.ActiveFrame = fDataViewerData.FrameChartViewer then
+    begin
+      fDataViewerData.FrameChartViewer.SetStockItem(AStockItemNode);
     end;
   end;
 end;
