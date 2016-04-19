@@ -31,6 +31,7 @@ uses
   Define_Message,
   zsUserUnlock,
   zsDialogUtils,
+  UtilsLog,
   zsDealBuy,
   zsDealSale,
   zsHelperMessage;
@@ -38,10 +39,12 @@ uses
 function AppCmdWndProcA(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): HRESULT; stdcall;
 begin
   case AMsg of
-    WM_C2S_LaunchProgram: begin     
-      zsLoginUtils.LaunchZSProgram(@zsVariants.GZsDealSession);   
+    WM_C2S_LaunchProgram: begin
+      //Log('', 'WM_C2S_LaunchProgram:' + GZsDealSession.ZsProgramFileUrl);
+      zsLoginUtils.LaunchZSProgram(@GZsDealSession);   
     end;
-    WM_C2S_LoginUser: begin//        = WM_CustomAppBase + 21; 
+    WM_C2S_LoginUser: begin//        = WM_CustomAppBase + 21;
+      //Log('', 'WM_C2S_LoginUser:' + IntToStr(wParam) + '/' + IntToStr(lParam));     
       zsLoginUtils.AutoLogin(@zsVariants.GZsDealSession, wParam, lParam);
     end;
     WM_C2S_DialogCloseNormal: begin
@@ -51,6 +54,7 @@ begin
       HandleZsUserUnlock(@zsVariants.GZsDealSession, lParam);
     end;
     WM_C2S_StockBuy_Mode_1: begin //         = WM_CustomAppBase + 41;
+      //Log('', 'WM_C2S_StockBuy_Mode_1:' + IntToStr(wParam) + '/' + IntToStr(TWMDeal_LParam(lParam).Price) + ':' + IntToStr(TWMDeal_LParam(lParam).Hand));    
       BuyStockByNum(@zsVariants.GZsDealSession, IntToStr(wParam), TWMDeal_LParam(lParam).Price / 100, TWMDeal_LParam(lParam).Hand * 100);
     end;
     WM_C2S_StockSale_Mode_1: begin

@@ -13,6 +13,7 @@ uses
   win.thread in '..\..\..\..\devwintech\v0000\win_system\win.thread.pas',
   UtilsWindows in '..\..\..\..\devwintech\v0000\win_utils\UtilsWindows.pas',
   define_price in '..\..\..\basedefine\define_price.pas',
+  UtilsLog in '..\..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',
   zsVariants in '..\zsVariants.pas',
   zsLoginUtils in '..\zsLoginUtils.pas',
   zsLoginWindow in '..\zsLoginWindow.pas',
