@@ -11,20 +11,20 @@ uses
 type
   TStockAppPath = class(TBaseWinAppPath)
   protected
-    function GetDataBasePath(ADBType: integer; ADataSrc: integer): string; override;
-    function GetInstallPath: string; override;
+    function GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString; override;
+    function GetInstallPath: WideString; override;
   public
-    function GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): string; override;
-    function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string; override;
-    function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string; override;
-    function GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string; override;
+    function GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;
+    function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
+    function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
+    function GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
   end;
   
 implementation
 
 { TStockDay163AppPath }
 
-function TStockAppPath.GetDataBasePath(ADBType: integer; ADataSrc: integer): string;
+function TStockAppPath.GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString;
 var
   tmpDataSrcCode: string;
 begin
@@ -56,7 +56,7 @@ begin
   end;
 end;
 
-function TStockAppPath.GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): string;
+function TStockAppPath.GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
 begin
   Result := '';
   if FilePath_DBType_DetailData = ADBType then
@@ -101,7 +101,7 @@ begin
   end;
 end;
 
-function TStockAppPath.GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string;
+function TStockAppPath.GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString;
 begin
   Result := '';
   if FilePath_DBType_DetailData = ADBType then
@@ -149,7 +149,7 @@ begin
   end;
 end;
 
-function TStockAppPath.CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string;
+function TStockAppPath.CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString;
 var
   tmpFileName: AnsiString;
   tmpFilePath: AnsiString;
@@ -164,7 +164,7 @@ begin
   end;
 end;
 
-function TStockAppPath.GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string;
+function TStockAppPath.GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString;
 var
   tmpFileName: AnsiString;
   tmpFilePath: AnsiString;
@@ -178,7 +178,7 @@ begin
   end;
 end;
 
-function TStockAppPath.GetInstallPath: string;
+function TStockAppPath.GetInstallPath: WideString;
 begin
   Result := ExtractFilePath(ParamStr(0));
 end;

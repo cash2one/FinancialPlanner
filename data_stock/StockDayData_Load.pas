@@ -12,6 +12,7 @@ uses
 implementation
 
 uses
+  Sysutils,
   BaseWinFile,          
   Define_Price,
   UtilsLog,
@@ -24,7 +25,7 @@ function LoadStockDayDataFromBuffer(ADataAccess: TStockDayDataAccess; AMemory: p
 function LoadStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess): Boolean;
 var
   tmpWinFile: TWinFile;
-  tmpFileUrl: string;
+  tmpFileUrl: WideString;
   tmpFileMapView: Pointer;   
 begin
   Result := false;
@@ -37,7 +38,8 @@ begin
   end;
   Log('LoadStockDayData', 'FileUrl:' + tmpFileUrl);
   if App.Path.IsFileExists(tmpFileUrl) then
-  begin
+  begin                                 
+    Log('LoadStockDayData', 'FileUrl exist');
     tmpWinFile := TWinFile.Create;
     try
       if tmpWinFile.OpenFile(tmpFileUrl, false) then
@@ -86,11 +88,13 @@ var
   tmpRecordCount: integer; 
   i: integer;
 begin
-  Result := false;
+  Result := false; 
+  Log('LoadStockDayData', 'LoadStockDayDataFromBuffer');
   tmpHead := ReadStockDayDataHeader(ADataAccess, AMemory);
   if nil <> tmpHead then
   begin
     tmpRecordCount := tmpHead.Header.BaseHeader.RecordCount;
+    Log('LoadStockDayData', 'LoadStockDayDataFromBuffer record count:' + IntToStr(tmpRecordCount));    
     Inc(tmpHead);
     tmpQuoteData := PStore_Quote64_M1(tmpHead);
     for i := 0 to tmpRecordCount - 1 do
