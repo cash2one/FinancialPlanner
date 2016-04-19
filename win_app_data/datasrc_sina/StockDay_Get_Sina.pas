@@ -20,7 +20,8 @@ uses
   define_stock_quotes,
   StockDayData_Get_Sina,
      
-  UtilsDateTime,
+  UtilsDateTime,   
+  UtilsLog,
   
   StockDayDataAccess,
   StockDayData_Load,
@@ -53,7 +54,11 @@ begin
       begin                                        
         if GetStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpNetClientSession) then
         begin
+          Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Succ');
           Sleep(2000);
+        end else
+        begin
+          Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Fail');
         end;
       end;
     end;

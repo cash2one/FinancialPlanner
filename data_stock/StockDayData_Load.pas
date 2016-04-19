@@ -15,7 +15,7 @@ uses
   Sysutils,
   BaseWinFile,          
   Define_Price,
-  UtilsLog,
+  //UtilsLog,
   define_stock_quotes,
   define_dealstore_header,
   define_dealstore_file;
@@ -36,10 +36,10 @@ begin
   begin
     tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
   end;
-  Log('LoadStockDayData', 'FileUrl:' + tmpFileUrl);
+  //Log('LoadStockDayData', 'FileUrl:' + tmpFileUrl);
   if App.Path.IsFileExists(tmpFileUrl) then
   begin                                 
-    Log('LoadStockDayData', 'FileUrl exist');
+    //Log('LoadStockDayData', 'FileUrl exist');
     tmpWinFile := TWinFile.Create;
     try
       if tmpWinFile.OpenFile(tmpFileUrl, false) then
@@ -48,7 +48,13 @@ begin
         if nil <> tmpFileMapView then
         begin        
           Result := LoadStockDayDataFromBuffer(ADataAccess, tmpFileMapView);
+        end else
+        begin
+          //Log('LoadStockDayData', 'FileUrl map fail');
         end;
+      end else
+      begin
+        //Log('LoadStockDayData', 'FileUrl open fail');
       end;
     finally
       tmpWinFile.Free;
@@ -89,12 +95,12 @@ var
   i: integer;
 begin
   Result := false; 
-  Log('LoadStockDayData', 'LoadStockDayDataFromBuffer');
+  //Log('LoadStockDayData', 'LoadStockDayDataFromBuffer');
   tmpHead := ReadStockDayDataHeader(ADataAccess, AMemory);
   if nil <> tmpHead then
   begin
     tmpRecordCount := tmpHead.Header.BaseHeader.RecordCount;
-    Log('LoadStockDayData', 'LoadStockDayDataFromBuffer record count:' + IntToStr(tmpRecordCount));    
+    //Log('LoadStockDayData', 'LoadStockDayDataFromBuffer record count:' + IntToStr(tmpRecordCount));    
     Inc(tmpHead);
     tmpQuoteData := PStore_Quote64_M1(tmpHead);
     for i := 0 to tmpRecordCount - 1 do
