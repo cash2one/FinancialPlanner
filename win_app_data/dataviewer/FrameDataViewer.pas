@@ -14,11 +14,9 @@ uses
 type
   TDataViewerData = record
     StockDayDataAccess: StockDayDataAccess.TStockDayDataAccess;
-    IsWeight: Boolean;
         
     Rule_BDZX_Price: TRule_BDZX_Price;  
     Rule_CYHT_Price: TRule_CYHT_Price;
-    DataSrcId: integer;
   end;
 
   TfmeDataViewer = class(TfrmBase)
@@ -58,8 +56,10 @@ uses
 
 type    
   TDayColumns = (
+    colIndex,
     colDate, colOpen, colClose, colHigh, colLow,
-    colDayVolume, colDayAmount
+    colDayVolume, colDayAmount,
+    colWeight
     //, colBoll, colBollUP, colBollLP
     //, colCYHT_SK, colCYHT_SD
     , colBDZX_AK, colBDZX_AD1, colBDZX_AJ
@@ -85,12 +85,22 @@ type
   end;
   
 const
-  DayColumnsText: array[TDayColumns] of String = ('日期',
+  DayColumnsText: array[TDayColumns] of String = (
+    'Index', '日期',
     '开盘', '收盘', '最高', '最低',
-    '成交量', '成交金额'
+    '成交量', '成交金额', '权重'
     //, 'BOLL', 'UP', 'LP'
     //, 'SK', 'SD'
     , 'AK', 'AD1', 'AJ'
+  );
+              
+  DayColumnsWidth: array[TDayColumns] of integer = (
+    60, 0,
+    0, 0, 0, 0,
+    0, 0, 0
+    //, 'BOLL', 'UP', 'LP'
+    //, 'SK', 'SD'
+    , 0, 0, 0
   );
         
   DetailColumnsText: array[TDetailColumns] of String = (
@@ -111,7 +121,6 @@ begin
   inherited;
   //fStockDetailDataAccess := nil;
   FillChar(fDataViewerData, SizeOf(fDataViewerData), 0);
-  fDataViewerData.DataSrcId := DataSrc_163;
   
   //fRule_Boll_Price := nil;
   //fRule_CYHT_Price := nil;
@@ -134,21 +143,29 @@ var
   tmpStockDataNode: PStockDayDataNode;
   tmpStockData: PRT_Quote_M1_Day;
   tmpNode: PVirtualNode;
+  tmpStr: string;
 begin
   vtDayDatas.Clear;
   if nil = AStockItem then
     exit;
   fDataViewerData.StockDayDataAccess := AStockItem.StockDayDataAccess;
   if nil = fDataViewerData.StockDayDataAccess then
-    fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DataSrcId, fDataViewerData.IsWeight);
+  begin
+    fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem,
+      DataSrc_163, false);
+  end;
   fDataViewerData.Rule_BDZX_Price := AStockItem.Rule_BDZX_Price;
   fDataViewerData.Rule_CYHT_Price := AStockItem.Rule_CYHT_Price;
-
+  tmpStr := '';
   for i := fDataViewerData.StockDayDataAccess.RecordCount - 1 downto 0 do
   begin
     tmpStockData := fDataViewerData.StockDayDataAccess.RecordItem[i];
     tmpNode := vtDayDatas.AddChild(nil);
     tmpStockDataNode := vtDayDatas.GetNodeData(tmpNode);
+    if '' = tmpStr then
+    begin
+      tmpStr := FormatDateTime('yyyymmdd', tmpStockData.DealDateTime.Value);
+    end;
     tmpStockDataNode.QuoteData := tmpStockData;
     tmpStockDataNode.DayIndex := i;
   end;
@@ -217,7 +234,13 @@ begin
   begin
     tmpCol := vtDayDatas.Header.Columns.Add;
     tmpCol.Text := DayColumnsText[col_day];
-    tmpCol.Width := 120;
+    if 0 = DayColumnsWidth[col_day] then
+    begin
+      tmpCol.Width := 120;
+    end else
+    begin
+      tmpCol.Width := DayColumnsWidth[col_day];
+    end;
   end;
 
   vtDetailDatas.NodeDataSize := SizeOf(TStockDetailDataNode);
@@ -230,8 +253,6 @@ begin
     tmpCol.Text := DetailColumnsText[col_detail];
     tmpCol.Width := 120;
   end;
-
-  fDataViewerData.DataSrcId := DataSrc_163;
 end;
                    
 procedure TfmeDataViewer.vtDayDatasGetText(Sender: TBaseVirtualTree;
@@ -239,13 +260,18 @@ procedure TfmeDataViewer.vtDayDatasGetText(Sender: TBaseVirtualTree;
   var CellText: WideString);
 var
   tmpNodeData: PStockDayDataNode;
-begin     
+begin
   CellText := '';    
   tmpNodeData := Sender.GetNodeData(Node);
   if nil <> tmpNodeData then
   begin
     if nil <> tmpNodeData.QuoteData then
     begin
+      if Integer(colIndex) = Column then
+      begin
+        CellText := IntToStr(Node.Index);
+        exit;
+      end;
       if Integer(colDate) = Column then
       begin
         CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData.DealDateTime.Value);
@@ -280,7 +306,12 @@ begin
       begin
         CellText := IntToStr(tmpNodeData.QuoteData.DealAmount);
         exit;
-      end;      
+      end;
+      if Integer(colWeight) = Column then
+      begin
+        CellText := IntToStr(tmpNodeData.QuoteData.Weight.Value);
+        exit;
+      end;
       if Integer(colBDZX_AK) = Column then
       begin
         if nil <> fDataViewerData.Rule_BDZX_Price then

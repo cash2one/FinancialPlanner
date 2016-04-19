@@ -429,7 +429,8 @@ begin
       Sleep(100);
     end;
     DataGet_DayData_SinaNow(tmpStockDataAccess, AIsWeight, ANetSession);
-    
+
+    tmpStockDataAccess.Sort;
     SaveStockDayData(App, tmpStockDataAccess); 
     if 0 = AStockItem.FirstDealDate then
     begin
