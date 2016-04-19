@@ -375,9 +375,16 @@ begin
     tmpLastDealDate := Trunc(now());
     tmpInt := DayOfWeek(tmpLastDealDate);
     if 1 = tmpInt then
+    begin
       tmpLastDealDate := tmpLastDealDate - 2;
-    if 7 = tmpInt then
+    end else if 7 = tmpInt then
+    begin
       tmpLastDealDate := tmpLastDealDate - 1;
+    end else
+    begin
+      // 当天数据不下载
+      tmpLastDealDate := tmpLastDealDate - 1;
+    end;
                                                
     if CheckNeedLoadStockDayData(App, tmpStockDataAccess, tmpLastDealDate) then
     begin
