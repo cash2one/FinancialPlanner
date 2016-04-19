@@ -57,7 +57,7 @@ type
     colDate163,
     colDateSina,  
     colDateSinaW,
-    colOpen163, colClose163, colHigh163, colLow163, colDayVolume163, colDayAmount163, colWeight163
+    colOpen, colClose, colHigh, colLow, colDayVolume, colDayAmount, colWeight
   );
   
   PStockDayDataNode = ^TStockDayDataNode;
@@ -212,70 +212,119 @@ begin
   CellText := '';    
   tmpNodeData := Sender.GetNodeData(Node);
   if nil <> tmpNodeData then
-  begin            
-    if nil <> tmpNodeData.QuoteData_Sina then
+  begin             
+    if Integer(colDateSina) = Column then
     begin      
-      if Integer(colDateSina) = Column then
+      if nil <> tmpNodeData.QuoteData_Sina then
       begin
         CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData_Sina.DealDateTime.Value);
         exit;
       end;
-    end;        
-    if nil <> tmpNodeData.QuoteData_SinaW then
-    begin      
-      if Integer(colDateSinaW) = Column then
+    end;
+    if Integer(colDateSinaW) = Column then
+    begin
+      if nil <> tmpNodeData.QuoteData_SinaW then
       begin
         CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData_SinaW.DealDateTime.Value);
         exit;
       end;
-    end;
-    if nil <> tmpNodeData.QuoteData_163 then
-    begin
-      if Integer(colIndex) = Column then
-      begin
-        CellText := IntToStr(Node.Index);
-        exit;
-      end;
-      if Integer(colDate163) = Column then
+    end;  
+    if Integer(colDate163) = Column then
+    begin              
+      if nil <> tmpNodeData.QuoteData_163 then
       begin
         CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData_163.DealDateTime.Value);
-        exit;
       end;
-      if Integer(colOpen163) = Column then
-      begin         
+      exit;
+    end;         
+    if Integer(colIndex) = Column then
+    begin
+      CellText := IntToStr(Node.Index);
+      exit;
+    end;
+    if Integer(colOpen) = Column then
+    begin            
+      if nil <> tmpNodeData.QuoteData_163 then
+      begin
         CellText := IntToStr(tmpNodeData.QuoteData_163.PriceRange.PriceOpen.Value);
-        exit;
       end;
-      if Integer(colClose163) = Column then
+      if nil <> tmpNodeData.QuoteData_SinaW then
+      begin
+        CellText := CellText + '/' + IntToStr(tmpNodeData.QuoteData_SinaW.PriceRange.PriceOpen.Value);
+      end;
+      exit;
+    end;      
+    if Integer(colClose) = Column then
+    begin              
+      if nil <> tmpNodeData.QuoteData_163 then
       begin
         CellText := IntToStr(tmpNodeData.QuoteData_163.PriceRange.PriceClose.Value);
-        exit;
       end;
-      if Integer(colHigh163) = Column then
+      if nil <> tmpNodeData.QuoteData_SinaW then
+      begin
+        CellText := CellText + '/' + IntToStr(tmpNodeData.QuoteData_SinaW.PriceRange.PriceClose.Value);
+      end;
+      exit;
+    end;       
+    if Integer(colHigh) = Column then
+    begin               
+      if nil <> tmpNodeData.QuoteData_163 then
       begin
         CellText := IntToStr(tmpNodeData.QuoteData_163.PriceRange.PriceHigh.Value);
-        exit;
       end;
-      if Integer(colLow163) = Column then
+      if nil <> tmpNodeData.QuoteData_SinaW then
+      begin
+        CellText := CellText + '/' + IntToStr(tmpNodeData.QuoteData_SinaW.PriceRange.PriceHigh.Value);
+      end;
+      exit;
+    end;       
+    if Integer(colLow) = Column then
+    begin                  
+      if nil <> tmpNodeData.QuoteData_163 then
       begin
         CellText := IntToStr(tmpNodeData.QuoteData_163.PriceRange.PriceLow.Value);
-        exit;
       end;
-      if Integer(colDayVolume163) = Column then
+      if nil <> tmpNodeData.QuoteData_SinaW then
+      begin
+        CellText := CellText + '/' + IntToStr(tmpNodeData.QuoteData_SinaW.PriceRange.PriceLow.Value);
+      end;
+      exit;
+    end;       
+    if Integer(colDayVolume) = Column then
+    begin            
+      if nil <> tmpNodeData.QuoteData_163 then
       begin
         CellText := IntToStr(tmpNodeData.QuoteData_163.DealVolume);
-        exit;
       end;
-      if Integer(colDayAmount163) = Column then
+      if nil <> tmpNodeData.QuoteData_SinaW then
+      begin
+        CellText := CellText + '/' + IntToStr(tmpNodeData.QuoteData_SinaW.DealVolume);
+      end;
+      exit;
+    end;         
+    if Integer(colDayAmount) = Column then
+    begin           
+      if nil <> tmpNodeData.QuoteData_163 then
       begin
         CellText := IntToStr(tmpNodeData.QuoteData_163.DealAmount);
-        exit;
       end;
-      if Integer(colWeight163) = Column then
+      if nil <> tmpNodeData.QuoteData_SinaW then
+      begin
+        CellText := CellText + '/' + IntToStr(tmpNodeData.QuoteData_SinaW.DealAmount);
+      end;
+      exit;
+    end;              
+    if Integer(colWeight) = Column then
+    begin
+      if nil <> tmpNodeData.QuoteData_163 then
       begin
         CellText := IntToStr(tmpNodeData.QuoteData_163.Weight.Value);
-        exit;
+      end;  
+      if nil <> tmpNodeData.QuoteData_SinaW then
+      begin
+        CellText := CellText + '/' + IntToStr(tmpNodeData.QuoteData_SinaW.Weight.Value);
       end;
+      exit;
     end;
   end;
 end;
