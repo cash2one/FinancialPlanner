@@ -300,7 +300,7 @@ begin
     try
       tmpParseRec.HtmlRoot := UtilsHtmlParser.ParserHtml(AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
     except
-      Log('ParserSinaDataError:', ADataAccess.StockItem.sCode + 'error html:' + AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
+      Log('ParserSinaDataError:', ADataAccess.StockItem.sCode + 'error html');// + AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
     end;
     if tmpParseRec.HtmlRoot <> nil then
     begin
@@ -357,6 +357,7 @@ begin
       CheckInIOBuffer(tmpHttpData);
     end;
   end;
+  Sleep(1000);
 end;
 
 function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
