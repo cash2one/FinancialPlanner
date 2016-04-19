@@ -20,6 +20,7 @@ uses
   UtilsHttp in '..\..\..\devwintech\v0000\win_utils\UtilsHttp.pas',
   UtilsHtmlParser in '..\..\..\devwintech\v0000\win_utils\UtilsHtmlParser.pas',
   UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
+  UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',  
   UtilsDateTime in '..\..\..\devwintech\v0000\win_utils\UtilsDateTime.pas',
   win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
   BaseStockApp in '..\..\base\BaseStockApp.pas',
