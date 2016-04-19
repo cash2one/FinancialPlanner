@@ -142,6 +142,7 @@ begin
   if nil = fDataViewerData.StockDayDataAccess_sina then
   begin
     fDataViewerData.StockDayDataAccess_sina := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_Sina, false);
+    StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess_sina);
   end;
   if nil = fDataViewerData.StockDayDataAccess_SinaW then
   begin
@@ -165,6 +166,17 @@ begin
     tmpStockDataNode.QuoteData_Sina := nil;
     tmpStockDataNode.QuoteData_SinaW := nil;    
     tmpStockDataNode.DayIndex := i;
+  end;                  
+  for i := fDataViewerData.StockDayDataAccess_Sina.RecordCount - 1 downto 0 do
+  begin          
+    tmpStockData := fDataViewerData.StockDayDataAccess_Sina.RecordItem[i];
+    tmpIndex := fDataViewerData.StockDayList.IndexOf(tmpStockData.DealDateTime.Value);
+    if 0 <= tmpIndex then
+    begin
+      tmpNode := PVirtualNode(fDataViewerData.StockDayList.Objects[tmpIndex]); 
+      tmpStockDataNode := vtDayDatas.GetNodeData(tmpNode); 
+      tmpStockDataNode.QuoteData_Sina := tmpStockData;
+    end;
   end;
   for i := fDataViewerData.StockDayDataAccess_SinaW.RecordCount - 1 downto 0 do
   begin          
@@ -212,23 +224,12 @@ begin
   CellText := '';    
   tmpNodeData := Sender.GetNodeData(Node);
   if nil <> tmpNodeData then
-  begin             
-    if Integer(colDateSina) = Column then
-    begin      
-      if nil <> tmpNodeData.QuoteData_Sina then
-      begin
-        CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData_Sina.DealDateTime.Value);
-        exit;
-      end;
-    end;
-    if Integer(colDateSinaW) = Column then
+  begin        
+    if Integer(colIndex) = Column then
     begin
-      if nil <> tmpNodeData.QuoteData_SinaW then
-      begin
-        CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData_SinaW.DealDateTime.Value);
-        exit;
-      end;
-    end;  
+      CellText := IntToStr(tmpNodeData.DayIndex);
+      exit;
+    end;           
     if Integer(colDate163) = Column then
     begin              
       if nil <> tmpNodeData.QuoteData_163 then
@@ -236,10 +237,21 @@ begin
         CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData_163.DealDateTime.Value);
       end;
       exit;
-    end;         
-    if Integer(colIndex) = Column then
+    end;    
+    if Integer(colDateSina) = Column then
+    begin      
+      if nil <> tmpNodeData.QuoteData_Sina then
+      begin
+        CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData_Sina.DealDateTime.Value);
+      end;
+      exit;
+    end;
+    if Integer(colDateSinaW) = Column then
     begin
-      CellText := IntToStr(Node.Index);
+      if nil <> tmpNodeData.QuoteData_SinaW then
+      begin
+        CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData_SinaW.DealDateTime.Value);
+      end;
       exit;
     end;
     if Integer(colOpen) = Column then
