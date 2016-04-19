@@ -34,7 +34,7 @@ begin
   tmpDBStockItem := TDBDealItem.Create;
   tmpDBStockInstant := TDBStockInstant.Create(DataSrc_Sina);
   try
-    LoadDBStockItem(App, tmpDBStockItem);
+    LoadDBStockItemDic(App, tmpDBStockItem);
                        
     //=================
 //    tmpPathUrl := App.Path.DataBasePath[Define_Store_File.FilePath_DBType_InstantData, 0];
