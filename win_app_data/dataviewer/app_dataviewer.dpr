@@ -17,6 +17,7 @@ uses
   BaseWinApp in '..\..\..\devwintech\v0000\win_base\BaseWinApp.pas',
   BaseForm in '..\..\..\devwintech\v0000\win_ui\BaseForm.pas' {frmBase},
   Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
+  UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',
   define_price in '..\..\basedefine\define_price.pas',
   define_datasrc in '..\..\basedefine\define_datasrc.pas',
   define_dealitem in '..\..\basedefine\define_dealitem.pas',

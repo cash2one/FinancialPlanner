@@ -46,6 +46,7 @@ implementation
 uses
   BaseStockApp,
   Define_DataSrc,
+  UtilsLog,
   define_stock_quotes,
   StockDayData_Load,
   StockDetailData_Load,
@@ -150,7 +151,8 @@ begin
     StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess_SinaW);
   end;
   tmpStr := '';
-  fDataViewerData.StockDayList.Clear;
+  fDataViewerData.StockDayList.Clear; 
+  Log('', '163 recordcount:' + IntToStr(fDataViewerData.StockDayDataAccess_163.RecordCount));
   for i := fDataViewerData.StockDayDataAccess_163.RecordCount - 1 downto 0 do
   begin
     tmpStockData := fDataViewerData.StockDayDataAccess_163.RecordItem[i];
@@ -166,7 +168,8 @@ begin
     tmpStockDataNode.QuoteData_Sina := nil;
     tmpStockDataNode.QuoteData_SinaW := nil;    
     tmpStockDataNode.DayIndex := i;
-  end;                  
+  end;
+  Log('', 'sina recordcount:' + IntToStr(fDataViewerData.StockDayDataAccess_sina.RecordCount));
   for i := fDataViewerData.StockDayDataAccess_Sina.RecordCount - 1 downto 0 do
   begin          
     tmpStockData := fDataViewerData.StockDayDataAccess_Sina.RecordItem[i];
@@ -177,7 +180,8 @@ begin
       tmpStockDataNode := vtDayDatas.GetNodeData(tmpNode); 
       tmpStockDataNode.QuoteData_Sina := tmpStockData;
     end;
-  end;
+  end;                               
+  Log('', 'sinaw recordcount:' + IntToStr(fDataViewerData.StockDayDataAccess_SinaW.RecordCount));
   for i := fDataViewerData.StockDayDataAccess_SinaW.RecordCount - 1 downto 0 do
   begin          
     tmpStockData := fDataViewerData.StockDayDataAccess_SinaW.RecordItem[i];

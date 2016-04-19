@@ -14,6 +14,7 @@ implementation
 uses
   BaseWinFile,          
   Define_Price,
+  UtilsLog,
   define_stock_quotes,
   define_dealstore_header,
   define_dealstore_file;
@@ -34,6 +35,7 @@ begin
   begin
     tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
   end;
+  Log('LoadStockDayData', 'FileUrl:' + tmpFileUrl);
   if App.Path.IsFileExists(tmpFileUrl) then
   begin
     tmpWinFile := TWinFile.Create;
