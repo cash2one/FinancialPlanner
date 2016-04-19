@@ -356,7 +356,7 @@ var
 begin
   Result := false;
   tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AIsWeight);
-  try                   
+  try                      
     tmpLastDealDate := Trunc(now());
     tmpInt := DayOfWeek(tmpLastDealDate);
     if 1 = tmpInt then
@@ -370,8 +370,10 @@ begin
     end else
       exit;
       
+    if tmpStockDataAccess.StockItem.FirstDealDate < 1 then
+      exit;
+      
     DecodeDate(now, tmpCurrentYear, tmpCurrentMonth, tmpCurrentDay);
-
     if (0 < tmpStockDataAccess.LastDealDate) and (0 < tmpStockDataAccess.FirstDealDate) then
     begin
       DecodeDate(tmpStockDataAccess.LastDealDate, tmpFromYear, tmpFromMonth, tmpFromDay);
