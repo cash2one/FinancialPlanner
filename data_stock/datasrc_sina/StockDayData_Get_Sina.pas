@@ -313,7 +313,7 @@ begin
   else
     tmpUrl := BaseSinaDayUrl1;
   tmpurl := tmpurl + ADataAccess.StockItem.sCode + '.phtml';
-  Result := DataParse_DayData_Sina(ADataAccess, GetHttpUrlData(tmpUrl, ANetSession));
+  Result := DataParse_DayData_Sina(ADataAccess, GetHttpUrlData(tmpUrl, ANetSession, SizeMode_64k));
 end;
 
 function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
@@ -333,7 +333,7 @@ begin
     tmpUrl := tmpUrl + '&' + 'jidu=' + inttostr(ASeason);
   end;
   // parse html data
-  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession);
+  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_64k);
   if nil <> tmpHttpData then
   begin
     try
