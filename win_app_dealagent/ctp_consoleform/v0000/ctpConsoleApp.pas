@@ -8,7 +8,7 @@ uses
 type
   TctpConsoleApp = class(TBaseWinApp)
   protected          
-    fMainForm: TfrmBase;
+    fMainForm: TfrmBase; 
   public
     function Initialize: Boolean; override;
     procedure Finalize; override;
@@ -22,6 +22,8 @@ implementation
 
 uses
   //ctpConsoleForm,
+  TcpAgentConsole,
+  ctpConsoleAppCommandWnd,
   FormFunctionsTab,
   ctpDealForm,
   ctpQuoteForm;
@@ -36,8 +38,16 @@ end;
 function TctpConsoleApp.Initialize: Boolean;
 begin
   Result := inherited Initialize;
+
   Application.Initialize;
-  Application.MainFormOnTaskbar := True;  
+  Application.MainFormOnTaskbar := True;
+
+  fBaseWinAppData.AppCmdWnd := ctpConsoleAppCommandWnd.CreateAppCommandWindow;
+  
+  if nil = GTcpAgentConsole then
+  begin
+    GTcpAgentConsole := TTcpAgentConsole.Create;
+  end;
 end;
 
 procedure TctpConsoleApp.Run;

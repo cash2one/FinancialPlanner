@@ -2,6 +2,9 @@ unit define_ctp_deal;
 
 interface
 
+uses
+  ThostFtdcTraderApiDataType;
+  
 type
   TDealDirection = (directionNone, directionBuy, directionSale);   
   TDealOffsetMode = (
@@ -91,8 +94,87 @@ type
     //OrgData: TDealOrgDataConsole;
     LastRequestDeal: PDeal;
   end;
+                
+  PTradingAccount = ^TTradingAccount;
+  TTradingAccount = record
+    RecordTime: TDateTime;
+    Data: ThostFtdcTradingAccountField;
+  end;
 
+  PInvestorPosition = ^TInvestorPosition;
+  TInvestorPosition = record
+    RecordTime: TDateTime;
+    InstrumentId: AnsiString;
+    Data: ThostFtdcInvestorPositionField;
+  end;
 
+  PInputOrder = ^TInputOrder;
+  TInputOrder = record
+    RecordTime: TDateTime;
+    Data: ThostFtdcInputOrderField;
+  end;
+
+  PInputOrderAction = ^TInputOrderAction;
+  TInputOrderAction = record
+    RecordTime: TDateTime;
+    Data: ThostFtdcInputOrderActionField;
+  end;
+
+  POrder = ^TOrder;
+  TOrder = record
+    MsgSrc: Integer;
+    RecordTime: TDateTime;
+    Data: ThostFtdcOrderField;
+  end;
+
+  PTrade = ^TTrade;
+  TTrade = record
+    MsgSrc: Integer;
+    RecordTime: TDateTime;
+    Data: ThostFtdcTradeField;
+  end;
+
+  PInstrument = ^TInstrument;
+  TInstrument = record
+    RecordTime: TDateTime;
+    Data: ThostFtdcInstrumentField;
+  end;
+             
+  TInputOrderCache = record
+    Count: integer;
+    InputOrderArray: array[0..1 * 1024 - 1] of PInputOrder;
+  end;
+
+  TInputOrderActionCache = record
+    Count: integer;       
+    InputOrderActionArray: array[0..1 * 1024 - 1] of PInputOrderAction;
+  end;
+
+  TOrderCache = record
+    Count: integer;
+    OrderArray: array[0..1 * 1024 - 1] of POrder;
+  end;
+
+  TTradeCache = record
+    Count: integer;
+    TradeArray: array[0..1 * 1024 - 1] of PTrade;
+  end;
+
+  TInvestorPositionCache = record  
+    Count: integer;
+    InvestorPositionArray: array[0..7] of PInvestorPosition;
+  end;
+
+  TConsoleData = record
+    TradingAccount: TTradingAccount;
+    InvestorPositionCache: TInvestorPositionCache;
+    // -------------------------------
+    InputOrderCache: TInputOrderCache;
+    InputOrderActionCache: TInputOrderActionCache;
+    OrderCache: TOrderCache;
+    TradeCache: TTradeCache;
+  end;
+  
 implementation
 
 end.
