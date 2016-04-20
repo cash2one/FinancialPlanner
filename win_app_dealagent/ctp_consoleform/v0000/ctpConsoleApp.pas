@@ -19,7 +19,12 @@ var
   GlobalApp: TctpConsoleApp = nil;
 
 implementation
-  
+
+uses
+  //ctpConsoleForm,
+  FormFunctionsTab,
+  ctpDealForm,
+  ctpQuoteForm;
 { TswHelperApp }
 
 procedure TctpConsoleApp.Finalize;
@@ -36,8 +41,13 @@ begin
 end;
 
 procedure TctpConsoleApp.Run;
-begin
-  fMainForm.App := Self;
+begin                   
+  //Application.CreateForm(TfrmCtpConsole, fMainForm);  
+  Application.CreateForm(TfrmFunctionsTab, fMainForm);
+  fMainForm.Initialize(Self);
+  fMainForm.App := Self;    
+  TfrmFunctionsTab(fMainForm).AddFunctionTab('交易', TfrmCtpDeal);
+  TfrmFunctionsTab(fMainForm).AddFunctionTab('行情', TfrmCtpQuote);  
   Application.Run;
 end;
 

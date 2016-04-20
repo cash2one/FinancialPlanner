@@ -8,11 +8,13 @@ uses
   Define_String in '..\..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
   Define_Message in '..\..\..\..\devwintech\v0000\win_basedefine\Define_Message.pas',
   BaseForm in '..\..\..\..\devwintech\v0000\win_ui\BaseForm.pas' {frmBase},
+  FormFunctionsTab in '..\..\..\..\devwintech\v0000\win_ui\FormFunctionsTab.pas' {frmFunctionsTab},
   UtilsWindows in '..\..\..\..\devwintech\v0000\win_utils\UtilsWindows.pas',
   UtilsApplication in '..\..\..\..\devwintech\v0000\win_utils\UtilsApplication.pas',
   define_price in '..\..\..\basedefine\define_price.pas',
-  ctpConsoleForm in 'ctpConsoleForm.pas' {frmCtpConsole},
-  ctpConsoleApp in 'ctpConsoleApp.pas';
+  ctpConsoleApp in 'ctpConsoleApp.pas',
+  ctpDealForm in 'ctpDealForm.pas' {frmCtpDeal},
+  ctpQuoteForm in 'ctpQuoteForm.pas' {frmCtpQuote};
 
 {$R *.res}
 
