@@ -14,7 +14,10 @@ uses
   define_price in '..\..\..\basedefine\define_price.pas',
   ctpConsoleApp in 'ctpConsoleApp.pas',
   ctpDealForm in 'ctpDealForm.pas' {frmCtpDeal},
-  ctpQuoteForm in 'ctpQuoteForm.pas' {frmCtpQuote};
+  ctpQuoteForm in 'ctpQuoteForm.pas' {frmCtpQuote},
+  TcpAgentConsole in 'TcpAgentConsole.pas',
+  TcpQuoteAgent in 'TcpQuoteAgent.pas',
+  TcpDealAgent in 'TcpDealAgent.pas';
 
 {$R *.res}
 

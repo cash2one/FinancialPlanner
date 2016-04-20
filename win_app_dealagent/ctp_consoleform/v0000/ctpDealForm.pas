@@ -85,7 +85,7 @@ end;
 
 procedure TfrmCtpDeal.btnInitDealClick(Sender: TObject);
 begin
-  GTcpAgentConsole.InitDeal;
+  GTcpAgentConsole.Deal.InitDeal;
 end;
 
 procedure TfrmCtpDeal.btnConnectDealClick(Sender: TObject);
@@ -96,34 +96,32 @@ begin
   tmpAddrDesc := Trim(edtAddrDeal.Text);
   tmpAddr := ParseAddress(tmpAddrDesc);
   SaveIniAddress(tmpAddrDesc, tmpAddr, 'DealUrl');
-  GTcpAgentConsole.ConnectDeal(tmpAddr);
+  GTcpAgentConsole.Deal.ConnectDeal(tmpAddr);
 end;
 
 procedure TfrmCtpDeal.btnShutDownClick(Sender: TObject);
 begin
-  if GTcpAgentConsole.FindSrvWindow then
-  begin
-    SendMessage(GTcpAgentConsole.SrvWND, WM_C2S_Shutdown, 0, 0);
-  end;
+  if GTcpAgentConsole.Deal.FindSrvWindow then
+    SendMessage(GTcpAgentConsole.Deal.SrvWND, WM_C2S_Shutdown, 0, 0);
+  if GTcpAgentConsole.Quote.FindSrvWindow then
+    SendMessage(GTcpAgentConsole.Quote.SrvWND, WM_C2S_Shutdown, 0, 0);
 end;
 
 procedure TfrmCtpDeal.btnLoginDealClick(Sender: TObject);
 begin
-  GTcpAgentConsole.LoginDeal(Trim(edtBrokeId.Text), Trim(edtAccount.Text), Trim(edtPassword.Text));
+  GTcpAgentConsole.Deal.LoginDeal(Trim(edtBrokeId.Text), Trim(edtAccount.Text), Trim(edtPassword.Text));
   SaveIniAccount(edtBrokeId.Text, edtAccount.Text);
 end;
 
 procedure TfrmCtpDeal.btnConfirmSettlementClick(Sender: TObject);
 begin
-  GTcpAgentConsole.ConfirmSettlementInfo;
+  GTcpAgentConsole.Deal.ConfirmSettlementInfo;
 end;
 
 procedure TfrmCtpDeal.btnLogoutDealClick(Sender: TObject);
 begin
-  if GTcpAgentConsole.FindSrvWindow then
-  begin
-    SendMessage(GTcpAgentConsole.SrvWND, WM_C2S_Deal_RequestUserLogout, GTcpAgentConsole.CheckOutRequestId, 0);
-  end;
+  if GTcpAgentConsole.Deal.FindSrvWindow then
+    SendMessage(GTcpAgentConsole.Deal.SrvWND, WM_C2S_Deal_RequestUserLogout, GTcpAgentConsole.CheckOutRequestId, 0);
 end;
 
 procedure TfrmCtpDeal.btnDealBuyClick(Sender: TObject);
@@ -132,7 +130,7 @@ var
   tmpNum: Integer;
   tmpPrice: double;
 begin
-  if GTcpAgentConsole.FindSrvWindow then
+  if GTcpAgentConsole.Deal.FindSrvWindow then
   begin
     tmpNum := StrToIntDef(edtDealBuyNum.text, 0);
     if tmpNum < 1 then
@@ -167,7 +165,7 @@ var
   tmpNum: Integer;
   tmpPrice: double;
 begin
-  if GTcpAgentConsole.FindSrvWindow then
+  if GTcpAgentConsole.Deal.FindSrvWindow then
   begin
     tmpNum := StrToIntDef(edtDealSaleNum.text, 0);
     if tmpNum < 1 then

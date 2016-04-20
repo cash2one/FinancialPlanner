@@ -64,7 +64,7 @@ end;
 
 procedure TfrmCtpQuote.btnInitMDClick(Sender: TObject);
 begin
-  GTcpAgentConsole.InitMD;
+  GTcpAgentConsole.Quote.InitMD;
 end;
 
 procedure TfrmCtpQuote.btnConnectMDClick(Sender: TObject);
@@ -76,34 +76,34 @@ begin
   tmpAddr := ParseAddress(tmpAddrDesc);
   SaveIniAddress(tmpAddrDesc, tmpAddr, 'MDUrl');
 
-  GTcpAgentConsole.ConnectMD(tmpAddr);
+  GTcpAgentConsole.Quote.ConnectMD(tmpAddr);
 end;
 
 procedure TfrmCtpQuote.btnShutDownClick(Sender: TObject);
 begin
-  if GTcpAgentConsole.FindSrvWindow then
+  if GTcpAgentConsole.Quote.FindSrvWindow then
   begin
-    SendMessage(GTcpAgentConsole.SrvWND, WM_C2S_Shutdown, 0, 0);
+    SendMessage(GTcpAgentConsole.Quote.SrvWND, WM_C2S_Shutdown, 0, 0);
   end;
 end;
 
 procedure TfrmCtpQuote.btnLoginMDClick(Sender: TObject);
 begin
-  GTcpAgentConsole.LoginMD(Trim(edtBrokeId.Text), Trim(edtAccount.Text), Trim(edtPassword.Text));
+  GTcpAgentConsole.Quote.LoginMD(Trim(edtBrokeId.Text), Trim(edtAccount.Text), Trim(edtPassword.Text));
   SaveIniAccount(Trim(edtBrokeId.Text), Trim(edtAccount.Text));
 end;
 
 procedure TfrmCtpQuote.btnLogoutMDClick(Sender: TObject);
 begin
-  if GTcpAgentConsole.FindSrvWindow then
+  if GTcpAgentConsole.Quote.FindSrvWindow then
   begin
-    SendMessage(GTcpAgentConsole.SrvWND, WM_C2S_MD_RequestUserLogout, GTcpAgentConsole.CheckOutRequestId, 0);
+    SendMessage(GTcpAgentConsole.Quote.SrvWND, WM_C2S_MD_RequestUserLogout, GTcpAgentConsole.CheckOutRequestId, 0);
   end;
 end;
 
 procedure TfrmCtpQuote.btnSubscribeClick(Sender: TObject);
 begin
-  GTcpAgentConsole.MDSubscribe(Trim(edtInstItem.Text));
+  GTcpAgentConsole.Quote.MDSubscribe(Trim(edtInstItem.Text));
 end;
 
 procedure TfrmCtpQuote.btnUnsubscribeClick(Sender: TObject);
@@ -111,7 +111,7 @@ var
   tmpCopyData: TCopyDataCommand;
   tmpAnsi: AnsiString;
 begin
-  if GTcpAgentConsole.FindSrvWindow then
+  if GTcpAgentConsole.Quote.FindSrvWindow then
   begin
     //PostMessage(SrvWND, WM_C2S_UnSubscribeMarketData, 0, 0);
     FillChar(tmpCopyData, SizeOf(TCopyDataCommand), 0);
@@ -122,7 +122,7 @@ begin
     tmpAnsi := Trim(edtInstItem.Text);
     CopyMemory(@tmpCopyData.CommonCommand.scmd1[0], @tmpAnsi[1], Length(tmpAnsi));
 
-    SendMessage(GTcpAgentConsole.SrvWND, WM_COPYDATA, Self.Handle, LongWord(@tmpCopyData));
+    SendMessage(GTcpAgentConsole.Quote.SrvWND, WM_COPYDATA, Self.Handle, LongWord(@tmpCopyData));
   end;
 end;
 
