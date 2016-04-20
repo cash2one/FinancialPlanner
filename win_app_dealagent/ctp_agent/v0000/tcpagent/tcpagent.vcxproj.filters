@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{992b2511-2d13-4087-9af5-bd1978a5d8a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\api">
+      <UniqueIdentifier>{4b8f5906-7d3f-4908-b101-b0e19fea119b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\api\trade">
+      <UniqueIdentifier>{ba794fbd-832a-495a-82a3-6be92d4ec523}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\api\trade\win">
+      <UniqueIdentifier>{6453b063-4c2b-4d01-a27e-92fc56bd3603}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\api\trade\win\public">
+      <UniqueIdentifier>{06990193-0163-4457-a54d-f8baf419bb73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\api\trade\win\lib">
+      <UniqueIdentifier>{215fabcc-a276-4e0c-a718-2c74d707b7f5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\config.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\agentsrv.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\api\trade\win\public\ThostFtdcMdApi.h">
+      <Filter>src\api\trade\win\public</Filter>
+    </ClInclude>
+    <ClInclude Include="src\api\trade\win\public\ThostFtdcTraderApi.h">
+      <Filter>src\api\trade\win\public</Filter>
+    </ClInclude>
+    <ClInclude Include="src\api\trade\win\public\ThostFtdcUserApiDataType.h">
+      <Filter>src\api\trade\win\public</Filter>
+    </ClInclude>
+    <ClInclude Include="src\api\trade\win\public\ThostFtdcUserApiStruct.h">
+      <Filter>src\api\trade\win\public</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mdspi.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\traderspi.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\agentsrv.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mdspi.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\traderspi.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\api\trade\win\lib\thostmduserapi.dll">
+      <Filter>src\api\trade\win\lib</Filter>
+    </None>
+    <None Include="src\api\trade\win\lib\thosttraderapi.dll">
+      <Filter>src\api\trade\win\lib</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="src\api\trade\win\lib\thostmduserapi.lib">
+      <Filter>src\api\trade\win\lib</Filter>
+    </Library>
+    <Library Include="src\api\trade\win\lib\thosttraderapi.lib">
+      <Filter>src\api\trade\win\lib</Filter>
+    </Library>
+  </ItemGroup>
+</Project>
