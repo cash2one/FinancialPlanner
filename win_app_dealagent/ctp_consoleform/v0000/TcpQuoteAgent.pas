@@ -48,7 +48,7 @@ type
 implementation
                
 uses
-  Messages, Sysutils,
+  Messages, Sysutils, UtilsApplication,
   TcpAgentConsole,
   define_app_msg;
   
@@ -146,7 +146,7 @@ begin
   GTcpAgentConsole.StartAgentProcess();
   if FindSrvWindow then
   begin                              
-    //ApplicationSleepProcessMessage(50);
+    SleepWait(50);
     PostMessage(SrvWND, WM_C2S_MD_RequestInitialize, 0, 0);
   end;
 end;
@@ -195,7 +195,7 @@ begin
     
     SendMessage(SrvWND, WM_COPYDATA, 0, LongWord(@tmpCopyData));
 
-    //ApplicationSleepProcessMessage(1000);
+    SleepWait(1000);
     if GTcpAgentConsole.Deal.IsDealLogined then
     begin
       GTcpAgentConsole.Deal.ConfirmSettlementInfo;

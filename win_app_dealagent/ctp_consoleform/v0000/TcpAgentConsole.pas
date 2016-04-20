@@ -42,7 +42,10 @@ var
 implementation
 
 uses
-  IniFiles, SysUtils;
+  IniFiles,
+  SysUtils,
+  UtilsApplication
+  ;
   
 { TTcpAgentConsole }
 constructor TTcpAgentConsole.Create;
@@ -79,7 +82,7 @@ begin
     end;
     //RunExProcess(@fTcpAgentConsoleData.TCPAgentProcess);
   end;   
-  //ApplicationSleepProcessMessage(200);
+  SleepWait(200);
 end;
               
 function TTcpAgentConsole.FindSrvWindow: Boolean;
