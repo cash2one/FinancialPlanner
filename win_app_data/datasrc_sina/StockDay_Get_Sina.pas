@@ -21,7 +21,7 @@ uses
   StockDayData_Get_Sina,
      
   UtilsDateTime,   
-  UtilsLog,
+  //UtilsLog,
   
   StockDayDataAccess,
   StockDayData_Load,
@@ -54,11 +54,11 @@ begin
       begin                                        
         if GetStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpNetClientSession) then
         begin
-          Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Succ');
+          //Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Succ');
           Sleep(2000);
         end else
         begin
-          Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Fail');
+          //Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Fail');
         end;
       end;
     end;

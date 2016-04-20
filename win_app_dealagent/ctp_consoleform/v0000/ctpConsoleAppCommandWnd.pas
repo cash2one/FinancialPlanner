@@ -11,6 +11,7 @@ implementation
 
 uses
   define_app_msg,
+  UtilsApplication,
   ctpConsoleAppCommandWnd_CopyData,
   {WMCopyData, } TcpAgentConsole;
 
@@ -129,20 +130,20 @@ begin
   // 知道了, 如果提早时间连接 可能一直没有连接上 最后就跳掉了
   GIsQuoteMode := true;
   GTcpAgentConsole.Quote.InitMD;
-  //ApplicationSleepProcessMessage(500);
+  SleepWait(500);
   DecodeTime(now, tmpHour, tmpMin, tmpSec, tmpMSec);
   if tmpHour = 9 then
   begin
     while tmpMin < 14 do
     begin
-      //ApplicationSleepProcessMessage(100);   
+      SleepWait(100);   
       DecodeTime(now, tmpHour, tmpMin, tmpSec, tmpMSec);
     end;                  
     if tmpMin = 14 then
     begin
       while (tmpMin = 14) and (tmpSec < 55) do
       begin
-        //ApplicationSleepProcessMessage(100);
+        SleepWait(100);
         DecodeTime(now, tmpHour, tmpMin, tmpSec, tmpMSec);
       end;                
     end;
@@ -151,7 +152,7 @@ begin
   while not GTcpAgentConsole.Quote.IsMDConnected do
   begin                                  
     GTcpAgentConsole.Quote.ConnectMD('tcp://180.166.65.119:41213'); 
-    //ApplicationSleepProcessMessage(500);
+    SleepWait(500);
     Inc(tmpCounter);
     if tmpCounter > 30 then
       Break;
@@ -162,7 +163,7 @@ begin
     while not GTcpAgentConsole.Quote.IsMDLogined do
     begin                                   
       GTcpAgentConsole.Quote.LoginMD('8060', '039753', '841122');
-      //ApplicationSleepProcessMessage(500);
+      SleepWait(500);
       Inc(tmpCounter);
       if tmpCounter > 10 then
         Break;
@@ -203,11 +204,11 @@ begin
   //2. 获取资金明细
   //3. 获取持仓明细
   GTcpAgentConsole.Deal.ConfirmSettlementInfo;
-  //ApplicationSleepProcessMessage(1000);
+  SleepWait(1000);
   GTcpAgentConsole.Deal.QueryMoney;        
-  //ApplicationSleepProcessMessage(1000);   
+  SleepWait(1000);   
   GTcpAgentConsole.Deal.QueryUserHold('IF1606');        
-  //ApplicationSleepProcessMessage(1000);
+  SleepWait(1000);
 end;
 
 function AppCommandWndProcA(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
