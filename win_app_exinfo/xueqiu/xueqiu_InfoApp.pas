@@ -86,7 +86,9 @@ begin
   fHostWindow.BaseWnd.ClientRect.Right := 800;
   fHostWindow.BaseWnd.ClientRect.Bottom := 600;
   fHostWindow.BaseWnd.Style := WS_POPUP;
-  fHostWindow.BaseWnd.ExStyle := WS_EX_TOPMOST;  
+  fHostWindow.BaseWnd.ExStyle := WS_EX_TOOLWINDOW
+    //or WS_EX_TOPMOST
+    ;
   CreateHostWndChromium(@fHostWindow);
 end;
 
