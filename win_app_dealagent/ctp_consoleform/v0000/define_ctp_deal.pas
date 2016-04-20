@@ -165,16 +165,6 @@ type
     InvestorPositionArray: array[0..7] of PInvestorPosition;
   end;
 
-  TConsoleData = record
-    TradingAccount: TTradingAccount;
-    InvestorPositionCache: TInvestorPositionCache;
-    // -------------------------------
-    InputOrderCache: TInputOrderCache;
-    InputOrderActionCache: TInputOrderActionCache;
-    OrderCache: TOrderCache;
-    TradeCache: TTradeCache;
-  end;
-  
 implementation
 
 end.

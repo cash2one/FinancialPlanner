@@ -17,9 +17,16 @@ type
     Index: Integer;           
     DealArray: array[0..300 - 1] of TDeal;              
     LastRequestDeal: PDeal;                
-    //======================================  
+    //======================================   
+    TradingAccount: TTradingAccount;
+    InvestorPositionCache: TInvestorPositionCache;
+    // -------------------------------
+    InputOrderCache: TInputOrderCache;
+    InputOrderActionCache: TInputOrderActionCache;
+    OrderCache: TOrderCache;
+    TradeCache: TTradeCache;
   end;
-  
+                      
   TDealConsole = class
   protected
     fTcpAgentDealConsoleData: TTcpAgentDealConsoleData;
@@ -29,6 +36,7 @@ type
     //======================================
     function FindSrvWindow: Boolean;        
     //======================================
+    // 初始化过程
     procedure InitDeal;
     procedure ConnectDeal(Addr: AnsiString);
     procedure LoginDeal(ABrokerId, Account, APassword: AnsiString);
@@ -44,7 +52,32 @@ type
     function FindDealByRequestId(ARequestId: Integer): PDeal;   
     function FindDealByOrderSysId(AOrderSysId: AnsiString): PDeal; 
     function FindDealByBrokerOrderSeq(ABrokerOrderSeq: Integer): PDeal;   
-    
+    //================================
+    function GetOrderItem(AIndex: integer): POrder;
+    function GetInputOrderItem(AIndex: integer): PInputOrder;
+    function GetInputOrderActionItem(AIndex: integer): PInputOrderAction;
+    function GetTradeItem(AIndex: Integer): PTrade;      
+  public
+    function CheckOutOrder: POrder;
+    property OrderCount: integer read fTcpAgentDealConsoleData.OrderCache.Count;
+    property OrderItem[AIndex: integer]: POrder read GetOrderItem;
+    //-----------------------------------------------
+  public
+    function CheckOutInputOrder: PInputOrder;  
+    property InputOrderItem[AIndex: integer]: PInputOrder read GetInputOrderItem;
+    //-----------------------------------------------
+  public
+    function CheckOutInputOrderAction: PInputOrderAction;
+    property InputOrderActionItem[AIndex: integer]: PInputOrderAction read GetInputOrderActionItem;
+    //-----------------------------------------------
+  public
+    function CheckOutTrade: PTrade;
+    property TradeItem[AIndex: Integer]: PTrade read GetTradeItem;
+    //-----------------------------------------------
+  public
+    function CheckOutInvestorPosition(AInstrumentId: AnsiString): PInvestorPosition;
+  public
+    property TradingAccount: TTradingAccount read fTcpAgentDealConsoleData.TradingAccount write fTcpAgentDealConsoleData.TradingAccount;
     property SrvWND: HWND read fTcpAgentDealConsoleData.SrvWND;   
     property IsDealConnected: Boolean read fTcpAgentDealConsoleData.IsDealConnected write fTcpAgentDealConsoleData.IsDealConnected;
     property IsDealLogined: Boolean read fTcpAgentDealConsoleData.IsDealLogined write fTcpAgentDealConsoleData.IsDealLogined;
@@ -346,6 +379,105 @@ begin
         Result := @fTcpAgentDealConsoleData.DealArray[i];
         Break;
       end;
+    end;
+  end;
+end;
+
+function TDealConsole.CheckOutOrder: POrder;
+begin
+  Result := nil;
+  if fTcpAgentDealConsoleData.OrderCache.OrderArray[fTcpAgentDealConsoleData.OrderCache.Count] = nil then
+  begin                            
+    Result := System.New(POrder);      
+    FillChar(Result^, SizeOf(TOrder), 0);
+    fTcpAgentDealConsoleData.OrderCache.OrderArray[fTcpAgentDealConsoleData.OrderCache.Count] := Result;
+    Inc(fTcpAgentDealConsoleData.OrderCache.Count);
+  end;
+end;
+
+function TDealConsole.GetOrderItem(AIndex: integer): POrder;
+begin
+  Result := fTcpAgentDealConsoleData.OrderCache.OrderArray[AIndex];
+end;
+
+function TDealConsole.CheckOutInputOrder: PInputOrder;
+begin
+  Result := nil;
+  if fTcpAgentDealConsoleData.InputOrderCache.InputOrderArray[fTcpAgentDealConsoleData.InputOrderCache.Count] = nil then
+  begin                            
+    Result := System.New(PInputOrder);
+    FillChar(Result^, SizeOf(TInputOrder), 0);
+    fTcpAgentDealConsoleData.InputOrderCache.InputOrderArray[fTcpAgentDealConsoleData.InputOrderCache.Count] := Result;
+    Inc(fTcpAgentDealConsoleData.InputOrderCache.Count);
+  end;
+end;
+
+function TDealConsole.GetInputOrderItem(AIndex: integer): PInputOrder;
+begin
+  Result := fTcpAgentDealConsoleData.InputOrderCache.InputOrderArray[AIndex];
+end;
+
+function TDealConsole.CheckOutInputOrderAction: PInputOrderAction;
+begin
+  Result := nil;
+  if fTcpAgentDealConsoleData.InputOrderActionCache.InputOrderActionArray[fTcpAgentDealConsoleData.InputOrderActionCache.Count] = nil then
+  begin                            
+    Result := System.New(PInputOrderAction);
+    FillChar(Result^, SizeOf(TInputOrderAction), 0);
+    fTcpAgentDealConsoleData.InputOrderActionCache.InputOrderActionArray[fTcpAgentDealConsoleData.InputOrderActionCache.Count] := Result;
+    Inc(fTcpAgentDealConsoleData.InputOrderActionCache.Count);
+  end;
+end;
+
+function TDealConsole.GetInputOrderActionItem(AIndex: integer): PInputOrderAction;
+begin
+  Result := fTcpAgentDealConsoleData.InputOrderActionCache.InputOrderActionArray[AIndex];
+end;
+
+function TDealConsole.CheckOutTrade: PTrade;
+begin
+  Result := nil;
+  if fTcpAgentDealConsoleData.TradeCache.TradeArray[fTcpAgentDealConsoleData.TradeCache.Count] = nil then
+  begin                            
+    Result := System.New(PTrade);
+    FillChar(Result^, SizeOf(TTrade), 0);
+    fTcpAgentDealConsoleData.TradeCache.TradeArray[fTcpAgentDealConsoleData.TradeCache.Count] := Result;
+    Inc(fTcpAgentDealConsoleData.TradeCache.Count);
+  end;
+end;
+
+function TDealConsole.GetTradeItem(AIndex: Integer): PTrade;
+begin
+  Result := fTcpAgentDealConsoleData.TradeCache.TradeArray[AIndex];
+end;
+   
+function TDealConsole.CheckOutInvestorPosition(AInstrumentId: AnsiString): PInvestorPosition;
+var
+  i: integer;
+begin
+  Result := nil;
+  if AInstrumentId = '' then
+    exit;
+  for i := 0 to fTcpAgentDealConsoleData.InvestorPositionCache.Count - 1 do
+  begin
+    if fTcpAgentDealConsoleData.InvestorPositionCache.InvestorPositionArray[i] = nil then
+      Break;
+    if SameText(fTcpAgentDealConsoleData.InvestorPositionCache.InvestorPositionArray[i].InstrumentId, AInstrumentId) then
+    begin
+      result := fTcpAgentDealConsoleData.InvestorPositionCache.InvestorPositionArray[i];
+      Break;
+    end;
+  end;
+  if Result = nil then
+  begin
+    if fTcpAgentDealConsoleData.InvestorPositionCache.InvestorPositionArray[fTcpAgentDealConsoleData.InvestorPositionCache.Count] = nil then
+    begin                            
+      Result := System.New(PInvestorPosition);
+      FillChar(Result^, SizeOf(TInvestorPosition), 0);
+
+      Result.InstrumentId := AInstrumentId;
+      fTcpAgentDealConsoleData.InvestorPositionCache.InvestorPositionArray[fTcpAgentDealConsoleData.InvestorPositionCache.Count] := Result;
+      Inc(fTcpAgentDealConsoleData.InvestorPositionCache.Count);
     end;
   end;
 end;
