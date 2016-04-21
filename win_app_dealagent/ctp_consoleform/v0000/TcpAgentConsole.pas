@@ -14,7 +14,6 @@ type
     SrvWND    : HWND;
     Deal      : TDealConsole;
     Quote     : TQuoteConsole;
-    TCPAgentProcess: TOwnProcess;
   end;
   
   TTcpAgentConsole = class
@@ -23,8 +22,8 @@ type
   public                               
     constructor Create; virtual;
     destructor Destroy; override;      
-    procedure StartAgentProcess;    
-    function FindSrvWindow: Boolean;
+    
+    //function FindSrvWindow: Boolean;
     function CheckOutRequestId: Integer;    
     procedure LoadGlobalRequestId;
     procedure SaveGlobalRequestId;
@@ -63,7 +62,7 @@ begin
   fTcpAgentConsoleData.Quote.Free;
   inherited;
 end;
-             
+(*//             
 procedure TTcpAgentConsole.StartAgentProcess;
 var
   tmpProcessFileUrl: AnsiString;
@@ -103,7 +102,7 @@ begin
   Result := (fTcpAgentConsoleData.SrvWND <> 0) and
             (fTcpAgentConsoleData.SrvWND <> INVALID_HANDLE_VALUE);
 end;
- 
+//*) 
 function TTcpAgentConsole.CheckOutRequestId: Integer;
 begin
   Result := fTcpAgentConsoleData.RequestId;

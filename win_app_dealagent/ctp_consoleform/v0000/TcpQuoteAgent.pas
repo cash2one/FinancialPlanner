@@ -3,7 +3,8 @@ unit TcpQuoteAgent;
 interface
 
 uses
-  Windows,
+  Windows,            
+  BaseWinProcess,
   ThostFtdcBaseDataType,
   ThostFtdcMdApiDataType,
   define_price,
@@ -14,7 +15,8 @@ type
     IsMDConnected: Boolean;
     IsMDLogined: Boolean;       
     //TCPAgentProcess: TExProcessA;
-    SrvWND: HWND;         
+    SrvWND: HWND;      
+    TCPAgentQuoteProcess: TOwnProcess;   
     QuoteInstrumentIds: array[0..QuoteArraySize - 1] of AnsiString;
     QuoteArray: array[0..QuoteArraySize - 1] of TRT_QuoteData;
   end;
@@ -26,7 +28,8 @@ type
     constructor Create; virtual;
     destructor Destroy; override;    
     //================================    
-    function FindSrvWindow: Boolean;  
+    function FindSrvWindow: Boolean;
+    procedure StartAgentProcess;  
     //================================      
     procedure InitMD;
     procedure ConnectMD(Addr: AnsiString);
@@ -124,7 +127,6 @@ end;
 
 function TQuoteConsole.FindSrvWindow: Boolean;
 begin
-  Result := false;
   if 0 <> fTcpAgentQuoteConsoleData.SrvWND then
   begin
     if not IsWindow(fTcpAgentQuoteConsoleData.SrvWND) then
@@ -140,10 +142,31 @@ begin
   Result := (fTcpAgentQuoteConsoleData.SrvWND <> 0) and
             (fTcpAgentQuoteConsoleData.SrvWND <> INVALID_HANDLE_VALUE);
 end;
- 
+
+procedure TQuoteConsole.StartAgentProcess;
+var
+  tmpProcessFileUrl: AnsiString;
+begin     
+  if not FindSrvWindow then
+  begin
+    //CloseExProcess(@fTcpAgentConsoleData.TCPAgentProcess);  
+    //fTcpAgentConsoleData.TCPAgentProcess.FilePath := ExtractFilePath(ParamStr(0));
+    //fTcpAgentConsoleData.TCPAgentProcess.FileUrl := fTcpAgentConsoleData.TCPAgentProcess.FilePath + 'tcpagent.exe';
+    tmpProcessFileUrl := ExtractFilePath(ParamStr(0)) + 'tcpagent.exe';
+    if FileExists(tmpProcessFileUrl) then
+    begin
+      RunProcessA(@fTcpAgentQuoteConsoleData.TCPAgentQuoteProcess,
+        tmpProcessFileUrl,
+        nil);
+    end;
+    //RunExProcess(@fTcpAgentConsoleData.TCPAgentProcess);
+  end;   
+  SleepWait(200);
+end;
+            
 procedure TQuoteConsole.InitMD;
 begin
-  GTcpAgentConsole.StartAgentProcess();
+  StartAgentProcess();
   if FindSrvWindow then
   begin                              
     SleepWait(50);

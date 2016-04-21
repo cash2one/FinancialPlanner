@@ -119,7 +119,7 @@ begin
   if AInputOrder = nil then
     exit;          
   // 报单回报   
-  //tmpInputOrder := GTcpAgentConsole.Deal.OrgData.CheckOutInputOrder;
+  tmpInputOrder := GTcpAgentConsole.Deal.CheckOutInputOrder;
   if tmpInputOrder <> nil then
   begin
     tmpInputOrder.Data := AInputOrder^;
@@ -143,7 +143,7 @@ begin
   // 撤单回报
   if AOrderAction = nil then
     exit;       
-  //tmpInputOrderAction := GTcpAgentConsole.Deal.OrgData.CheckOutInputOrderAction;
+  tmpInputOrderAction := GTcpAgentConsole.Deal.CheckOutInputOrderAction;
   if tmpInputOrderAction <> nil then
   begin
     tmpInputOrderAction.Data := AOrderAction^;
@@ -170,7 +170,7 @@ begin
   //报单回报
   if AOrder <> nil then
   begin
-    //tmpOrder := GTcpAgentConsole.Deal.OrgData.CheckOutOrder;
+    tmpOrder := GTcpAgentConsole.Deal.CheckOutOrder;
     if tmpOrder <> nil then
     begin
       tmpOrder.MsgSrc := WM_S2C_RtnOrder;
@@ -178,10 +178,10 @@ begin
     end;
     //tmpData5.BrokerOrderSeq  198219                               
     tmpDeal := GTcpAgentConsole.Deal.FindDealByBrokerOrderSeq(AOrder.BrokerOrderSeq);
-//    if tmpDeal = nil then
-//    begin
-//      tmpDeal := GTcpAgentConsole.Deal.FindDealByRequestId(AOrder.RequestID);
-//    end;
+    if tmpDeal = nil then
+    begin
+      tmpDeal := GTcpAgentConsole.Deal.FindDealByRequestId(AOrder.RequestID);
+    end;
     if tmpDeal = nil then
     begin
 //      if GTcpAgentConsole.Deal.LastRequestDeal <> nil then
@@ -300,7 +300,7 @@ begin
   // 查询报单   
   if AOrder <> nil then
   begin
-    //tmpOrder := GTcpAgentConsole.Deal.OrgData.CheckOutOrder;
+    tmpOrder := GTcpAgentConsole.Deal.CheckOutOrder;
     if tmpOrder <> nil then
     begin           
       tmpOrder.MsgSrc := WM_S2C_RspQryOrder;
@@ -318,7 +318,7 @@ begin
   //成交通知
   if ATrade <> nil then
   begin
-    //tmpTrade := GTcpAgentConsole.Deal.OrgData.CheckOutTrade;
+    tmpTrade := GTcpAgentConsole.Deal.CheckOutTrade;
     if tmpTrade <> nil then
     begin
       tmpTrade.MsgSrc := WM_S2C_RtnTrade;
@@ -327,7 +327,7 @@ begin
       tmpDeal := GTcpAgentConsole.Deal.FindDealByBrokerOrderSeq(ATrade.BrokerOrderSeq);
       if tmpDeal <> nil then
       begin
-        //tmpDealResponse := GTcpAgentConsole.Deal.CheckOutOrderDeal(tmpDeal);
+        tmpDealResponse := GTcpAgentConsole.Deal.CheckOutOrderDeal(tmpDeal);
         if tmpDealResponse <> nil then
         begin
           tmpDealResponse.Price := ATrade.Price;
@@ -355,7 +355,7 @@ begin
   // 查询成交   
   if ATrade <> nil then
   begin
-    //tmpTrade := GTcpAgentConsole.Deal.OrgData.CheckOutTrade;
+    tmpTrade := GTcpAgentConsole.Deal.CheckOutTrade;
     if tmpTrade <> nil then
     begin
       tmpTrade.MsgSrc := WM_S2C_RspQryTrade;

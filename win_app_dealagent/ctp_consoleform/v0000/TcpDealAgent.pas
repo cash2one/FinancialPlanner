@@ -3,7 +3,8 @@ unit TcpDealAgent;
 interface
 
 uses
-  Windows,
+  Windows,       
+  BaseWinProcess,
   define_ctp_deal;
   
 type
@@ -11,8 +12,8 @@ type
     IsDealConnected: Boolean;
     IsDealLogined: Boolean;  
     IsSettlementConfirmed: Boolean;   
-    //TCPAgentProcess: TExProcessA;
-    SrvWND: HWND;
+    SrvWND: HWND;                    
+    TCPAgentDealProcess: TOwnProcess;
     //======================================      
     Index: Integer;           
     DealArray: array[0..300 - 1] of TDeal;              
@@ -34,7 +35,8 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
     //======================================
-    function FindSrvWindow: Boolean;        
+    function FindSrvWindow: Boolean;     
+    procedure StartAgentProcess;   
     //======================================
     // 初始化过程
     procedure InitDeal;
@@ -47,7 +49,10 @@ type
     //================================
     function CheckOutDeal: PDeal;    
     procedure RunDeal(ADeal: PDeal);      
-    procedure CancelDeal(ADeal: PDeal);
+    procedure CancelDeal(ADeal: PDeal); 
+    function CheckOutOrderRequest(ADeal: PDeal): PDealOrderRequest;
+    function CheckOutOrderResponse(ADeal: PDeal): PDealOrderResponse;
+    function CheckOutOrderDeal(ADeal: PDeal): PDealResponse;
     //================================    
     function FindDealByRequestId(ARequestId: Integer): PDeal;   
     function FindDealByOrderSysId(AOrderSysId: AnsiString): PDeal; 
@@ -107,7 +112,6 @@ end;
 
 function TDealConsole.FindSrvWindow: Boolean;
 begin
-  Result := false;
   if 0 <> fTcpAgentDealConsoleData.SrvWND then
   begin
     if not IsWindow(fTcpAgentDealConsoleData.SrvWND) then
@@ -124,11 +128,32 @@ begin
             (fTcpAgentDealConsoleData.SrvWND <> INVALID_HANDLE_VALUE);
 end;
 
+procedure TDealConsole.StartAgentProcess;
+var
+  tmpProcessFileUrl: AnsiString;
+begin     
+  if not FindSrvWindow then
+  begin
+    //CloseExProcess(@fTcpAgentConsoleData.TCPAgentProcess);  
+    //fTcpAgentConsoleData.TCPAgentProcess.FilePath := ExtractFilePath(ParamStr(0));
+    //fTcpAgentConsoleData.TCPAgentProcess.FileUrl := fTcpAgentConsoleData.TCPAgentProcess.FilePath + 'tcpagent.exe';
+    tmpProcessFileUrl := ExtractFilePath(ParamStr(0)) + 'tcpagent.exe';
+    if FileExists(tmpProcessFileUrl) then
+    begin
+      RunProcessA(@fTcpAgentDealConsoleData.TCPAgentDealProcess,
+        tmpProcessFileUrl,
+        nil);
+    end;
+    //RunExProcess(@fTcpAgentConsoleData.TCPAgentProcess);
+  end;   
+  SleepWait(200);
+end;
+              
 procedure TDealConsole.InitDeal;
 begin                                 
   if not FindSrvWindow then
   begin
-    GTcpAgentConsole.StartAgentProcess();
+    StartAgentProcess();
     SleepWait(200);
   end;
   if FindSrvWindow then
@@ -327,6 +352,33 @@ begin
     
     tmpCopyData.Base.dwData := WM_C2S_RequestCancelOrder;
     SendMessage(SrvWND, WM_COPYDATA, 0, LongWord(@tmpCopyData));
+  end;
+end;
+         
+function TDealConsole.CheckOutOrderRequest(ADeal: PDeal): PDealOrderRequest;
+begin
+  Result := @ADeal.OrderRequest;
+end;
+
+function TDealConsole.CheckOutOrderResponse(ADeal: PDeal): PDealOrderResponse;
+begin
+  Result := ADeal.OrderResponse;
+  if Result = nil then
+  begin
+    Result := System.New(PDealOrderResponse);
+    FillChar(Result^, SizeOf(TDealOrderResponse), 0);
+    ADeal.OrderResponse := Result;
+  end;
+end;
+
+function TDealConsole.CheckOutOrderDeal(ADeal: PDeal): PDealResponse;
+begin
+  Result := ADeal.Deal;
+  if Result = nil then
+  begin
+    Result := System.New(PDealResponse);
+    FillChar(Result^, SizeOf(TDealResponse), 0);
+    ADeal.Deal := Result;
   end;
 end;
 
