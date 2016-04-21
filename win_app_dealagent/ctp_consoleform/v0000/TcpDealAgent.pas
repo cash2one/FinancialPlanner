@@ -88,6 +88,7 @@ implementation
 
 uses
   Messages, Sysutils,
+  UtilsApplication,
   TcpAgentConsole,
   define_app_msg;
   
@@ -124,11 +125,15 @@ begin
 end;
 
 procedure TDealConsole.InitDeal;
-begin
-  GTcpAgentConsole.StartAgentProcess();
+begin                                 
+  if not FindSrvWindow then
+  begin
+    GTcpAgentConsole.StartAgentProcess();
+    SleepWait(200);
+  end;
   if FindSrvWindow then
-  begin                   
-    //ApplicationSleepProcessMessage(50);
+  begin
+    SleepWait(50);
     PostMessage(fTcpAgentDealConsoleData.SrvWND, WM_C2S_Deal_RequestInitialize, 0, 0);
   end;
 end;
@@ -178,7 +183,7 @@ begin
     
     SendMessage(SrvWND, WM_COPYDATA, 0, LongWord(@tmpCopyData));
                           
-    //ApplicationSleepProcessMessage(500);
+    SleepWait(500);
   end;
 
 end;
