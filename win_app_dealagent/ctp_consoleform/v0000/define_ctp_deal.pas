@@ -4,7 +4,16 @@ interface
 
 uses
   ThostFtdcTraderApiDataType;
-  
+
+const
+  //…ÍÕÚ  tcp://180.168.212.51:41205
+  Port_Ctp_Deal = 41205;                 
+  Ip_Ctp_Deal_SW_1 = '180.168.212.51';
+  Ip_Ctp_Deal_SW_2 = '180.168.212.52';
+  Ip_Ctp_Deal_SW_3 = '180.168.212.53';
+  Ip_Ctp_Deal_SW_4 = '180.168.212.54';
+  Ip_Ctp_Deal_SW_5 = '180.168.212.55';
+
 type
   TDealDirection = (directionNone, directionBuy, directionSale);   
   TDealOffsetMode = (

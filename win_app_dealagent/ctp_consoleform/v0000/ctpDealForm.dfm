@@ -28,6 +28,7 @@ object frmCtpDeal: TfrmCtpDeal
       Height = 25
       Caption = 'Query Money'
       TabOrder = 0
+      OnClick = btnQueryMoneyClick
     end
     object btnQueryHold: TButton
       Left = 148
@@ -36,6 +37,7 @@ object frmCtpDeal: TfrmCtpDeal
       Height = 25
       Caption = 'Query Hold'
       TabOrder = 1
+      OnClick = btnQueryHoldClick
     end
     object edtHold: TEdit
       Left = 16

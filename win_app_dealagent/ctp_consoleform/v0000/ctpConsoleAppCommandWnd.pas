@@ -7,6 +7,11 @@ uses
                 
   function CreateAppCommandWindow: HWND;
 
+  procedure AppCmdWinLog(ALog: string);
+  
+var
+  _AppCmdWinLog: procedure (ALog: string);
+
 implementation
 
 uses
@@ -15,42 +20,48 @@ uses
   ctpConsoleAppCommandWnd_CopyData,
   {WMCopyData, } TcpAgentConsole;
 
+procedure AppCmdWinLog(ALog: string);
+begin
+  if Assigned(_AppCmdWinLog) then
+    _AppCmdWinLog(ALog);
+end;
+
 procedure DoWMDEBUGOUTPUT(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('DoWMDEBUGOUTPUT');
+  AppCmdWinLog('DoWMDEBUGOUTPUT');
 end;
 
 procedure WMMDFrontDisconnected(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMMDFrontDisconnected');
+  AppCmdWinLog('WMMDFrontDisconnected');
   GTcpAgentConsole.Quote.IsMDConnected := false;
 end;
               
 procedure WMDealFrontDisconnected(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMDealFrontDisconnected');
+  AppCmdWinLog('WMDealFrontDisconnected');
   GTcpAgentConsole.Deal.IsDealConnected := false;
 end;
 
 procedure WMMDHeartBeatWarning(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMHeartBeatWarning');
+  AppCmdWinLog('WMHeartBeatWarning');
 end;
              
 procedure WMDealHeartBeatWarning(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMDealHeartBeatWarning');
+  AppCmdWinLog('WMDealHeartBeatWarning');
 end;
 
 procedure WMMDFrontConnected(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMMDFrontConnected');
+  AppCmdWinLog('WMMDFrontConnected');
   GTcpAgentConsole.Quote.IsMDConnected := true;
 end;
                
 procedure WMDealFrontConnected(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMDealFrontConnected');
+  AppCmdWinLog('WMDealFrontConnected');
   GTcpAgentConsole.Deal.IsDealConnected := true;
 end;
 
@@ -58,13 +69,13 @@ procedure WMMDRspUserLogin(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARA
 begin                               
   if 1 = wParam then
   begin
-    //AppCmdWinLog('WMMDRspUserLogin succ');
+    AppCmdWinLog('WMMDRspUserLogin succ');
     GTcpAgentConsole.Quote.IsMDLogined := true;
   end else
   begin
     if 100 = wParam then
     begin
-      //AppCmdWinLog('WMMDRspUserLogin fail');
+      AppCmdWinLog('WMMDRspUserLogin fail');
     end;
   end;
 end;
@@ -73,46 +84,46 @@ procedure WMDealRspUserLogin(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPA
 begin
   if 1 = wParam then
   begin                   
-    //AppCmdWinLog('WMDealRspUserLogin succ');
+    AppCmdWinLog('WMDealRspUserLogin succ');
     GTcpAgentConsole.Deal.IsDealLogined := true;
     PostMessage(AWnd, WM_User_Logined_Deal, 0, 0);
   end else
   begin
     if 100 = wParam then
     begin
-      //AppCmdWinLog('WMDealRspUserLogin fail');
+      AppCmdWinLog('WMDealRspUserLogin fail');
     end;
   end;
 end;
 
 procedure WMRspUnSubMarketData(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMRspUnSubMarketData');
+  AppCmdWinLog('WMRspUnSubMarketData');
 end;
 
 procedure WMRtnDepthMarketData(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMRtnDepthMarketData');
+  AppCmdWinLog('WMRtnDepthMarketData');
 end;
 
 procedure WMMDIsErrorRspInfo(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMMDIsErrorRspInfo');
+  AppCmdWinLog('WMMDIsErrorRspInfo');
 end;
                 
 procedure WMDealIsErrorRspInfo(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMDealIsErrorRspInfo');
+  AppCmdWinLog('WMDealIsErrorRspInfo');
 end;
 
 procedure WMRspSubMarketData(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMRspSubMarketData');
+  AppCmdWinLog('WMRspSubMarketData');
 end;
                            
 procedure WMRspQryTradingAccount(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM);
 begin
-  //AppCmdWinLog('WMRspQryTradingAccount');
+  AppCmdWinLog('WMRspQryTradingAccount');
 end;
                    
 var

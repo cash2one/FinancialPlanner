@@ -10,6 +10,7 @@ type
   protected          
     fMainForm: TfrmBase; 
   public
+    procedure DoLog(ALog: string);
     function Initialize: Boolean; override;
     procedure Finalize; override;
     procedure Run; override;
@@ -34,6 +35,11 @@ begin
   inherited;
 
 end;
+                    
+procedure DoAppCmdWinLog(ALog: string);
+begin
+  GlobalApp.DoLog(ALog);
+end;
 
 function TctpConsoleApp.Initialize: Boolean;
 begin
@@ -47,7 +53,8 @@ begin
   if nil = GTcpAgentConsole then
   begin
     GTcpAgentConsole := TTcpAgentConsole.Create;
-  end;
+  end;            
+  _AppCmdWinLog := DoAppCmdWinLog;
 end;
 
 procedure TctpConsoleApp.Run;
@@ -59,6 +66,13 @@ begin
   TfrmFunctionsTab(fMainForm).AddFunctionTab('交易', TfrmCtpDeal);
   TfrmFunctionsTab(fMainForm).AddFunctionTab('行情', TfrmCtpQuote);  
   Application.Run;
+end;
+
+procedure TctpConsoleApp.DoLog(ALog: string);
+begin
+  if '' <> ALog then
+  begin  
+  end;
 end;
 
 end.

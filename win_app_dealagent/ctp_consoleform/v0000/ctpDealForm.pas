@@ -54,6 +54,8 @@ type
     procedure btnShutDownClick(Sender: TObject);
     procedure btnDealBuyClick(Sender: TObject);
     procedure btnDealSaleClick(Sender: TObject);
+    procedure btnQueryHoldClick(Sender: TObject);
+    procedure btnQueryMoneyClick(Sender: TObject);
   protected                         
     procedure CreateParams(var Params: TCreateParams); override;    
   public
@@ -68,8 +70,14 @@ uses
   TcpAgentConsole,
   define_app_msg,
   define_ctp_deal,
+  ctpConsoleAppCommandWnd,
   TcpInitUtils;
-  
+
+(*// ÉêÍò½»Ò×
+  tcp://180.168.212.51:41205
+  tcp://180.168.212.52:41205
+//*)
+
 constructor TfrmCtpDeal.Create(Owner: TComponent);
 begin
   inherited;
@@ -122,6 +130,28 @@ procedure TfrmCtpDeal.btnLogoutDealClick(Sender: TObject);
 begin
   if GTcpAgentConsole.Deal.FindSrvWindow then
     SendMessage(GTcpAgentConsole.Deal.SrvWND, WM_C2S_Deal_RequestUserLogout, GTcpAgentConsole.CheckOutRequestId, 0);
+end;
+
+procedure TfrmCtpDeal.btnQueryHoldClick(Sender: TObject);
+var
+  tmpHold: string;
+begin
+  inherited;
+  tmpHold := Trim(edtHold.Text);
+  if '' <> tmpHold then
+  begin
+    if GTcpAgentConsole.Deal.FindSrvWindow then
+      GTcpAgentConsole.Deal.QueryUserHold(tmpHold);
+  end;
+//
+end;
+
+procedure TfrmCtpDeal.btnQueryMoneyClick(Sender: TObject);
+begin
+  inherited;  
+  if GTcpAgentConsole.Deal.FindSrvWindow then
+    GTcpAgentConsole.Deal.QueryMoney;
+//
 end;
 
 procedure TfrmCtpDeal.btnDealBuyClick(Sender: TObject);

@@ -31,7 +31,8 @@ uses
   ctpConsoleAppCommandWnd in 'ctpConsoleAppCommandWnd.pas',
   ctpConsoleAppCommandWnd_CopyData in 'ctpConsoleAppCommandWnd_CopyData.pas',
   define_ctp_quote in 'define_ctp_quote.pas',
-  define_ctp_deal in 'define_ctp_deal.pas';
+  define_ctp_deal in 'define_ctp_deal.pas',
+  define_ctp in 'define_ctp.pas';
 
 {$R *.res}
 

@@ -84,7 +84,7 @@ begin
    // 查询保证金
   if ATradingAccount = nil then
     exit;
-  //PTradingAccount(@GTcpAgentConsole.Deal.OrgData.TradingAccount).Data := ATradingAccount^;
+  PTradingAccount(@GTcpAgentConsole.Deal.TradingAccount).Data := ATradingAccount^;
   if ATradingAccount.AccountID <> '' then
   begin
 
@@ -94,17 +94,17 @@ end;
 procedure HandleInvestorPosition(AInvestorPosition: PhostFtdcInvestorPositionField);
 var
   tmpInstrumentId: AnsiString;
-//  tmpInvestorPosition: PInvestorPosition;
+  tmpInvestorPosition: PInvestorPosition;
 begin
   if AInvestorPosition = nil then
     Exit;
   // 查询持仓
   tmpInstrumentId := AInvestorPosition.InstrumentId;
-//  tmpInvestorPosition := GTcpAgentConsole.Deal.OrgData.CheckOutInvestorPosition(tmpInstrumentId);
-//  if tmpInvestorPosition <> nil then
-//  begin
-//    tmpInvestorPosition.Data := AInvestorPosition^;
-//  end;
+  tmpInvestorPosition := GTcpAgentConsole.Deal.CheckOutInvestorPosition(tmpInstrumentId);
+  if tmpInvestorPosition <> nil then
+  begin
+    tmpInvestorPosition.Data := AInvestorPosition^;
+  end;
   if AInvestorPosition.InvestorID <> '' then
   begin
 
@@ -129,9 +129,9 @@ begin
     tmpDeal := GTcpAgentConsole.Deal.FindDealByRequestId(AInputOrder.RequestID);
     if tmpDeal <> nil then
     begin
-      //tmpDeal.OrderResponse := GTcpAgentConsole.Deal.CheckOutOrderResponse(tmpDeal);
-          //tmpDeal.OrderResponse.ExchangeID := tmpData3.
-          //tmpDeal.OrderResponse.OrderSysID :=
+      tmpDeal.OrderResponse := GTcpAgentConsole.Deal.CheckOutOrderResponse(tmpDeal);
+      //tmpDeal.OrderResponse.ExchangeID := tmpData3.
+      //tmpDeal.OrderResponse.OrderSysID :=
     end;
   end;    
 end;
@@ -257,7 +257,7 @@ begin
     begin                 
       if tmpDeal.OrderResponse = nil then
       begin
-        //tmpDeal.OrderResponse := GTcpAgentConsole.Deal.CheckOutOrderResponse(tmpDeal);
+        tmpDeal.OrderResponse := GTcpAgentConsole.Deal.CheckOutOrderResponse(tmpDeal);
       end;
       if tmpDeal.ExchangeID = '' then // CFFEX
         tmpDeal.ExchangeID := AOrder.ExchangeID; // CFFEX
@@ -270,8 +270,8 @@ begin
       begin              
         tmpIsHandleStep := true;   
         tmpDeal.Status := deal_Deal;
-//        if tmpDeal.OrderRequest.Mode = modeOpen then
-//        begin                         
+        if tmpDeal.OrderRequest.Mode = modeOpen then
+        begin
 //          if GTcpAgentConsole.Deal.LastRequestDeal <> nil then
 //          begin
 //            if GTcpAgentConsole.Deal.LastRequestDeal.BrokerOrderSeq = AOrder.BrokerOrderSeq then
@@ -279,7 +279,7 @@ begin
 //              PostMessage(AWnd, WM_M2M_OpenDeal, Integer(tmpDeal), 0);
 //            end;
 //          end;
-//        end;
+        end;
       end;
       if not tmpIsHandleStep then
       begin
