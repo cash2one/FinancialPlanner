@@ -6,12 +6,14 @@ uses
   BaseWinApp in '..\..\..\devwintech\v0000\win_base\BaseWinApp.pas',
   BaseForm in '..\..\..\devwintech\v0000\win_ui\BaseForm.pas' {frmBase},
   FormFunctionsTab in '..\..\..\devwintech\v0000\win_ui\FormFunctionsTab.pas' {frmFunctionsTab},
+  define_deal in '..\..\basedefine\define_deal.pas',
+  define_price in '..\..\basedefine\define_price.pas',
   dealHistoryForm in 'dealHistoryForm.pas' {frmDealHistory},
   dealHistoryApp in 'dealHistoryApp.pas';
 
 {$R *.res}
 
-begin          
+begin
   RunApp(TdealHistoryApp, 'dealHistoryApp', TBaseApp(GlobalApp));
 //  Application.Initialize;
 //  Application.MainFormOnTaskbar := True;

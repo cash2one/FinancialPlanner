@@ -13,4 +13,13 @@ object frmDealHistory: TfrmDealHistory
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
+  object mmo1: TMemo
+    Left = 48
+    Top = 48
+    Width = 185
+    Height = 89
+    Lines.Strings = (
+      'mmo1')
+    TabOrder = 0
+  end
 end
