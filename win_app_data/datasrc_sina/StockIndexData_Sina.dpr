@@ -1,4 +1,4 @@
-﻿program StockDay_Sina;
+﻿program StockIndexData_Sina;
 
 uses
   Windows,
@@ -20,7 +20,7 @@ uses
   UtilsHttp in '..\..\..\devwintech\v0000\win_utils\UtilsHttp.pas',
   UtilsHtmlParser in '..\..\..\devwintech\v0000\win_utils\UtilsHtmlParser.pas',
   UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
-  UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',  
+  UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',
   UtilsDateTime in '..\..\..\devwintech\v0000\win_utils\UtilsDateTime.pas',
   win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
   BaseStockApp in '..\..\base\BaseStockApp.pas',
@@ -38,15 +38,13 @@ uses
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
-  StockDayData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina.pas',
-  StockDetailData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDetailData_Get_Sina.pas',
-  FuturesData_Get_Sina in '..\..\data_futures\datasrc_sina\FuturesData_Get_Sina.pas',
-  StockDay_Get_Sina in 'StockDay_Get_Sina.pas';
+  StockIndexData_Get_Sina in '..\..\data_stock\datasrc_sina\StockIndexData_Get_Sina.pas',
+  StockIndex_Get_Sina in 'StockIndex_Get_Sina.pas';
 
 {$R *.res}
 
 type
-  TStockDaySinaApp = class(TBaseStockApp)
+  TStockIndexDataSinaApp = class(TBaseStockApp)
   protected
   public     
     constructor Create(AppClassId: AnsiString); override;
@@ -55,20 +53,20 @@ type
 
 { TStockDay163App }
 
-constructor TStockDaySinaApp.Create(AppClassId: AnsiString);
+constructor TStockIndexDataSinaApp.Create(AppClassId: AnsiString);
 begin
   inherited;
 end;
 
-procedure TStockDaySinaApp.Run;
+procedure TStockIndexDataSinaApp.Run;
 begin
-  GetStockDataDay_Sina_All(Self, false);
+  GetStockIndexData_Sina_All(Self, false);
 end;
 
 var
-  GlobalApp: TStockDaySinaApp;
+  GlobalApp: TStockIndexDataSinaApp;
 begin
-  GlobalApp := TStockDaySinaApp.Create('');
+  GlobalApp := TStockIndexDataSinaApp.Create('');
   try
     if GlobalApp.Initialize then
       GlobalApp.Run;
