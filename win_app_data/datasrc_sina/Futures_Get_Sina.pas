@@ -29,7 +29,7 @@ uses
 procedure GetFuturesData_Sina_All(App: TBaseApp);
 var
   tmpDBDealItem: TDBDealItem;  
-  tmpNetClientSession: TNetClientSession;
+  tmpNetClientSession: THttpClientSession;
   i: integer;
 begin              
   FillChar(tmpNetClientSession, SizeOf(tmpNetClientSession), 0);

@@ -12,19 +12,19 @@ type
   TFutureAppPath = class(TBaseWinAppPath)
   protected
     fDataBasePath: string;
-    fDBType: integer;   
-    function GetDataBasePath(ADBType: integer; ADataSrc: integer): string; override;
-    function GetInstallPath: string; override;
+    fDBType: integer;
+    function GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString; override;
+    function GetInstallPath: WideString; override;
   public
-    function GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): string; override;
-    function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string; override;
-    function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string; override;
-    function GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string; override;
+    function GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;
+    function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
+    function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
+    function GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
   end;
   
 implementation
 
-function TFutureAppPath.GetDataBasePath(ADBType: integer; ADataSrc: integer): string;
+function TFutureAppPath.GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString;
 var
   tmpDataSrcCode: string;
 begin
@@ -57,7 +57,7 @@ begin
   Result := fDataBasePath;
 end;
 
-function TFutureAppPath.GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): string;
+function TFutureAppPath.GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
 begin
   Result := '';
   if FilePath_DBType_DetailData = ADBType then
@@ -95,7 +95,7 @@ begin
   end;
 end;
 
-function TFutureAppPath.GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string;
+function TFutureAppPath.GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString;
 begin
   Result := '';
   if FilePath_DBType_DetailData = ADBType then
@@ -135,7 +135,7 @@ begin
   end;
 end;
 
-function TFutureAppPath.CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string;
+function TFutureAppPath.CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString;
 var
   tmpFileName: AnsiString;
   tmpFilePath: AnsiString;
@@ -150,7 +150,7 @@ begin
   end;
 end;
 
-function TFutureAppPath.GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: string): string;
+function TFutureAppPath.GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString;
 var
   tmpFileName: AnsiString;
   tmpFilePath: AnsiString;
@@ -164,7 +164,7 @@ begin
   end;
 end;
 
-function TFutureAppPath.GetInstallPath: string;
+function TFutureAppPath.GetInstallPath: WideString;
 begin
   Result := ExtractFilePath(ParamStr(0));
 end;
