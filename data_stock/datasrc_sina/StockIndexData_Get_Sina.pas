@@ -42,8 +42,16 @@ const
   );
     
 const
-  BaseSinaDayUrl1 = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/';
-  BaseSinaDayUrl2 = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_FuQuanMarketHistory/stockid/';
+  BaseSinaIndexDayUrl1 = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/';
+
+  (*//
+  新浪没找到 搜狐倒是找到了
+  http://q.stock.sohu.com/zs/000001/cjmx.shtml 上证指数 
+  http://q.stock.sohu.com/zs/000300/cjmx.shtml 沪深 300
+
+  http://www.cnindex.com.cn/
+  //*)
+  
   (*//
   // 上证指数
   // http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/000001/type/S.phtml?year=2015&jidu=1
