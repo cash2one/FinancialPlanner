@@ -11,7 +11,8 @@ type
     DealItem: PRT_DealItem;
   end;
 
-  TDealItemColumns_BaseInfo = record
+  TDealItemColumns_BaseInfo = record  
+    Col_Index: TVirtualTreeColumn;
     Col_Code: TVirtualTreeColumn;
     Col_Name: TVirtualTreeColumn;
     Col_FirstDealDate: TVirtualTreeColumn;
@@ -60,7 +61,8 @@ type
     procedure BuildDealItemsTreeNodes;
     procedure InitializeDealItemsTree;
     procedure Clear;    
-
+                                                               
+    function AddDealItemsTreeColumn_Index: TVirtualTreeColumn;
     function AddDealItemsTreeColumn_Code: TVirtualTreeColumn;
     function AddDealItemsTreeColumn_Name: TVirtualTreeColumn;
     function AddDealItemsTreeColumn_FirstDeal: TVirtualTreeColumn;
@@ -93,12 +95,14 @@ begin
   // -----------------------------------
   fDealItemTreeData.TreeView.Header.Options := [hoVisible, hoColumnResize];
   // -----------------------------------
+  AddDealItemsTreeColumn_Index;
   AddDealItemsTreeColumn_Code;
   AddDealItemsTreeColumn_Name;
   AddDealItemsTreeColumn_FirstDeal;
   AddDealItemsTreeColumn_EndDeal;
   // -----------------------------------
-  fDealItemTreeData.TreeView.TreeOptions.AnimationOptions := []; 
+  fDealItemTreeData.TreeView.Indent := 4;
+  fDealItemTreeData.TreeView.TreeOptions.AnimationOptions := [];
   fDealItemTreeData.TreeView.TreeOptions.SelectionOptions := [toExtendedFocus,toFullRowSelect];
   fDealItemTreeData.TreeView.TreeOptions.AutoOptions := [
     {toAutoDropExpand,
@@ -108,7 +112,18 @@ begin
     toAutoDeleteMovedNodes,
     toAutoChangeScale}];
 end;
-                                                                    
+                            
+function TDealItemTree.AddDealItemsTreeColumn_Index: TVirtualTreeColumn;
+begin
+  if nil = fDealItemTreeData.Columns_BaseInfo.Col_Index then
+  begin
+    fDealItemTreeData.Columns_BaseInfo.Col_Index := fDealItemTreeData.TreeView.Header.Columns.Add;
+    fDealItemTreeData.Columns_BaseInfo.Col_Index.Width := 50;
+    fDealItemTreeData.Columns_BaseInfo.Col_Index.Text := 'ID';
+  end;
+  Result := fDealItemTreeData.Columns_BaseInfo.Col_Index;
+end;
+
 function TDealItemTree.AddDealItemsTreeColumn_Code: TVirtualTreeColumn;
 begin
   if nil = fDealItemTreeData.Columns_BaseInfo.Col_Code then
@@ -198,7 +213,16 @@ begin
   CellText := '';
   tmpVData := Sender.GetNodeData(Node);
   if nil <> tmpVData then
-  begin
+  begin              
+    if nil <> fDealItemTreeData.Columns_BaseInfo.Col_Index then
+    begin
+      if Column = fDealItemTreeData.Columns_BaseInfo.Col_Index.Index then
+      begin
+        CellText := IntToStr(Node.Index)
+        ;
+        exit;
+      end;
+    end;
     if nil <> tmpVData.DealItem then
     begin
       if nil <> fDealItemTreeData.Columns_BaseInfo.Col_Code then

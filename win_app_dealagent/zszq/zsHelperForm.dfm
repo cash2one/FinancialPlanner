@@ -18,6 +18,34 @@ object frmZSHelper: TfrmZSHelper
     Width = 105
     Height = 48
   end
+  object Label1: TLabel
+    Left = 256
+    Top = 73
+    Width = 51
+    Height = 13
+    Caption = 'stock code'
+  end
+  object Label2: TLabel
+    Left = 256
+    Top = 100
+    Width = 23
+    Height = 13
+    Caption = 'price'
+  end
+  object Label3: TLabel
+    Left = 256
+    Top = 127
+    Width = 32
+    Height = 13
+    Caption = 'money'
+  end
+  object Label4: TLabel
+    Left = 256
+    Top = 154
+    Width = 20
+    Height = 13
+    Caption = 'num'
+  end
   object btnbuy: TButton
     Left = 256
     Top = 178
@@ -71,7 +99,7 @@ object frmZSHelper: TfrmZSHelper
     OnClick = btnlaunchClick
   end
   object edStock: TEdit
-    Left = 256
+    Left = 328
     Top = 70
     Width = 121
     Height = 21
@@ -79,7 +107,7 @@ object frmZSHelper: TfrmZSHelper
     Text = '002494'
   end
   object edPrice: TEdit
-    Left = 256
+    Left = 328
     Top = 97
     Width = 121
     Height = 21
@@ -96,7 +124,7 @@ object frmZSHelper: TfrmZSHelper
     OnClick = btnConfirmDealClick
   end
   object edMoney: TEdit
-    Left = 256
+    Left = 328
     Top = 124
     Width = 121
     Height = 21
@@ -131,7 +159,7 @@ object frmZSHelper: TfrmZSHelper
     OnClick = btnCheckMoneyClick
   end
   object edNum: TEdit
-    Left = 256
+    Left = 328
     Top = 151
     Width = 121
     Height = 21
@@ -155,5 +183,16 @@ object frmZSHelper: TfrmZSHelper
     Caption = 'Check Deal Panel'
     TabOrder = 15
     OnClick = btnCheckDealPanelSizeClick
+  end
+  object btnCloseDialog: TButton
+    Left = 379
+    Top = 8
+    Width = 100
+    Height = 25
+    BiDiMode = bdLeftToRight
+    Caption = 'Close Dialog'
+    ParentBiDiMode = False
+    TabOrder = 16
+    OnClick = btnCloseDialogClick
   end
 end
