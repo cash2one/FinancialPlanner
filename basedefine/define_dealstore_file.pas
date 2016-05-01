@@ -13,16 +13,16 @@ const
   FilePath_DBType_DetailData    = 5;
   FilePath_DBType_ValueData     = 6;
 
-  FileExt_StockDay        = 'sday';
-  FileExt_StockDayWeight  = 'sdaw';
+  FileExt_StockDay        = 'sd';
+  FileExt_StockDayWeight  = 'sdw';
 
-  FileExt_StockDetail     = 'sdet';
-  FileExt_StockAnalysis   = 'sana';
-  FileExt_StockInstant    = 'sint';
-  FileExt_StockValue      = 'svue';
+  FileExt_StockDetail     = 'sdt';
+  FileExt_StockAnalysis   = 'sas';
+  FileExt_StockInstant    = 'sit';
+  FileExt_StockValue      = 'sve';
 
-  FileExt_FuturesDetail   = 'qdet';
-  FileExt_FuturesAnalysis = 'qana';
+  FileExt_FuturesDetail   = 'qdt';
+  FileExt_FuturesAnalysis = 'qas';
 
 implementation
 
