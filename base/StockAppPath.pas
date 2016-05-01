@@ -42,7 +42,7 @@ begin
     Result := GetInstallPath + FilePath_StockData + '\' + FileExt_StockValue + tmpDataSrcCode + '\';
       
   if FilePath_DBType_ItemDB = ADBType then
-    Result := GetInstallPath + FilePath_StockData + '\' + 'sdic' + '\';
+    Result := GetInstallPath + FilePath_StockData + '\' + 's_dic' + '\';
   if '' = Result then
   begin
     if '' <> tmpDataSrcCode then
