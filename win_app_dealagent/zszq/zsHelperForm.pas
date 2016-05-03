@@ -25,6 +25,11 @@ type
     edNum: TEdit;
     btnSale: TButton;
     btnCheckDealPanelSize: TButton;
+    btnCloseDialog: TButton;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
     procedure btnMainClick(Sender: TObject);
     procedure btnlaunchClick(Sender: TObject);
     procedure btnbuyClick(Sender: TObject);
@@ -34,6 +39,7 @@ type
     procedure btnCheckMoneyClick(Sender: TObject);
     procedure btnSaleClick(Sender: TObject);
     procedure btnCheckDealPanelSizeClick(Sender: TObject);
+    procedure btnCloseDialogClick(Sender: TObject);
   protected                         
     function GetBuyPriceStep1(APrice: double): double;
     function GetBuyPriceStep2(APrice: double): double;    
@@ -272,6 +278,16 @@ begin
       exit;
   end;
   CheckZSMoneyWindow(@GZsDealSession.MainWindow);
+end;
+
+procedure TfrmZSHelper.btnCloseDialogClick(Sender: TObject);
+begin
+  inherited;     
+  if FindZSMainWindow(@GZsDealSession) then
+  begin
+    CheckZSMainWindow(@GZsDealSession.MainWindow);
+    CloseAllDialogs(@GZsDealSession);
+  end;
 end;
 
 procedure TfrmZSHelper.btnConfirmDealClick(Sender: TObject);

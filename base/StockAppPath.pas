@@ -42,7 +42,7 @@ begin
     Result := GetInstallPath + FilePath_StockData + '\' + FileExt_StockValue + tmpDataSrcCode + '\';
       
   if FilePath_DBType_ItemDB = ADBType then
-    Result := GetInstallPath + FilePath_StockData + '\' + 'sdic' + '\';
+    Result := GetInstallPath + FilePath_StockData + '\' + 's_dic' + '\';
   if '' = Result then
   begin
     if '' <> tmpDataSrcCode then
@@ -118,7 +118,7 @@ begin
       end;
     end else
     begin
-      Result := Result + '.' + FileExt_StockDetail;
+      Result := Result + '.' + FileExt_StockDetail + IntToStr(ADataSrc);
     end;
     exit;
   end;              
@@ -126,7 +126,7 @@ begin
   begin
     if nil <> AParam then
     begin
-      Result := PRT_DealItem(AParam).sCode + '.' + FileExt_StockDay;
+      Result := PRT_DealItem(AParam).sCode + '.' + FileExt_StockDay + IntToStr(ADataSrc);
     end;
     exit;
   end;
@@ -134,7 +134,7 @@ begin
   begin
     if nil <> AParam then
     begin
-      Result := PRT_DealItem(AParam).sCode + '.' + FileExt_StockDayWeight;
+      Result := PRT_DealItem(AParam).sCode + '.' + FileExt_StockDayWeight + IntToStr(ADataSrc);
     end;
     exit;
   end;

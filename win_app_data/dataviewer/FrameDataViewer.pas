@@ -14,9 +14,11 @@ uses
 type
   TDataViewerData = record
     StockDayDataAccess: StockDayDataAccess.TStockDayDataAccess;
+    IsWeight: Boolean;
         
     Rule_BDZX_Price: TRule_BDZX_Price;  
     Rule_CYHT_Price: TRule_CYHT_Price;
+    DataSrcId: integer;
   end;
 
   TfmeDataViewer = class(TfrmBase)
@@ -121,6 +123,7 @@ begin
   inherited;
   //fStockDetailDataAccess := nil;
   FillChar(fDataViewerData, SizeOf(fDataViewerData), 0);
+  fDataViewerData.DataSrcId := DataSrc_163;
   
   //fRule_Boll_Price := nil;
   //fRule_CYHT_Price := nil;
@@ -143,29 +146,21 @@ var
   tmpStockDataNode: PStockDayDataNode;
   tmpStockData: PRT_Quote_M1_Day;
   tmpNode: PVirtualNode;
-  tmpStr: string;
 begin
   vtDayDatas.Clear;
   if nil = AStockItem then
     exit;
   fDataViewerData.StockDayDataAccess := AStockItem.StockDayDataAccess;
   if nil = fDataViewerData.StockDayDataAccess then
-  begin
-    fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem,
-      DataSrc_163, false);
-  end;
+    fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DataSrcId, fDataViewerData.IsWeight);
   fDataViewerData.Rule_BDZX_Price := AStockItem.Rule_BDZX_Price;
   fDataViewerData.Rule_CYHT_Price := AStockItem.Rule_CYHT_Price;
-  tmpStr := '';
+
   for i := fDataViewerData.StockDayDataAccess.RecordCount - 1 downto 0 do
   begin
     tmpStockData := fDataViewerData.StockDayDataAccess.RecordItem[i];
     tmpNode := vtDayDatas.AddChild(nil);
     tmpStockDataNode := vtDayDatas.GetNodeData(tmpNode);
-    if '' = tmpStr then
-    begin
-      tmpStr := FormatDateTime('yyyymmdd', tmpStockData.DealDateTime.Value);
-    end;
     tmpStockDataNode.QuoteData := tmpStockData;
     tmpStockDataNode.DayIndex := i;
   end;
@@ -253,6 +248,8 @@ begin
     tmpCol.Text := DetailColumnsText[col_detail];
     tmpCol.Width := 120;
   end;
+
+  fDataViewerData.DataSrcId := DataSrc_163;
 end;
                    
 procedure TfmeDataViewer.vtDayDatasGetText(Sender: TBaseVirtualTree;
@@ -260,7 +257,7 @@ procedure TfmeDataViewer.vtDayDatasGetText(Sender: TBaseVirtualTree;
   var CellText: WideString);
 var
   tmpNodeData: PStockDayDataNode;
-begin
+begin     
   CellText := '';    
   tmpNodeData := Sender.GetNodeData(Node);
   if nil <> tmpNodeData then
