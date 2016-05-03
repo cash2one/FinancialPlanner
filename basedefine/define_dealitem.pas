@@ -47,7 +47,7 @@ type
 implementation
 
 uses
-  SysUtils, Define_String;
+  SysUtils, sysdef_string;
   
 function getStockCodePack(AStockCode: AnsiString) : integer;
 begin
