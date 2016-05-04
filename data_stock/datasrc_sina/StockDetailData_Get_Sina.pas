@@ -5,7 +5,8 @@ interface
 uses
   BaseApp,
   Sysutils,
-  UtilsHttp,   
+  UtilsHttp,
+  StockDayDataAccess,
   define_dealitem,
   win.iobuffer;
 
@@ -34,7 +35,7 @@ const
     '成交时间', '成交价', '价格变动',
     '成交量', '成交额', '性质');
 
-  function GetStockDataDetail_Sina(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PHttpClientSession): Boolean;
+  function GetStockDataDetail_Sina(App: TBaseApp; AStockDayAccess: TStockDayDataAccess; ANetSession: PHttpClientSession): Boolean;
 
 implementation
 
@@ -50,7 +51,7 @@ var
   tmpFilePathRoot: AnsiString;
   tmpFilePathYear: AnsiString;
   tmpFileName: AnsiString;
-  tmpFileName2: AnsiString;  
+//  tmpFileName2: AnsiString;  
   tmpFileExt: AnsiString; 
   tmpHttpHeadParse: THttpHeadParseSession;  
   tmpRowDatas: TStringList;
@@ -136,10 +137,14 @@ begin
   end;
 end;
 
-function GetStockDataDetail_Sina(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PHttpClientSession): Boolean;
+function GetStockDataDetail_Sina(App: TBaseApp; AStockDayAccess: TStockDayDataAccess; ANetSession: PHttpClientSession): Boolean;
 begin             
   Result := false;
-  GetStockDayDetailData_Sina(App, AStockItem, ANetSession, Trunc(now) - 2);
+  if 0 < AStockDayAccess.LastDealDate then
+  begin
+    // Trunc(now) - 2
+    GetStockDayDetailData_Sina(App, AStockDayAccess.StockItem, ANetSession, AStockDayAccess.LastDealDate);
+  end;
 end;
 
 end.

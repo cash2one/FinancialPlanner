@@ -190,17 +190,12 @@ end;
                          
 function HtmlParse_DayData_Sina_Table(ADataAccess: TStockDayDataAccess; AParseRecord: PParseRecord; ANode: IHtmlElement): Boolean;
 var
-  i, j, k: integer;
+  i, j: integer;
   tmpNode1: IHtmlElement;
-  tmpNode2: IHtmlElement;
   tmpcnt1: integer;
   tmpcnt2: integer;
-  tmpcnt3: integer;
   tmpRow: integer;
-  tmpCol: integer;
-  tmpData: string;   
   tmpTagName: string;
-  tmpIsSkipRow: Boolean;
 var
   tmpHeadColName: TDealDayDataHeadName_Sina;
 begin
@@ -283,9 +278,7 @@ end;
 function DataParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AResultData: PIOBuffer): Boolean; overload;
 var     
   tmpParseRec: TParseRecord;
-  tmpPos: Integer;
   // 168k 的数据太大 不能这样设置
-  tmpStrs: TStringList;
   tmpHttpHeadSession: THttpHeadParseSession;
 begin
   Result := False;

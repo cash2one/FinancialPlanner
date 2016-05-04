@@ -29,7 +29,7 @@ function GetDataSrcCode(ADataSrc: integer): AnsiString;
 begin
   Result := '';
   case ADataSrc of
-    DataSrc_CTP        : Result := 'cp';
+    DataSrc_CTP        : Result := 'ctp';
     DataSrc_Standard   : Result := 'gov'; //  official 来至官方 证券交易所
     DataSrc_Sina       : Result := 'sina';
     DataSrc_163        : Result := '163';
