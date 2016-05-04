@@ -3,7 +3,8 @@ unit BaseStockApp;
 interface
 
 uses
-  BaseWinApp, BaseApp, db_dealitem;
+  BaseWinApp, BaseApp, 
+  StockAppPath, db_dealitem;
   
 type
   TBaseStockAppData = record
@@ -14,11 +15,13 @@ type
   protected
     fBaseStockAppData: TBaseStockAppData; 
     function GetPath: TBaseAppPath; override;
+    function GetStockAppPath: TStockAppPath;
   public
     constructor Create(AppClassId: AnsiString); override;
     destructor Destroy; override;     
-    procedure InitializeDBStockItem;    
+    procedure InitializeDBStockItem(AIsLoadDBStockItemDic: Boolean = True);    
     property StockItemDB: TDBDealItem read fBaseStockAppData.StockItemDB;
+    property StockAppPath: TStockAppPath read GetStockAppPath;
   end;
 
 var
@@ -27,7 +30,6 @@ var
 implementation
 
 uses
-  StockAppPath,
   db_dealitem_Load;
                      
 constructor TBaseStockApp.Create(AppClassId: AnsiString);
@@ -51,17 +53,25 @@ end;
 
 function TBaseStockApp.GetPath: TBaseAppPath;
 begin
+  Result := GetStockAppPath;
+end;
+
+function TBaseStockApp.GetStockAppPath: TStockAppPath;
+begin
   if nil = fBaseWinAppData.AppPath then
     fBaseWinAppData.AppPath := TStockAppPath.Create(Self);
-  Result := fBaseWinAppData.AppPath;
+  Result := TStockAppPath(fBaseWinAppData.AppPath);
 end;
-              
-procedure TBaseStockApp.InitializeDBStockItem;
+
+procedure TBaseStockApp.InitializeDBStockItem(AIsLoadDBStockItemDic: Boolean = True);
 begin              
   if nil = fBaseStockAppData.StockItemDB then
   begin              
     fBaseStockAppData.StockItemDB := TDBDealItem.Create;
-    db_dealitem_Load.LoadDBStockItemDic(Self, fBaseStockAppData.StockItemDB);
+    if AIsLoadDBStockItemDic then
+    begin
+      db_dealitem_Load.LoadDBStockItemDic(Self, fBaseStockAppData.StockItemDB);
+    end;
   end;
 end;
 

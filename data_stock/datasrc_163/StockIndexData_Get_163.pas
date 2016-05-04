@@ -299,7 +299,18 @@ begin
     ADataAccess.Sort;
   end;
 end;
-                                                                                                               
+                         
+function GetStockIndexCode_163(AStockItem: PRT_DealItem): AnsiString;
+begin
+  if AStockItem.sCode[1] = '0' then
+  begin
+    Result := '0' + AStockItem.sCode;
+  end else
+  begin
+    Result := '1' + AStockItem.sCode;
+  end;
+end;
+
 function GetStockIndexData_163(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; AHttpSession: PHttpClientSession): Boolean;
 var
   tmpStockDataAccess: TStockDayDataAccess;
@@ -322,7 +333,7 @@ begin
     //LoadStockDayData(App, tmpStockDataAccess); 
     if CheckNeedLoadStockDayData(App, tmpStockDataAccess, tmpLastDealDate) then
     begin
-      tmpUrl := Base163DayUrl1 + 'code=' + GetStockCode_163(AStockItem);
+      tmpUrl := Base163DayUrl1 + 'code=' + GetStockIndexCode_163(AStockItem);
       if tmpStockDataAccess.LastDealDate > 0 then
       begin
         if tmpLastDealDate >= tmpStockDataAccess.LastDealDate + 1 then

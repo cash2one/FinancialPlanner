@@ -7,6 +7,7 @@ uses
   
   procedure LoadDBStockItemIni(App: TBaseApp; ADB: TDBDealItem);     
   procedure LoadDBStockItemIniFromFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
+  procedure SaveDBStockItemIniToFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
 
 implementation
 
@@ -89,6 +90,10 @@ begin
           if nil <> tmpStockItem then
           begin
             tmpStockItem.FirstDealDate := tmpItemsIni.ReadInteger(tmpSections[i], 'FirstDeal', 0);
+            if 0 = tmpStockItem.FirstDealDate then
+            begin
+              tmpStockItem.FirstDealDate := tmpItemsIni.ReadInteger(tmpSections[i], 'f', 0);
+            end;
             tmpStockItem.EndDealDate := tmpItemsIni.ReadInteger(tmpSections[i], 'e', 0);
             if 0 = tmpStockItem.EndDealDate then
             begin
@@ -106,6 +111,31 @@ begin
   finally
     tmpItemsIni.Free;
     tmpSections.Free;
+  end;
+end;
+
+procedure SaveDBStockItemIniToFile(App: TBaseApp; ADB: TDBDealItem; AFileUrl: string);
+var
+  i: integer;      
+  tmpStockItem: PRT_DealItem;   
+  tmpItemsIni: TIniFile;
+  tmpSection: string;  
+begin
+  tmpItemsIni := TIniFile.Create(AFileUrl);
+  try
+    for i := 0 to ADB.RecordCount - 1 do
+    begin
+      tmpStockItem := ADB.RecordItem[i];
+      if '' <> tmpStockItem.Name then
+      begin
+        tmpSection := tmpStockItem.sMarketCode + tmpStockItem.sCode;
+        tmpItemsIni.WriteString(tmpSection, 'n', tmpStockItem.Name);
+        if 0 < tmpStockItem.FirstDealDate then
+          tmpItemsIni.WriteInteger(tmpSection, 'f', tmpStockItem.FirstDealDate);
+      end;
+    end;
+  finally
+    tmpItemsIni.Free;
   end;
 end;
 

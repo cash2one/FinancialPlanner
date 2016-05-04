@@ -5,25 +5,25 @@ uses
   Sysutils,
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
-  BasePath in '..\..\..\devwintech\v0000\app_base\BasePath.pas',
-  BaseApp in '..\..\..\devwintech\v0000\app_base\BaseApp.pas',
-  BaseThread in '..\..\..\devwintech\v0000\app_base\BaseThread.pas',
-  BaseRun in '..\..\..\devwintech\v0000\app_base\BaseRun.pas',
-  BaseFile in '..\..\..\devwintech\v0000\app_base\BaseFile.pas',
+  sysdef_string in '..\..\..\devwintech\v0001\sysdef\sysdef_string.pas',
+  Base.Run in '..\..\..\devwintech\v0001\rec\app_base\Base.Run.pas',
+  BasePath in '..\..\..\devwintech\v0001\obj\app_base\BasePath.pas',
+  BaseApp in '..\..\..\devwintech\v0001\obj\app_base\BaseApp.pas',
+  BaseThread in '..\..\..\devwintech\v0001\obj\app_base\BaseThread.pas',
+  BaseFile in '..\..\..\devwintech\v0001\obj\app_base\BaseFile.pas',
+  BaseWinApp in '..\..\..\devwintech\v0001\obj\win_app\BaseWinApp.pas',
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
-  BaseWinApp in '..\..\..\devwintech\v0000\win_base\BaseWinApp.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
-  Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
   win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
   xlNetwork in '..\..\..\devwintech\v0000\win_net\xlNetwork.pas',
   xlTcpClient in '..\..\..\devwintech\v0000\win_netclient\xlTcpClient.pas',
   xlClientSocket in '..\..\..\devwintech\v0000\win_netclient\xlClientSocket.pas',
-  win.thread in '..\..\..\devwintech\v0000\win_system\win.thread.pas',
   UtilsHttp in '..\..\..\devwintech\v0000\win_utils\UtilsHttp.pas',
   UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
+  db_dealitem_loadIni in '..\..\dealitem\db_dealitem_loadIni.pas',
   db_dealitem_save in '..\..\dealitem\db_dealitem_save.pas',
   BaseStockApp in '..\..\base\BaseStockApp.pas',
   StockAppPath in '..\..\base\StockAppPath.pas',
@@ -59,6 +59,7 @@ end;
 
 procedure TStockIndex163App.Run;
 begin
+  StockAppPath.DBPathRoot := FilePath_StockIndexData;
   GetStockIndexData_163_All(Self);
 end;
 

@@ -3,8 +3,9 @@ unit define_dealstore_file;
 interface
 
 const                               
-  FilePath_StockData      = 'sdata';   
-  FilePath_FutureData     = 'fdata';
+  FilePath_StockData      = 'sdata';
+  FilePath_StockIndexData = 'sidx';     
+  FilePath_FutureData     = 'fdat';
 
   FilePath_DBType_ItemDB        = 1;
   FilePath_DBType_DayData       = 2;
@@ -15,7 +16,6 @@ const
 
   FileExt_StockDay        = 'sd';
   FileExt_StockDayWeight  = 'sdw';
-
   FileExt_StockDetail     = 'sdt';
   FileExt_StockAnalysis   = 'sas';
   FileExt_StockInstant    = 'sit';

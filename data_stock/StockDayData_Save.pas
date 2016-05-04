@@ -6,7 +6,8 @@ uses
   BaseApp,
   StockDayDataAccess;
 
-  procedure SaveStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess);
+  procedure SaveStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess); overload;
+  procedure SaveStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; AFileUrl: string); overload;
 
 implementation
         
@@ -18,41 +19,6 @@ uses
   define_dealstore_header,
   define_dealstore_file;
                        
-procedure SaveStockDayDataToBuffer(App: TBaseApp; ADataAccess: TStockDayDataAccess; AMemory: pointer); forward;
-
-procedure SaveStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess);
-var
-  tmpWinFile: TWinFile;
-  tmpFileUrl: string;
-  tmpFileMapView: Pointer; 
-  tmpFileNewSize: integer;
-begin
-  if ADataAccess.IsWeight then
-  begin
-    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
-  end else
-  begin
-    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
-  end;
-  tmpWinFile := TWinFile.Create;
-  try
-    if tmpWinFile.OpenFile(tmpFileUrl, true) then
-    begin
-      tmpFileNewSize := SizeOf(TStore_Quote_M1_Day_Header_V1Rec) + ADataAccess.RecordCount * SizeOf(TStore_Quote64_M1); //400k
-      tmpFileNewSize := ((tmpFileNewSize div (64 * 1024)) + 1) * 64 * 1024;
-      tmpWinFile.FileSize := tmpFileNewSize;
-
-      tmpFileMapView := tmpWinFile.OpenFileMap;
-      if nil <> tmpFileMapView then
-      begin                             
-        SaveStockDayDataToBuffer(App, ADataAccess, tmpFileMapView);
-      end;
-    end;
-  finally
-    tmpWinFile.Free;
-  end;
-end;
-
 procedure SaveStockDayDataToBuffer(App: TBaseApp; ADataAccess: TStockDayDataAccess; AMemory: pointer);
 var
   tmpHead: PStore_Quote_M1_Day_Header_V1Rec;
@@ -106,6 +72,45 @@ begin
       tmpStoreDayData.DealValue           := tmpRTDayData.DealValue;         // 8 - 56 流通市值
       Inc(tmpQuoteData);
     end;
+  end;
+end;
+
+procedure SaveStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess);
+var
+  tmpFileUrl: string;
+begin
+  if ADataAccess.IsWeight then
+  begin
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  end else
+  begin
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+  end;
+  SaveStockDayData(App, ADataAccess, tmpFileUrl);
+end;
+
+procedure SaveStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess; AFileUrl: string);
+var
+  tmpWinFile: TWinFile;   
+  tmpFileMapView: Pointer; 
+  tmpFileNewSize: integer;
+begin
+  tmpWinFile := TWinFile.Create;
+  try
+    if tmpWinFile.OpenFile(AFileUrl, true) then
+    begin
+      tmpFileNewSize := SizeOf(TStore_Quote_M1_Day_Header_V1Rec) + ADataAccess.RecordCount * SizeOf(TStore_Quote64_M1); //400k
+      tmpFileNewSize := ((tmpFileNewSize div (64 * 1024)) + 1) * 64 * 1024;
+      tmpWinFile.FileSize := tmpFileNewSize;
+
+      tmpFileMapView := tmpWinFile.OpenFileMap;
+      if nil <> tmpFileMapView then
+      begin                             
+        SaveStockDayDataToBuffer(App, ADataAccess, tmpFileMapView);
+      end;
+    end;
+  finally
+    tmpWinFile.Free;
   end;
 end;
 

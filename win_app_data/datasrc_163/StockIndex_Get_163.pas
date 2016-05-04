@@ -24,7 +24,7 @@ uses
   StockDayData_Load,
   StockDayData_Save,
   define_stock_quotes,
-  DB_dealItem_Load,
+  DB_dealItem_LoadIni,
   DB_dealItem_Save;
          
 procedure GetStockIndexData_163_All(App: TBaseApp);
@@ -34,6 +34,7 @@ var
   tmpHttpClientSession: THttpClientSession;
   i: integer;
   tmpDealItem: PRT_DealItem;
+  tmpFileUrl: string;
 begin
   FillChar(tmpHttpClientSession, SizeOf(tmpHttpClientSession), 0);
   tmpHttpClientSession.IsKeepAlive := true;
@@ -41,10 +42,9 @@ begin
   tmpIsNeedSaveStockItemDB := false;
   tmpDBStockItem := TDBDealItem.Create;
   try
-    //LoadDBStockItemIni(App, tmpDBStockItem1);
-    //SaveDBStockItem(App, tmpDBStockItem1);
-    //exit;
-    LoadDBStockItemDic(App, tmpDBStockItem);
+    //LoadDBStockItemDic(App, tmpDBStockItem);
+    tmpFileUrl := ChangeFileExt(ParamStr(0), '.ini');
+    LoadDBStockItemIniFromFile(App, tmpDBStockItem, tmpFileUrl);
     for i := 0 to tmpDBStockItem.RecordCount - 1 do
     begin
       tmpDealItem := tmpDBStockItem.Items[i];
@@ -67,7 +67,8 @@ begin
     end;
     if tmpIsNeedSaveStockItemDB then
     begin
-      SaveDBStockItem(App, tmpDBStockItem);
+      //SaveDBStockItem(App, tmpDBStockItem);
+      SaveDBStockItemIniToFile(App, tmpDBStockItem, tmpFileUrl);
     end;
   finally
     tmpDBStockItem.Free;

@@ -10,6 +10,7 @@ uses
   
 type
   TStockAppPathData = record
+    DBPathRoot: string;
     DetailDBPath: string;
   end;
   
@@ -24,6 +25,8 @@ type
     function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
     function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
     function GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
+    
+    property DBPathRoot: string read fStockAppPathData.DBPathRoot write fStockAppPathData.DBPathRoot;
   end;
   
 implementation
@@ -37,6 +40,7 @@ constructor TStockAppPath.Create(App: TBaseApp);
 begin
   inherited;
   FillChar(fStockAppPathData, SizeOf(fStockAppPathData), 0);
+  fStockAppPathData.DBPathRoot := FilePath_StockData;
 end;
 
 function TStockAppPath.GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString;
@@ -47,11 +51,11 @@ begin
   Result := '';
   tmpDataSrcCode := GetDataSrcCode(ADataSrc);
   if FilePath_DBType_DayData = ADBType then
-    Result := GetInstallPath + FilePath_StockData + '\' + FileExt_StockDay + tmpDataSrcCode + '\';
+    Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + FileExt_StockDay + tmpDataSrcCode + '\';
   if FilePath_DBType_DayDataWeight  = ADBType then
-    Result := GetInstallPath + FilePath_StockData + '\' + FileExt_StockDayWeight + tmpDataSrcCode + '\';
+    Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + FileExt_StockDayWeight + tmpDataSrcCode + '\';
   if FilePath_DBType_InstantData = ADBType then
-    Result := GetInstallPath + FilePath_StockData + '\' + FileExt_StockInstant + tmpDataSrcCode + '\';
+    Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + FileExt_StockInstant + tmpDataSrcCode + '\';
   if FilePath_DBType_DetailData = ADBType then
   begin
     if '' = fStockAppPathData.DetailDBPath then
@@ -61,7 +65,7 @@ begin
         fStockAppPathData.DetailDBPath := tmpIni.ReadString('Path', 'DetailRoot_' + tmpDataSrcCode, '');
         if '' = fStockAppPathData.DetailDBPath then
         begin
-          fStockAppPathData.DetailDBPath := GetInstallPath + FilePath_StockData + '\' + FileExt_StockDetail + tmpDataSrcCode + '\';
+          fStockAppPathData.DetailDBPath := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + FileExt_StockDetail + tmpDataSrcCode + '\';
         end;
         tmpIni.WriteString('Path', 'DetailRoot_' + tmpDataSrcCode, fStockAppPathData.DetailDBPath);
       finally
@@ -71,16 +75,16 @@ begin
     Result := fStockAppPathData.DetailDBPath;
   end;
   if FilePath_DBType_ValueData = ADBType then
-    Result := GetInstallPath + FilePath_StockData + '\' + FileExt_StockValue + tmpDataSrcCode + '\';
+    Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + FileExt_StockValue + tmpDataSrcCode + '\';
       
   if FilePath_DBType_ItemDB = ADBType then
-    Result := GetInstallPath + FilePath_StockData + '\' + 's_dic' + '\';
+    Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + 's_dic' + '\';
   if '' = Result then
   begin
     if '' <> tmpDataSrcCode then
-      Result := GetInstallPath + FilePath_StockData + '\' + 's' + tmpDataSrcCode + '\'
+      Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + 's' + tmpDataSrcCode + '\'
     else
-      Result := GetInstallPath + FilePath_StockData + '\';
+      Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\';
   end;
   if '' <> Result then
   begin
