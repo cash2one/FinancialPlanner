@@ -3,17 +3,23 @@ unit StockAppPath;
 interface
 
 uses
-  SysUtils, BaseWinApp, 
+  SysUtils, BaseApp, BaseWinApp, 
   define_datasrc,
   define_dealitem,
   define_dealstore_file;
   
 type
+  TStockAppPathData = record
+    DetailDBPath: string;
+  end;
+  
   TStockAppPath = class(TBaseWinAppPath)
   protected
+    fStockAppPathData: TStockAppPathData;
     function GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString; override;
     function GetInstallPath: WideString; override;
-  public
+  public                    
+    constructor Create(App: TBaseApp); override;
     function GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;
     function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
     function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
@@ -22,11 +28,21 @@ type
   
 implementation
 
+uses
+  IniFiles;
+  
 { TStockDay163AppPath }
+
+constructor TStockAppPath.Create(App: TBaseApp);
+begin
+  inherited;
+  FillChar(fStockAppPathData, SizeOf(fStockAppPathData), 0);
+end;
 
 function TStockAppPath.GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString;
 var
   tmpDataSrcCode: string;
+  tmpIni: TIniFile;
 begin
   Result := '';
   tmpDataSrcCode := GetDataSrcCode(ADataSrc);
@@ -37,7 +53,23 @@ begin
   if FilePath_DBType_InstantData = ADBType then
     Result := GetInstallPath + FilePath_StockData + '\' + FileExt_StockInstant + tmpDataSrcCode + '\';
   if FilePath_DBType_DetailData = ADBType then
-    Result := GetInstallPath + FilePath_StockData + '\' + FileExt_StockDetail + tmpDataSrcCode + '\';
+  begin
+    if '' = fStockAppPathData.DetailDBPath then
+    begin
+      tmpIni := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
+      try
+        fStockAppPathData.DetailDBPath := tmpIni.ReadString('Path', 'DetailRoot_' + tmpDataSrcCode, '');
+        if '' = fStockAppPathData.DetailDBPath then
+        begin
+          fStockAppPathData.DetailDBPath := GetInstallPath + FilePath_StockData + '\' + FileExt_StockDetail + tmpDataSrcCode + '\';
+        end;
+        tmpIni.WriteString('Path', 'DetailRoot_' + tmpDataSrcCode, fStockAppPathData.DetailDBPath);
+      finally
+        tmpIni.Free;
+      end;
+    end;
+    Result := fStockAppPathData.DetailDBPath;
+  end;
   if FilePath_DBType_ValueData = ADBType then
     Result := GetInstallPath + FilePath_StockData + '\' + FileExt_StockValue + tmpDataSrcCode + '\';
       
