@@ -1,0 +1,23 @@
+上证指数
+http://hq.sinajs.cn/list=s_sh000001
+http://hq.sinajs.cn/list=sh000001
+
+只有搜狐有数据
+http://q.stock.sohu.com/zs/000001/index.shtml
+http://q.stock.sohu.com/zs/000001/cjmx.shtml
+
+
+
+深圳成指
+http://hq.sinajs.cn/list=s_sz399001
+
+上证指数 日线数据
+http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/000001/type/S.phtml
+
+成交明细
+只有股票的 没有指数的
+http://market.finance.sina.com.cn/downxls.php?date=2016-05-03&symbol=sh600100
+
+个股的成交明细
+http://stockhtm.finance.qq.com/sstock/quotpage/q/002414.htm#detail
+http://stock.gtimg.cn/data/index.php?appn=detail&action=download&c=sz002414&d=20160504
