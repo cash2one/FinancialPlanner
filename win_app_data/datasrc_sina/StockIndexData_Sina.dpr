@@ -5,15 +5,15 @@ uses
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
-  BaseWinApp in '..\..\..\devwintech\v0000\win_base\BaseWinApp.pas',
-  BasePath in '..\..\..\devwintech\v0000\app_base\BasePath.pas',
-  BaseFile in '..\..\..\devwintech\v0000\app_base\BaseFile.pas',
+  sysdef_string in '..\..\..\devwintech\v0001\sysdef\sysdef_string.pas',
+  Base.Run in '..\..\..\devwintech\v0001\rec\app_base\Base.Run.pas',
+  BasePath in '..\..\..\devwintech\v0001\obj\app_base\BasePath.pas',
+  BaseFile in '..\..\..\devwintech\v0001\obj\app_base\BaseFile.pas',
+  BaseApp in '..\..\..\devwintech\v0001\obj\app_base\BaseApp.pas',
+  BaseThread in '..\..\..\devwintech\v0001\obj\app_base\BaseThread.pas',
+  BaseWinApp in '..\..\..\devwintech\v0001\obj\win_app\BaseWinApp.pas',
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
-  BaseApp in '..\..\..\devwintech\v0000\app_base\BaseApp.pas',
-  BaseThread in '..\..\..\devwintech\v0000\app_base\BaseThread.pas',
-  BaseRun in '..\..\..\devwintech\v0000\app_base\BaseRun.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
-  Define_String in '..\..\..\devwintech\v0000\win_basedefine\Define_String.pas',
   xlNetwork in '..\..\..\devwintech\v0000\win_net\xlNetwork.pas',
   xlTcpClient in '..\..\..\devwintech\v0000\win_netclient\xlTcpClient.pas',
   xlClientSocket in '..\..\..\devwintech\v0000\win_netclient\xlClientSocket.pas',
@@ -34,6 +34,7 @@ uses
   define_stock_quotes in '..\..\basedefine\define_stock_quotes.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
+  db_dealitem_loadIni in '..\..\dealitem\db_dealitem_loadIni.pas',
   db_dealitem_save in '..\..\dealitem\db_dealitem_save.pas',
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
@@ -59,7 +60,8 @@ begin
 end;
 
 procedure TStockIndexDataSinaApp.Run;
-begin
+begin                            
+  StockAppPath.DBPathRoot := FilePath_StockIndexData;
   GetStockIndexData_Sina_All(Self, false);
 end;
 

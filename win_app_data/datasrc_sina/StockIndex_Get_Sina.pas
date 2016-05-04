@@ -27,7 +27,7 @@ uses
   StockDayData_Load,
   StockDayData_Save,
   DB_DealItem,
-  DB_DealItem_Load,
+  DB_DealItem_LoadIni,
   DB_DealItem_Save;                 
                     
 
@@ -36,7 +36,8 @@ var
   tmpDBStockItem: TDBDealItem;
   tmpNetClientSession: THttpClientSession;
   i: integer;
-  tmpDealItem: PRT_DealItem;
+  tmpDealItem: PRT_DealItem;      
+  tmpFileUrl: string;
 begin
   FillChar(tmpNetClientSession, SizeOf(tmpNetClientSession), 0);
   tmpNetClientSession.IsKeepAlive := true;
@@ -46,7 +47,9 @@ begin
 
   tmpDBStockItem := TDBDealItem.Create;
   try
-    LoadDBStockItemDic(App, tmpDBStockItem);
+    //LoadDBStockItemDic(App, tmpDBStockItem);    
+    tmpFileUrl := ChangeFileExt(ParamStr(0), '.ini');
+    LoadDBStockItemIniFromFile(App, tmpDBStockItem, tmpFileUrl);
     for i := 0 to tmpDBStockItem.RecordCount - 1 do
     begin
       tmpDealItem := tmpDBStockItem.Items[i];
