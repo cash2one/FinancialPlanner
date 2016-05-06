@@ -5,7 +5,7 @@ interface
 uses
   BaseApp;
 
-  procedure GetStockDataDay_Sina_All(App: TBaseApp; AIsWeight: Boolean);
+  procedure GetStockDataDay_Sina_All_Repair(App: TBaseApp; AIsWeight: Boolean);
 
 implementation
 
@@ -31,7 +31,7 @@ uses
   DB_DealItem_Save;                 
                     
 
-procedure GetStockDataDay_Sina_All(App: TBaseApp; AIsWeight: Boolean);
+procedure GetStockDataDay_Sina_All_Repair(App: TBaseApp; AIsWeight: Boolean);
 var
   tmpDBStockItem: TDBDealItem;
   tmpNetClientSession: THttpClientSession;

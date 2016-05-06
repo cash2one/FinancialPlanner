@@ -355,95 +355,88 @@ end;
 
 function GetStockDataDay_Sina_Repair(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
 var
-  tmpStockDataAccess: TStockDayDataAccess; 
-  tmpLastDealDate: Word;
-  tmpInt: integer; 
-  tmpQuoteDay: PRT_Quote_M1_Day;
-  tmpFromYear, tmpFromMonth, tmpFromDay: Word;   
-  tmpCurrentYear, tmpCurrentMonth, tmpCurrentDay: Word; 
+  tmpStockDataSina: TStockDayDataAccess;
+  tmpStockData163: TStockDayDataAccess;   
+  tmpYear, tmpMonth, tmpDay: Word;   
   tmpJidu: integer;
+  
+  tmpUpdateTimes: TStringList;   
+  tmpStockData_163: PRT_Quote_M1_Day;   
+  tmpStockData_Sina: PRT_Quote_M1_Day;
+  tmpIdx163, tmpIdxSina: integer;
+  tmpSeason: string;
+  i: integer;
 begin
   Result := false;
-  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AIsWeight);
-  try                      
-    tmpLastDealDate := Trunc(now());
-    tmpInt := DayOfWeek(tmpLastDealDate);
-    if 1 = tmpInt then
-    begin
-      tmpLastDealDate := tmpLastDealDate - 2;
-    end else if 7 = tmpInt then
-    begin
-      tmpLastDealDate := tmpLastDealDate - 1;
-    end else
-    begin
-      // 当天数据不下载
-      tmpLastDealDate := tmpLastDealDate - 1;
-    end;
-                                               
-    if CheckNeedLoadStockDayData(App, tmpStockDataAccess, tmpLastDealDate) then
-    begin
-    
-    end else
+  tmpStockDataSina := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AIsWeight);
+  tmpStockData163 := TStockDayDataAccess.Create(AStockItem, DataSrc_163, false);
+  tmpUpdateTimes := TStringList.Create;
+  try                
+    StockDayData_Load.LoadStockDayData(App, tmpStockData163);
+    StockDayData_Load.LoadStockDayData(App, tmpStockDataSina);
+    if 1 > tmpStockData163.RecordCount then
       exit;
-      
-    if tmpStockDataAccess.StockItem.FirstDealDate < 1 then
+
+    if tmpStockData163.RecordCount <= tmpStockDataSina.RecordCount then
       exit;
-      
-    DecodeDate(now, tmpCurrentYear, tmpCurrentMonth, tmpCurrentDay);
-    if (0 < tmpStockDataAccess.LastDealDate) and (0 < tmpStockDataAccess.FirstDealDate) then
+    tmpStockData163.Sort;
+    tmpStockDataSina.Sort;
+    tmpIdx163 := 0;
+    tmpIdxSina := 0;
+    while (tmpIdx163 < tmpStockData163.RecordCount) and
+          (tmpIdxSina < tmpStockDataSina.RecordCount) do
     begin
-      DecodeDate(tmpStockDataAccess.LastDealDate, tmpFromYear, tmpFromMonth, tmpFromDay);
-    end else
-    begin
-      if tmpStockDataAccess.StockItem.FirstDealDate > 0 then
+      tmpStockData_163 := tmpStockData163.RecordItem[tmpIdx163];
+      tmpStockData_Sina := tmpStockDataSina.RecordItem[tmpIdxSina];
+      if tmpStockData_163.DealDateTime.Value = tmpStockData_Sina.DealDateTime.Value then
       begin
-        DecodeDate(tmpStockDataAccess.StockItem.FirstDealDate, tmpFromYear, tmpFromMonth, tmpFromDay);
+        Inc(tmpIdx163);
+        Inc(tmpIdxSina);
       end else
       begin
+        if tmpStockData_163.DealDateTime.Value > tmpStockData_Sina.DealDateTime.Value then
+        begin
+          Inc(tmpIdxSina);
+        end else
+        begin
+          // sina 漏了数据了
+          DecodeDate(tmpStockData_163.DealDateTime.Value, tmpYear, tmpMonth, tmpDay);
+          tmpJidu := SeasonOfMonth(tmpMonth);
+          if 1988 < tmpYear then
+          begin
+            tmpSeason := IntToStr(tmpYear) + '_' + IntToStr(tmpJidu);
+            if tmpUpdateTimes.IndexOf(tmpSeason) < 0 then
+            begin
+              tmpUpdateTimes.Add(tmpSeason);
+            end;
+          end;
+          Inc(tmpIdx163);
+        end;
       end;
-    end;   
-    if tmpFromYear < 1980 then
-    begin
-      if tmpStockDataAccess.StockItem.FirstDealDate = 0 then
-      begin                 
-        tmpFromYear := 2013;
-        tmpFromYear := 1990;
-        tmpFromMonth := 12;
-      end;
-    end;      
-    tmpJidu := SeasonOfMonth(tmpFromMonth);
-    while tmpFromYear < tmpCurrentYear do
-    begin
-      while tmpJidu < 5 do
-      begin
-        DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, AIsWeight, ANetSession);
-        Inc(tmpJidu);
-        Sleep(100);
-      end;
-      Inc(tmpFromYear);
-      tmpJidu := 1;
-    end; 
-    while tmpJidu < SeasonOfMonth(tmpCurrentMonth) do
-    begin
-      DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, AIsWeight, ANetSession);
-      Inc(tmpJidu);
-      Sleep(100);
     end;
-    DataGet_DayData_SinaNow(tmpStockDataAccess, AIsWeight, ANetSession);
-
-    tmpStockDataAccess.Sort;
-    SaveStockDayData(App, tmpStockDataAccess); 
+    for i := 0 to tmpUpdateTimes.Count - 1 do
+    begin
+      tmpSeason := tmpUpdateTimes[i];
+      tmpYear := StrToIntDef(Copy(tmpSeason, 1, 4), 0);
+      tmpJidu := StrToIntDef(Copy(tmpSeason, 6, maxint), 0);   
+      DataGet_DayData_Sina(tmpStockDataSina, tmpYear, tmpJidu, AIsWeight, ANetSession);
+      Sleep(500);   
+    end;
+    tmpStockDataSina.Sort;
+    SaveStockDayData(App, tmpStockDataSina); 
     if 0 = AStockItem.FirstDealDate then
     begin
-      if 0 < tmpStockDataAccess.RecordCount then
+      if 0 < tmpStockDataSina.RecordCount then
       begin
-        tmpQuoteDay := tmpStockDataAccess.RecordItem[0];
-        AStockItem.FirstDealDate := tmpQuoteDay.DealDateTime.Value;
+        tmpStockData_Sina := tmpStockDataSina.RecordItem[0];
+        AStockItem.FirstDealDate := tmpStockData_Sina.DealDateTime.Value;
         AStockItem.IsDataChange := 1;
       end;
     end;   
   finally
-    tmpStockDataAccess.Free;
+    tmpUpdateTimes.Free;
+    tmpStockDataSina.Free;
+    tmpStockData163.Free;
   end;
 end;
 

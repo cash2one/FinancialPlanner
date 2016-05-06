@@ -62,7 +62,7 @@ end;
 
 procedure TStockDaySinaApp.Run;
 begin
-  GetStockDataDay_Sina_All(Self, false);
+  GetStockDataDay_Sina_All_Repair(Self, false);
 end;
 
 var
