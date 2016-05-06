@@ -414,16 +414,20 @@ begin
         end;
       end;
     end;
-    for i := 0 to tmpUpdateTimes.Count - 1 do
+    if 0 < tmpUpdateTimes.Count then
     begin
-      tmpSeason := tmpUpdateTimes[i];
-      tmpYear := StrToIntDef(Copy(tmpSeason, 1, 4), 0);
-      tmpJidu := StrToIntDef(Copy(tmpSeason, 6, maxint), 0);   
-      DataGet_DayData_Sina(tmpStockDataSina, tmpYear, tmpJidu, AIsWeight, ANetSession);
-      Sleep(500);   
+      Log('Repair', AStockItem.sCode + ':' + IntToStr(tmpUpdateTimes.Count));
+      for i := 0 to tmpUpdateTimes.Count - 1 do
+      begin
+        tmpSeason := tmpUpdateTimes[i];
+        tmpYear := StrToIntDef(Copy(tmpSeason, 1, 4), 0);
+        tmpJidu := StrToIntDef(Copy(tmpSeason, 6, maxint), 0);
+        DataGet_DayData_Sina(tmpStockDataSina, tmpYear, tmpJidu, AIsWeight, ANetSession);
+        Sleep(500);
+      end;
+      tmpStockDataSina.Sort;
+      SaveStockDayData(App, tmpStockDataSina);
     end;
-    tmpStockDataSina.Sort;
-    SaveStockDayData(App, tmpStockDataSina); 
     if 0 = AStockItem.FirstDealDate then
     begin
       if 0 < tmpStockDataSina.RecordCount then
