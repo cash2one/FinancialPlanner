@@ -166,10 +166,18 @@ function ParseData_163(A163Data: PRT_DealData_163; A163HeadData: PRT_DealDayData
   end;
 
   function GetParseTypeValue(AHeadNameType: TDealDayDataHeadName_163): string;
+  var
+    tmpIdx: integer;
   begin
     Result := '';
     if A163HeadData.HeadNameIndex[AHeadNameType] > 0 then
-      Result := AParseDatas[A163HeadData.HeadNameIndex[AHeadNameType] - 1];
+    begin
+      tmpIdx := A163HeadData.HeadNameIndex[AHeadNameType] - 1;
+      if tmpIdx < AParseDatas.Count then
+      begin
+        Result := AParseDatas[tmpIdx];
+      end;
+    end;
   end;
 
 var
@@ -184,7 +192,7 @@ begin
   tmpstr := Trim(tmpstr);
   AParseDatas.Text := StringReplace(tmpstr, ',', #13#10, [rfReplaceAll]);
   tmpInt := Integer(High(TDealDayDataHeadName_163));
-  if AParseDatas.Count >= tmpInt then
+  if AParseDatas.Count >= tmpInt - 1 then
   begin
     tmpstr := GetParseTypeValue(headDay);
     TryStrToDate(tmpstr, tmpDate, A163HeadData.DateFormat_163);
