@@ -61,15 +61,15 @@ begin
   // GET  POST  HEAD  PUT  DELETE  TRACE  CONNECT  OPTIONS  PATCH
   if nil = AIocpBuffer then
     exit;
-  if 0 = AIocpBuffer.DataBuffer.BufferHead.DataLength then
+  if 0 = AIocpBuffer.DataBufferPtr.BufferHead.DataLength then
     exit;
-  tmpCommand := @AIocpBuffer.DataBuffer.Data[0];
+  tmpCommand := @AIocpBuffer.DataBufferPtr.Data[0];
   if 2121 = tmpCommand.Magic then
   begin
 
   end else
   begin
-    tmpHeadChar := AIocpBuffer.DataBuffer.Data[0];
+    tmpHeadChar := AIocpBuffer.DataBufferPtr.Data[0];
     if ('G' = tmpHeadChar) then
     begin
       //SDLog('DealServerAppStart.pas', 'DealAgentServerDataIn begin');
@@ -139,9 +139,9 @@ begin
                 // 处理进来的数据
 
                 tmpIocpBuffer.IocpOperate := ioHandle;
-                tmpIocpBuffer.DataBuffer.BufferHead.DataLength := tmpBytes;
+                tmpIocpBuffer.DataBufferPtr.BufferHead.DataLength := tmpBytes;
 
-                Writeln(PAnsiChar(@tmpIocpBuffer.DataBuffer.Data[0]));
+                Writeln(PAnsiChar(@tmpIocpBuffer.DataBufferPtr.Data[0]));
 
                 Windows.PostQueuedCompletionStatus(tmpServer.Iocp.Handle, 0, 0, @tmpIocpBuffer.Overlapped);
                 ReadIocpDataIn(tmpConnect, CheckOutIocpBuffer);

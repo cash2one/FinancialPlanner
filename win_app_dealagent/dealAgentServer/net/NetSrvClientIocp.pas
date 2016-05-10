@@ -18,7 +18,7 @@ type
     WsaBuf            : TWsaBuf;           //完成端口的缓冲区定义
     IocpOperate       : TIocpOperate; //当前操作类型
     ClientConnect     : PNetClientConnectIOCP;                 
-    DataBuffer        : BaseDataIO.TDataBuffer;
+    DataBufferPtr     : PDataBuffer;
   end;
 
   TNetClientConnectIOCP  = packed record
@@ -101,17 +101,21 @@ begin
     InterlockedIncrement(GNetIocpBufferCounter);
     Result := System.New(PNetIocpBuffer);
     FillChar(Result^, SizeOf(TNetIocpBuffer), 0);
-    Result.DataBuffer.BufferHead.ChainNode := tmpNode;
-    Result.DataBuffer.BufferHead.BufferSize := SizeOf(Result.DataBuffer.Data);
-    Result.DataBuffer.BufferHead.Owner := Result;
+
+    Result.DataBufferPtr := System.New(PDataBuffer);
+    FillChar(Result.DataBufferPtr^, SizeOf(TDataBuffer), 0);
+
+    Result.DataBufferPtr.BufferHead.ChainNode := tmpNode;
+    Result.DataBufferPtr.BufferHead.BufferSize := SizeOf(Result.DataBufferPtr.Data);
+    Result.DataBufferPtr.BufferHead.Owner := Result;
     if nil <> tmpNode then
     begin
       tmpNode.NodePointer := Result;
     end;
   end else
   begin
-    Result.DataBuffer.BufferHead.DataLength := 0;
-    FillChar(Result.DataBuffer.Data, SizeOf(Result.DataBuffer.Data), 0);
+    Result.DataBufferPtr.BufferHead.DataLength := 0;
+    FillChar(Result.DataBufferPtr.Data, SizeOf(Result.DataBufferPtr.Data), 0);
   end;
 end;
 
@@ -124,7 +128,7 @@ begin
   if nil <> tmpBuffer then
   begin
     tmpBuffer.ClientConnect := PNetClientConnectIOCP(AClient);
-    Result := @tmpBuffer.DataBuffer;
+    Result := tmpBuffer.DataBufferPtr;
   end;
 end;
                        
@@ -133,7 +137,7 @@ begin
   if nil = ABufferIocp then
     exit;
   ABufferIocp.IocpOperate := ioNone; 
-  CheckInPoolChainNode(@IocpBufferChainPool, ABufferIocp.DataBuffer.BufferHead.ChainNode);
+  CheckInPoolChainNode(@IocpBufferChainPool, ABufferIocp.DataBufferPtr.BufferHead.ChainNode);
 end;
 
 procedure InitNetSrvClientIocp;
@@ -155,14 +159,14 @@ begin
   if nil = AIocpBuffer then
     exit;
   FillChar(AIocpBuffer.Overlapped, SizeOf(AIocpBuffer.Overlapped), 0);
-  AIocpBuffer.WsaBuf.buf := @AIocpBuffer.DataBuffer.Data[0];
-  AIocpBuffer.WsaBuf.len := Length(AIocpBuffer.DataBuffer.Data);
+  AIocpBuffer.WsaBuf.buf := @AIocpBuffer.DataBufferPtr.Data[0];
+  AIocpBuffer.WsaBuf.len := Length(AIocpBuffer.DataBufferPtr.Data);
 
-  FillChar(AIocpBuffer.DataBuffer.Data, SizeOf(AIocpBuffer.DataBuffer.Data), 0);
+  FillChar(AIocpBuffer.DataBufferPtr.Data, SizeOf(AIocpBuffer.DataBufferPtr.Data), 0);
   AIocpBuffer.IocpOperate := ioSockRead;
 
   AIocpBuffer.ClientConnect := AClientConnect;
-  AIocpBuffer.DataBuffer.BufferHead.Owner := AIocpBuffer;
+  AIocpBuffer.DataBufferPtr.BufferHead.Owner := AIocpBuffer;
   
   iFlags := 0;
   iTransfer := 0;
@@ -198,10 +202,10 @@ begin
     exit;
   tmpIocpBuffer.ClientConnect := PNetClientConnectIOCP(AClient);
   tmpIocpBuffer.IocpOperate := ioSockWrite;
-  tmpIocpBuffer.WsaBuf.len := Length(tmpIocpBuffer.DataBuffer.Data);
+  tmpIocpBuffer.WsaBuf.len := Length(tmpIocpBuffer.DataBufferPtr.Data);
   tmpIocpBuffer.WsaBuf.len := 4096;
-  tmpIocpBuffer.WsaBuf.len := tmpIocpBuffer.DataBuffer.BufferHead.DataLength;
-  tmpIocpBuffer.WsaBuf.buf := @tmpIocpBuffer.DataBuffer.Data[0]; 
+  tmpIocpBuffer.WsaBuf.len := tmpIocpBuffer.DataBufferPtr.BufferHead.DataLength;
+  tmpIocpBuffer.WsaBuf.buf := @tmpIocpBuffer.DataBufferPtr.Data[0]; 
   (*//            
   iTransfer := 0;
   iFlags := 0;
