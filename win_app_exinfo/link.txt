@@ -34,6 +34,11 @@ http://www.xueqiu.com
 ----------------------------------------
 新浪财经 股票
 http://finance.sina.com.cn/stock/
+
+http://biz.finance.sina.com.cn/stock/flash_hq/kline_data.php?symbol=sh000001&end_date=20120101
+http://biz.finance.sina.com.cn/stock/flash_hq/kline_data.php?&rand=random(10000)&symbol=sz002222&end_date=20160406&begin_date=20160401&type=plain
+
+http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodes
 ----------------------------------------
 网易财经 股票
 http://money.163.com/stock/
@@ -44,6 +49,7 @@ http://www.eastmoney.com/
 金融界
 http://www.jrj.com.cn/
 ----------------------------------------
+
 ----------------------------------------
 ----------------------------------------
 ----------------------------------------
