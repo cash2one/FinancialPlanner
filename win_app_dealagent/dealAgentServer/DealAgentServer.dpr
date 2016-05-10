@@ -1,5 +1,8 @@
 program DealAgentServer;
 
+// {$APPTYPE CONSOLE}
+{$APPTYPE CONSOLE}
+
 uses
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
   Base.Run in '..\..\..\devwintech\v0001\rec\app_base\Base.Run.pas',

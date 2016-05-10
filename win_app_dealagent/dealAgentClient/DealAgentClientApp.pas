@@ -3,23 +3,24 @@ unit DealAgentClientApp;
 interface
 
 uses
-  Windows, BaseApp, BaseWinFormApp, NetMgr;
+  Windows, BaseForm, BaseApp, BaseWinFormApp, NetMgr;
   
 type
   TDealAgentClientAppData = record
     NetMgr: TNetMgr;
+    ConsoleForm: TfrmBase;
   end;
   
   TDealAgentClientApp = Class(TBaseWinFormApp)
   protected
-    fSrvAppData: TDealAgentClientAppData;
+    fAppData: TDealAgentClientAppData;
   public
     constructor Create(AppClassId: AnsiString); override;
     destructor Destroy; override;        
     function Initialize: Boolean; override;
     procedure Finalize; override;
     procedure Run; override;     
-    property NetMgr: TNetMgr read fSrvAppData.NetMgr;
+    property NetMgr: TNetMgr read fAppData.NetMgr;
   end;
 
 var
@@ -28,14 +29,15 @@ var
 implementation
 
 uses
-  Messages, windef_msg, win.wnd, Sysutils, DealAgentClientAppStart;
+  Messages, Forms, Sysutils,
+  windef_msg, win.wnd, DealAgentClientAppStart, DealAgentClientForm;
   
 { THttpApiSrvApp }
 
 constructor TDealAgentClientApp.Create(AppClassId: AnsiString);
 begin
   inherited;
-  FillChar(fSrvAppData, SizeOf(fSrvAppData), 0);
+  FillChar(fAppData, SizeOf(fAppData), 0);
 end;
 
 destructor TDealAgentClientApp.Destroy;
@@ -46,7 +48,7 @@ end;
 procedure TDealAgentClientApp.Finalize;
 begin
   //DestroyCommandWindow(@fSrvAppData.AppWindow.CommandWindow);
-  FreeAndNIl(fSrvAppData.NetMgr);
+  FreeAndNIl(fAppData.NetMgr);
 end;
                       
 function WndProcA_DealAgentClientApp(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
@@ -66,12 +68,13 @@ end;
 
 function TDealAgentClientApp.Initialize: Boolean;
 begin
+  Application.Initialize;
   fBaseWinAppData.AppCmdWnd := CreateCommandWndA(@WndProcA_DealAgentClientApp, 'DealAgentClientWindow');
   Result := IsWindow(fBaseWinAppData.AppCmdWnd);
   //Result := CreateCommandWindow(@fSrvAppData.AppWindow.CommandWindow, @AppWndProcA, 'DealAgentClientWindow');
   if not Result then
     exit;
-  fSrvAppData.NetMgr := TNetMgr.Create(Self);
+  fAppData.NetMgr := TNetMgr.Create(Self);
 end;
 
 procedure TDealAgentClientApp.Run;
@@ -79,7 +82,10 @@ begin
   //AppStartProc := DealAgentClientAppStart.WMAppStart;
   //PostMessage(fSrvAppData.AppWindow.CommandWindow.WindowHandle, WM_AppStart, 0, 0);
   PostMessage(fBaseWinAppData.AppCmdWnd, WM_AppStart, 0, 0);
-  RunAppMsgLoop;
+  //RunAppMsgLoop;
+  Application.CreateForm(TfrmDealAgentClient, fAppData.ConsoleForm);
+  fAppData.ConsoleForm.Initialize(Self);         
+  Application.Run;
 end;
 
 end.

@@ -136,8 +136,12 @@ begin
               if 0 < tmpBytes then
               begin
                 // 处理进来的数据
+
                 tmpIocpBuffer.IocpOperate := ioHandle;
                 tmpIocpBuffer.DataBuffer.BufferHead.DataLength := tmpBytes;
+
+                Writeln(PAnsiChar(@tmpIocpBuffer.DataBuffer.Data[0]));
+
                 Windows.PostQueuedCompletionStatus(tmpServer.Iocp.Handle, 0, 0, @tmpIocpBuffer.Overlapped);
                 ReadIocpDataIn(tmpConnect, CheckOutIocpBuffer);
               end else

@@ -46,7 +46,7 @@ begin
   tmpNetServer := GlobalApp.NetMgr.CheckOutNetServerIocp;
   if nil <> tmpNetServer then
   begin               
-    tmpNetServer.BaseServer.ListenPort := 1080;
+    tmpNetServer.BaseServer.ListenPort := 7785;
     GlobalApp.NetMgr.ListenAndServeNetServer(tmpNetServer);
   end;
 end;
