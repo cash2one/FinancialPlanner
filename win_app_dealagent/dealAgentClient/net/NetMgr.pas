@@ -5,7 +5,8 @@ interface
 uses
   BaseApp,
   NetBase,
-  NetObjClient,    
+  NetObjClient,
+  NetClientIocp, 
   NetBaseObj;
   
 type
@@ -19,7 +20,7 @@ type
   public
     constructor Create(App: TBaseApp); override;
     destructor Destroy; override;
-    function CheckOutNetClient: PNetClient;
+    function CheckOutNetClient: PNetClientIocp;
   end;
   
 implementation
@@ -40,12 +41,12 @@ begin
   inherited;
 end;
 
-function TNetMgr.CheckOutNetClient: PNetClient;
+function TNetMgr.CheckOutNetClient: PNetClientIocp;
 begin
-  Result := System.New(PNetClient);
-  FillChar(Result^, SizeOf(TNetClient), 0);
-  Result.TimeOutConnect := 10 * 1000; //连接超时
-  Result.TimeOutRead := 30 * 1000;
+  Result := System.New(PNetClientIocp);
+  FillChar(Result^, SizeOf(TNetClientIocp), 0);
+  Result.BaseClient.TimeOutConnect := 10 * 1000; //连接超时
+  Result.BaseClient.TimeOutRead := 30 * 1000;
 end;
            
 //function TNetMgr.CheckOutHttpClient: PNetHttpClient;

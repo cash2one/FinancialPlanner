@@ -33,11 +33,12 @@ implementation
 {$R *.dfm}
 
 uses
+  NetClientIocp,
   NetObjClientProc,
   DealAgentClientApp;
 
 var
-  Client: PNetClient = nil;
+  Client: PNetClientIocp = nil;
   ServerAddr: TNetServerAddress;
   SendDataBuffer: array[0..4 * 1024 - 1] of Byte;
   
@@ -52,7 +53,7 @@ begin
     end;
     ServerAddr.Host := edtIp.Text;
     ServerAddr.Port := StrToIntDef(edtPort.text, 7785);
-    NetClientConnect(Client, @ServerAddr);
+    NetClientIocp.NetClientConnect(Client, @ServerAddr);
   end;
 end;
 
@@ -61,7 +62,7 @@ begin
   inherited;
   if nil <> Client then
   begin
-    NetClientDisconnect(Client);
+    NetClientIocp.NetClientDisconnect(Client);
   end;
 end;
 
@@ -81,7 +82,7 @@ begin
     CopyMemory(@SendDataBuffer[0], @tmpAnsi[1], tmpSendLength);
     
     tmpSendCount := 0;
-    NetClientSendBuf(Client, @SendDataBuffer[0], tmpSendLength, tmpSendCount);
+    NetClientIocp.NetClientSendBuf(Client, @SendDataBuffer[0], tmpSendLength, tmpSendCount);
   end;
 //
 end;
