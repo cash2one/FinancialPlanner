@@ -80,6 +80,6 @@ object frmDealAgentClient: TfrmDealAgentClient
     Height = 25
     Caption = 'Disconnect'
     TabOrder = 7
-    OnClick = btnConnectClick
+    OnClick = btnDisconnectClick
   end
 end

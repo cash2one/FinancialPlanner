@@ -116,6 +116,7 @@ begin
         //此处有可能多个线程处理同一个SocketHandle对象，因此需要加锁
         if not GetQueuedCompletionStatus(tmpServer.Iocp.Handle, tmpBytes, tmpCompleteKey, POverlapped(tmpIocpBuffer), INFINITE) then
         begin  //客户端异常断开
+          Writeln('client disconnected 1');
           if nil <> tmpIocpBuffer then
           begin
       
@@ -145,7 +146,8 @@ begin
                 Windows.PostQueuedCompletionStatus(tmpServer.Iocp.Handle, 0, 0, @tmpIocpBuffer.Overlapped);
                 ReadIocpDataIn(tmpConnect, CheckOutIocpBuffer);
               end else
-              begin
+              begin             
+                Writeln('client disconnected 2');
                 WinSock2.closesocket(tmpConnect.BaseConnect.ClientSocketHandle);
                 tmpConnect.BaseConnect.ClientSocketHandle := 0;
                 CheckInClientConnectionIocp(tmpConnect);
@@ -199,6 +201,7 @@ begin
         // error
       end else
       begin
+        Writeln('client connected');
         tmpClient := CheckOutClientConnectionIocp(@AParam.Server.BaseServer);
         if nil <> tmpClient then
         begin

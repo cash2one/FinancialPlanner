@@ -30,6 +30,7 @@ uses
 {$R *.res}
 
 begin
+  Writeln('Server Run');
   GlobalApp := TDealAgentServerApp.Create('dealAgentServer');
   try
     if GlobalApp.Initialize then

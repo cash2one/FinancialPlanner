@@ -21,6 +21,7 @@ type
     btnDisconnect: TButton;
     procedure btnSendClick(Sender: TObject);
     procedure btnConnectClick(Sender: TObject);
+    procedure btnDisconnectClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -55,13 +56,22 @@ begin
   end;
 end;
 
+procedure TfrmDealAgentClient.btnDisconnectClick(Sender: TObject);
+begin
+  inherited;
+  if nil <> Client then
+  begin
+    NetClientDisconnect(Client);
+  end;
+end;
+
 procedure TfrmDealAgentClient.btnSendClick(Sender: TObject);
 var
   tmpSendLength: integer;
   tmpSendCount: integer;
   tmpAnsi: AnsiString; 
 begin
-  inherited;     
+  inherited;
   if nil <> Client then
   begin
     FillChar(SendDataBuffer, SizeOf(SendDataBuffer), 0);
