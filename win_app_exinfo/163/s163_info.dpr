@@ -5,6 +5,7 @@ uses
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   sysdef_string in '..\..\..\devwintech\v0001\sysdef\sysdef_string.pas',
+  win.wnd in '..\..\..\devwintech\v0001\winproc\win.wnd.pas',
   windef_msg in '..\..\..\devwintech\v0001\windef\windef_msg.pas',
   Base.Run in '..\..\..\devwintech\v0001\rec\app_base\Base.Run.pas',
   Base.Thread in '..\..\..\devwintech\v0001\rec\app_base\Base.Thread.pas',
@@ -86,5 +87,5 @@ begin
 ////    exit;
 //  if '' = tmpANsi then
 //    exit;
-  RunApp(TXueQiuInfoApp, '', TBaseApp(GlobalApp));
+  RunApp(T163InfoApp, '', TBaseApp(GlobalApp));
 end.

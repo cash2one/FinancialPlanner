@@ -14,6 +14,7 @@ uses
   BaseFile in '..\..\..\devwintech\v0001\obj\app_base\BaseFile.pas',
   BaseThread in '..\..\..\devwintech\v0001\obj\app_base\BaseThread.pas',
   BaseWinApp in '..\..\..\devwintech\v0001\obj\win_app\BaseWinApp.pas',
+  win.wnd in '..\..\..\devwintech\v0001\winproc\win.wnd.pas',
   cef_apilib in '..\..\..\devwintech\v0000\ex_chromium\v0001\cef_apilib.pas',
   cef_apilib_requesthandler in '..\..\..\devwintech\v0000\ex_chromium\v0001\cef_apilib_requesthandler.pas',
   cef_apilib_domvisitor in '..\..\..\devwintech\v0000\ex_chromium\v0001\cef_apilib_domvisitor.pas',
@@ -42,8 +43,6 @@ uses
   cef_utils in '..\..\..\devwintech\v0000\ex_chromium\v0001\cef_utils.pas',
   cef_apiobj in '..\..\..\devwintech\v0000\ex_chromium\v0001\cef_apiobj.pas',
   cef_apilib_init in '..\..\..\devwintech\v0000\ex_chromium\v0001\cef_apilib_init.pas',
-  
-
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
   UIBaseWin in '..\..\..\devwintech\v0000\win_base\UIBaseWin.pas',
   BaseWinHook in '..\..\..\devwintech\v0000\win_base\BaseWinHook.pas',
