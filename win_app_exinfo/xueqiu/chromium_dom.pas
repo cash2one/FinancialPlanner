@@ -28,15 +28,15 @@ var
   ExTraverseDomNode_Proc: TTraverseDomNode_Proc = nil;
 
 type
-  TInfoType_Xueqiu = (infUndefine,
-    infEPS,  // earnings per share
-    infPE,   //  price earning ratio 
-    infGeneralCapital,
-    infNAPS, // 每股净资产 net asset per share
-    infPB,    // 市净率
-    infFlow,
-    infDPS,
-    infPS
+  TInfoType_Xueqiu = (infxq_Undefine,
+    infxq_EPS,  // earnings per share
+    infxq_PE,   //  price earning ratio 
+    infxq_GeneralCapital,
+    infxq_NAPS, // 每股净资产 net asset per share
+    infxq_PB,    // 市净率
+    infxq_Flow,
+    infxq_DPS,
+    infxq_PS
     );
 
 const
