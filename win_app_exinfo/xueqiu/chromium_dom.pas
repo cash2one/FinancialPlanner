@@ -6,11 +6,21 @@ uses
   sysutils,
   cef_type, cef_api, cef_apiobj;
 
-type  
+type            
+  PDomTraverseParam = ^TDomTraverseParam;
+  TDomTraverseParam = record
+    Level: integer;
+    IsDoLog: Boolean;
+  end;
+
   TCefDomVisitProc = procedure (self: PCefDomVisitor; document: PCefDomDocument); stdcall;
+  TTraverseDomNode_Proc = procedure (ANode: PCefDomNode; ADomTraverseParam: PDomTraverseParam);
 
   { ±éÀú html dom ½Úµã }
   procedure TestTraverseChromiumDom(AClientObject: PCefClientObject; ACefDomVisitProc: TCefDomVisitProc);
+
+var
+  ExTraverseDomNode_Proc: TTraverseDomNode_Proc = nil;
 
 implementation
 
@@ -19,13 +29,6 @@ uses
   cef_apilib,
   cef_apilib_domvisitor;
   
-type
-  PDomTraverseParam = ^TDomTraverseParam;
-  TDomTraverseParam = record
-    Level: integer;
-    IsDoLog: Boolean;
-  end;
-
 procedure TraverseDomNode_Proc(ANode: PCefDomNode; ADomTraverseParam: PDomTraverseParam);
 var
   tmpName: ustring;
@@ -89,7 +92,13 @@ begin
     if tmpNode <> nil then
     begin
       FillChar(tmpDomTraverseParam, SizeOf(tmpDomTraverseParam), 0);
-      TraverseDomNode_Proc(tmpNode, @tmpDomTraverseParam);
+      if Assigned(ExTraverseDomNode_Proc) then
+      begin
+        ExTraverseDomNode_Proc(tmpNode, @tmpDomTraverseParam);
+      end else
+      begin
+        TraverseDomNode_Proc(tmpNode, @tmpDomTraverseParam);
+      end;
     end;
   end;
 end;

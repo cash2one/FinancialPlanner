@@ -114,11 +114,28 @@ begin
   end;
 end;
 
+(*//
+每股收益：0.70
+市盈率LYR/TTM：6.70/6.35
+总股本：196.53亿
+每股净资产：17.48
+市净率TTM：0.99
+流通股本：186.53亿
+每股股息：0.757
+市销率TTM：2.20
+//*)
+
 procedure DoLoadEnd(ACefClient: PCefClientObject; AUrl: string);
+var
+  tmpDealItem: PRT_DealItem;
 begin
   if SameText(ACefClient.CefUrl, AUrl) then
   begin
-    chromium_dom.TestTraverseChromiumDom(ACefClient, nil);
+    tmpDealItem := ACefClient.ExParam;
+    if nil <> tmpDealItem then
+    begin
+      chromium_dom.TestTraverseChromiumDom(ACefClient, nil);
+    end;
   end;
   Sleep(1000);
   PostMessage(GlobalApp.AppWindow, WM_LoadUrl, 0, 0);
@@ -155,6 +172,7 @@ begin
     tmpMainFrame := fCefClientObject.CefBrowser.get_main_frame(fCefClientObject.CefBrowser);
     if nil <> tmpMainFrame then
     begin
+      fCefClientObject.ExParam := AStockItem;
       fCefClientObject.CefOnLoadEnd := DoLoadEnd;
 
       fCefClientObject.CefUrl := 'https://xueqiu.com/S/' + GetStockCode_Sina(AStockItem);
