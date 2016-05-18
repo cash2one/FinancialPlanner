@@ -130,7 +130,29 @@ const
   DealType_Buy  = 1;
   DealType_Sale = 2;
   DealType_Neutral = 3;  
-    
+
+  function GetTimeText(ATime: PRT_TimePack): AnsiString;
+  
 implementation
+
+uses
+  Sysutils;
+  
+function GetTimeText(ATime: PRT_TimePack): AnsiString;
+var
+  tmpHour: Integer;
+  tmpMinute: Integer;
+  tmpSecond: Integer;
+begin
+  Result := '';
+  if nil <> ATime then
+  begin
+    tmpHour := Trunc(ATime.Value div 3600);
+    tmpSecond := ATime.Value - tmpHour * 3600;
+    tmpMinute := Trunc(tmpSecond div 60);
+    tmpSecond := tmpSecond - tmpMinute * 60;
+    Result := IntToStr(tmpHour + 9) + ':' + IntToStr(tmpMinute) + ':' + IntToStr(tmpSecond);
+  end;
+end;
 
 end.

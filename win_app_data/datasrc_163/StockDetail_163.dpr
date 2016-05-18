@@ -4,9 +4,11 @@ uses
   Windows,
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
+  nExcel in '..\..\..\devwintech\comps\nativeExcel310\nExcel.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
   sysdef_string in '..\..\..\devwintech\v0001\sysdef\sysdef_string.pas',
   Base.Run in '..\..\..\devwintech\v0001\rec\app_base\Base.Run.pas',
+  win.diskfile in '..\..\..\devwintech\v0001\rec\win_sys\win.diskfile.pas',
   BaseApp in '..\..\..\devwintech\v0001\obj\app_base\BaseApp.pas',
   BaseThread in '..\..\..\devwintech\v0001\obj\app_base\BaseThread.pas',
   BasePath in '..\..\..\devwintech\v0001\obj\app_base\BasePath.pas',
@@ -38,6 +40,8 @@ uses
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
+  StockDetailDataAccess in '..\..\data_stock\StockDetailDataAccess.pas',
+  StockDetailData_Save in '..\..\data_stock\StockDetailData_Save.pas',
   StockDetailData_Get_163 in '..\..\data_stock\datasrc_163\StockDetailData_Get_163.pas',
   StockDetail_Get_163 in 'StockDetail_Get_163.pas';
 

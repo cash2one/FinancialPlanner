@@ -14,11 +14,10 @@ implementation
 uses
   Windows,
   BaseWinFile,
-  Define_Price,
-  Define_RunTime_StockQuote,
-  Define_Store_Header,
-  Define_Store_StockQuote,
-  Define_Store_File;
+  define_dealstore_file,
+  define_stock_quotes,
+  define_dealstore_header,
+  Define_Price;
                        
 procedure SaveStockDetailDataToBuffer(App: TBaseApp; ADataAccess: TStockDetailDataAccess; AMemory: pointer); forward;
 
@@ -26,7 +25,8 @@ procedure SaveStockDetailData(App: TBaseApp; ADataAccess: TStockDetailDataAccess
 var
   tmpFileUrl: string;
 begin
-  tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DetailData, ADataAccess.DataSourceId, ADataAccess.DealDate, ADataAccess.StockItem);
+  tmpFileUrl := App.Path.GetFileUrl(define_dealstore_file.FilePath_DBType_DetailData,
+    ADataAccess.DataSourceId, ADataAccess.DealDate, ADataAccess.StockItem);
   SaveStockDetailData2File(App, ADataAccess, tmpFileUrl);
 end;
 
@@ -40,7 +40,8 @@ begin
   try
     if tmpWinFile.OpenFile(AFileUrl, true) then
     begin
-      tmpFileNewSize := SizeOf(TStore_Quote_M2_Detail_Header_V1Rec) + ADataAccess.RecordCount * SizeOf(TStore_Quote32_M2_V1); //400k
+      tmpFileNewSize := SizeOf(define_dealstore_header.TStore_Quote_M2_Detail_Header_V1Rec) +
+          ADataAccess.RecordCount * SizeOf(define_stock_quotes.TStore_Quote32_M2_V1); //400k
       tmpFileNewSize := ((tmpFileNewSize div (1 * 1024)) + 1) * 1 * 1024;
       tmpWinFile.FileSize := tmpFileNewSize;
 
@@ -81,7 +82,7 @@ begin
   tmpHead.Header.CompressFlag        := 0;             // 1 -- 17
   tmpHead.Header.EncryptFlag         := 0;             // 1 -- 18
   tmpHead.Header.DataSourceId        := ADataAccess.DataSourceId;             // 2 -- 20
-  CopyMemory(@tmpHead.Header.Code[0], @ADataAccess.StockItem.Code[1], Length(ADataAccess.StockItem.Code));
+  CopyMemory(@tmpHead.Header.Code[0], @ADataAccess.StockItem.sCode[1], Length(ADataAccess.StockItem.sCode));
   //Move(ADataAccess.StockItem.Code, tmpHead.Header.BaseHeader.Code[0], Length(ADataAccess.StockItem.Code)); // 12 - 32
   // ----------------------------------------------------
   tmpHead.Header.StorePriceFactor    := 1000;             // 2 - 34

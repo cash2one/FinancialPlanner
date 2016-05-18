@@ -28,7 +28,7 @@ begin
   try                   
     if LoadStockDayData(App, tmpDayData) then
     begin
-      GetStockDataDetail_163(App, AStockItem, AHttpClientSession);
+      GetStockDataDetail_163(App, tmpDayData, AHttpClientSession);
     end;
   except
     tmpDayData.Free;
