@@ -21,6 +21,7 @@ type
     function GetInstallPath: WideString; override;
   public                    
     constructor Create(App: TBaseApp); override;
+    function GetRelativeFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;     
     function GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;
     function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
     function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
@@ -92,11 +93,18 @@ begin
   end;
 end;
 
+function TStockAppPath.GetRelativeFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
+begin
+  Result := '';
+end;
+
 function TStockAppPath.GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
 begin
   Result := '';
   if FilePath_DBType_DetailData = ADBType then
   begin
+    if nil = AParam then
+      exit;
     Result := DataBasePath[ADBType, ADataSrc] +
         Copy(PRT_DealItem(AParam).sCode, 1, 4) + '\' +
         PRT_DealItem(AParam).sCode + '\';

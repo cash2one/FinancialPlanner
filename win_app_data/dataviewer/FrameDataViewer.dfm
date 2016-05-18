@@ -17,16 +17,16 @@ object fmeDataViewer: TfmeDataViewer
     Left = 0
     Top = 0
     Width = 547
-    Height = 41
+    Height = 10
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
   end
   object pnMain: TPanel
     Left = 0
-    Top = 41
+    Top = 10
     Width = 547
-    Height = 294
+    Height = 325
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
@@ -34,7 +34,7 @@ object fmeDataViewer: TfmeDataViewer
       Left = 0
       Top = 0
       Width = 547
-      Height = 294
+      Height = 325
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 0
@@ -51,53 +51,87 @@ object fmeDataViewer: TfmeDataViewer
         Left = 0
         Top = 17
         Width = 547
-        Height = 277
+        Height = 308
         Align = alClient
         TabOrder = 1
         object spl1: TSplitter
-          Left = 153
+          Left = 201
           Top = 1
-          Height = 275
+          Height = 306
         end
-        object vtDetailDatas: TVirtualStringTree
-          Left = 156
+        object pnlDetail: TPanel
+          Left = 204
           Top = 1
-          Width = 390
-          Height = 275
+          Width = 342
+          Height = 306
           Align = alClient
-          BevelInner = bvNone
           BevelOuter = bvNone
-          BorderStyle = bsNone
-          Header.AutoSizeIndex = 0
-          Header.Font.Charset = DEFAULT_CHARSET
-          Header.Font.Color = clWindowText
-          Header.Font.Height = -11
-          Header.Font.Name = 'Tahoma'
-          Header.Font.Style = []
-          Header.MainColumn = -1
           TabOrder = 0
-          OnGetText = vtDetailDatasGetText
-          Columns = <>
+          object pnlDetailTop: TPanel
+            Left = 0
+            Top = 0
+            Width = 342
+            Height = 28
+            Align = alTop
+            BevelOuter = bvNone
+          end
+          object vtDetailDatas: TVirtualStringTree
+            Left = 0
+            Top = 28
+            Width = 342
+            Height = 278
+            Align = alClient
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            BorderStyle = bsNone
+            Header.AutoSizeIndex = 0
+            Header.Font.Charset = DEFAULT_CHARSET
+            Header.Font.Color = clWindowText
+            Header.Font.Height = -11
+            Header.Font.Name = 'Tahoma'
+            Header.Font.Style = []
+            Header.MainColumn = -1
+            OnGetText = vtDetailDatasGetText
+            Columns = <>
+          end
         end
-        object vtDayDatas: TVirtualStringTree
+        object pnlDayData: TPanel
           Left = 1
           Top = 1
-          Width = 152
-          Height = 275
+          Width = 200
+          Height = 306
           Align = alLeft
-          BevelInner = bvNone
           BevelOuter = bvNone
-          BorderStyle = bsNone
-          Header.AutoSizeIndex = 0
-          Header.Font.Charset = DEFAULT_CHARSET
-          Header.Font.Color = clWindowText
-          Header.Font.Height = -11
-          Header.Font.Name = 'Tahoma'
-          Header.Font.Style = []
-          Header.MainColumn = -1
           TabOrder = 1
-          OnGetText = vtDayDatasGetText
-          Columns = <>
+          object pnlDayDataTop: TPanel
+            Left = 0
+            Top = 0
+            Width = 200
+            Height = 28
+            Align = alTop
+            BevelOuter = bvNone
+          end
+          object vtDayDatas: TVirtualStringTree
+            Left = 0
+            Top = 28
+            Width = 200
+            Height = 278
+            Align = alClient
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            BorderStyle = bsNone
+            Header.AutoSizeIndex = 0
+            Header.Font.Charset = DEFAULT_CHARSET
+            Header.Font.Color = clWindowText
+            Header.Font.Height = -11
+            Header.Font.Name = 'Tahoma'
+            Header.Font.Style = []
+            Header.MainColumn = -1
+            TreeOptions.SelectionOptions = [toFullRowSelect]
+            OnChange = vtDayDatasChange
+            OnGetText = vtDayDatasGetText
+            Columns = <>
+          end
         end
       end
     end

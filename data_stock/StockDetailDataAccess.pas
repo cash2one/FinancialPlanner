@@ -29,7 +29,8 @@ type
     function FindRecord(ADateTime: Integer): PRT_Quote_M2;
     function CheckOutRecord(ADateTime: Integer): PRT_Quote_M2;
     function NewRecord(ADateTime: Integer): PRT_Quote_M2;
-    procedure Sort; override;
+    procedure Sort; override;    
+    procedure Clear; override;
     property DealDate: Word read GetDealDate write SetDealDate;
     property StockItem: PRT_DealItem read fStockItem write SetStockItem;
     property DataSourceId: integer read fDataSourceId write fDataSourceId;
@@ -109,16 +110,8 @@ begin
 end;
 
 destructor TStockDetailDataAccess.Destroy;
-var
-  i: integer;
-  tmpQuote: PRT_Quote_M2;
 begin
-  for i := fDetailDealData.Count - 1 downto 0 do
-  begin
-    tmpQuote := PRT_Quote_M2(fDetailDealData.Objects[i]);
-    FreeMem(tmpQuote);
-  end;
-  fDetailDealData.Clear;
+  Clear;
   fDetailDealData.Free;
   inherited;
 end;
@@ -129,7 +122,7 @@ begin
   begin
     if fStockItem <> AStockItem then
     begin
-    
+      Self.Clear;
     end;
   end;
   fStockItem := AStockItem;
@@ -172,6 +165,20 @@ end;
 procedure TStockDetailDataAccess.Sort;
 begin
   fDetailDealData.Sort;
+end;
+
+procedure TStockDetailDataAccess.Clear;  
+var
+  i: integer;
+  tmpQuote: PRT_Quote_M2;
+begin
+  inherited;        
+  for i := fDetailDealData.Count - 1 downto 0 do
+  begin
+    tmpQuote := PRT_Quote_M2(fDetailDealData.Objects[i]);
+    FreeMem(tmpQuote);
+  end;
+  fDetailDealData.Clear;
 end;
 
 function TStockDetailDataAccess.NewRecord(ADateTime: Integer): PRT_Quote_M2;

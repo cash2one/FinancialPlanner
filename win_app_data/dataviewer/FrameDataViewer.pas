@@ -13,7 +13,9 @@ uses
 
 type
   TDataViewerData = record
-    StockDayDataAccess: StockDayDataAccess.TStockDayDataAccess;
+    DayDataAccess: StockDayDataAccess.TStockDayDataAccess;
+    DetailDataAccess: StockDetailDataAccess.TStockDetailDataAccess;
+     
     IsWeight: Boolean;
         
     Rule_BDZX_Price: TRule_BDZX_Price;  
@@ -27,15 +29,22 @@ type
     pnData: TPanel;
     pnDataTop: TPanel;
     pnlDatas: TPanel;
-    vtDetailDatas: TVirtualStringTree;
-    vtDayDatas: TVirtualStringTree;
     spl1: TSplitter;
+    pnlDetail: TPanel;
+    vtDetailDatas: TVirtualStringTree;
+    pnlDetailTop: TPanel;
+    pnlDayData: TPanel;
+    vtDayDatas: TVirtualStringTree;
+    pnlDayDataTop: TPanel;
     procedure vtDetailDatasGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
     procedure vtDayDatasGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
+    procedure vtDayDatasChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
   protected
     fDataViewerData: TDataViewerData;
+    procedure LoadDetailTreeView;
+    procedure LoadDayDataTreeView(AStockItem: PStockItemNode);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -52,6 +61,7 @@ uses
   BaseStockApp,
   Define_DataSrc,
   define_stock_quotes,
+  define_dealstore_file,
   StockDayData_Load,
   StockDetailData_Load,
   db_DealItem_Load;
@@ -141,6 +151,36 @@ begin
 end;
 
 procedure TfmeDataViewer.SetStockItem(AStockItem: PStockItemNode);
+begin
+  LoadDayDataTreeView(AStockItem);
+end;
+                          
+procedure TfmeDataViewer.LoadDetailTreeView;     
+var
+  i: integer;
+  tmpNodeData: PStockDetailDataNode;
+  tmpDetailData: PRT_Quote_M2;   
+  tmpNode: PVirtualNode;
+begin
+  vtDetailDatas.Clear;
+  vtDetailDatas.BeginUpdate;
+  try
+    if nil <> fDataViewerData.DetailDataAccess then
+    begin
+      for i := 0 to fDataViewerData.DetailDataAccess.RecordCount - 1 do
+      begin
+        tmpDetailData := fDataViewerData.DetailDataAccess.RecordItem[i];  
+        tmpNode := vtDetailDatas.AddChild(nil);
+        tmpNodeData := vtDetailDatas.GetNodeData(tmpNode);
+        tmpNodeData.QuoteData := tmpDetailData;
+      end;
+    end;      
+  finally
+    vtDetailDatas.EndUpdate;
+  end;
+end;
+
+procedure TfmeDataViewer.LoadDayDataTreeView(AStockItem: PStockItemNode);
 var
   i: integer;       
   tmpStockDataNode: PStockDayDataNode;
@@ -150,15 +190,15 @@ begin
   vtDayDatas.Clear;
   if nil = AStockItem then
     exit;
-  fDataViewerData.StockDayDataAccess := AStockItem.StockDayDataAccess;
-  if nil = fDataViewerData.StockDayDataAccess then
-    fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DataSrcId, fDataViewerData.IsWeight);
+  fDataViewerData.DayDataAccess := AStockItem.StockDayDataAccess;
+  if nil = fDataViewerData.DayDataAccess then
+    fDataViewerData.DayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DataSrcId, fDataViewerData.IsWeight);
   fDataViewerData.Rule_BDZX_Price := AStockItem.Rule_BDZX_Price;
   fDataViewerData.Rule_CYHT_Price := AStockItem.Rule_CYHT_Price;
 
-  for i := fDataViewerData.StockDayDataAccess.RecordCount - 1 downto 0 do
+  for i := fDataViewerData.DayDataAccess.RecordCount - 1 downto 0 do
   begin
-    tmpStockData := fDataViewerData.StockDayDataAccess.RecordItem[i];
+    tmpStockData := fDataViewerData.DayDataAccess.RecordItem[i];
     tmpNode := vtDayDatas.AddChild(nil);
     tmpStockDataNode := vtDayDatas.GetNodeData(tmpNode);
     tmpStockDataNode.QuoteData := tmpStockData;
@@ -222,9 +262,15 @@ var
 begin
   inherited;
   vtDayDatas.NodeDataSize := SizeOf(TStockDayDataNode);  
-  vtDayDatas.OnGetText := vtDayDatasGetText;
   vtDayDatas.Header.Options := [hoColumnResize, hoVisible];
-  vtDayDatas.Header.Columns.Clear;   
+  vtDayDatas.Header.Columns.Clear;
+
+  vtDayDatas.TreeOptions.SelectionOptions := [toFullRowSelect];
+  vtDayDatas.TreeOptions.AnimationOptions := [];
+  vtDayDatas.TreeOptions.MiscOptions := [toAcceptOLEDrop,toFullRepaintOnResize,toInitOnSave,toToggleOnDblClick,toWheelPanning,toEditOnClick];
+  vtDayDatas.TreeOptions.PaintOptions := [toShowButtons,toShowDropmark,{toShowRoot} toShowTreeLines,toThemeAware,toUseBlendedImages];
+  vtDayDatas.TreeOptions.StringOptions := [toSaveCaptions,toAutoAcceptEditChange];
+
   for col_day := low(TDayColumns) to high(TDayColumns) do
   begin
     tmpCol := vtDayDatas.Header.Columns.Add;
@@ -249,9 +295,47 @@ begin
     tmpCol.Width := 120;
   end;
 
+  vtDayDatas.OnGetText := vtDayDatasGetText;
+  vtDayDatas.OnChange := vtDayDatasChange;
   fDataViewerData.DataSrcId := DataSrc_163;
 end;
                    
+procedure TfmeDataViewer.vtDayDatasChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+var      
+  tmpNodeData: PStockDayDataNode;
+  tmpFileUrl: string;
+begin
+  inherited;
+  if nil = Node then
+    exit;
+  tmpNodeData := Sender.GetNodeData(Node);
+  if nil = tmpNodeData then
+    exit;
+  if nil = tmpNodeData.QuoteData then
+    exit;
+  if nil = fDataViewerData.DetailDataAccess then
+    fDataViewerData.DetailDataAccess := TStockDetailDataAccess.Create(fDataViewerData.DayDataAccess.StockItem, DataSrc_Sina);
+  fDataViewerData.DetailDataAccess.Clear;
+  fDataViewerData.DetailDataAccess.StockItem := fDataViewerData.DayDataAccess.StockItem;
+
+  tmpFileUrl := TBaseStockApp(App).StockAppPath.GetFileUrl(FilePath_DBType_DetailData, DataSrc_Sina,
+    tmpNodeData.QuoteData.DealDateTime.Value,
+    fDataViewerData.DayDataAccess.StockItem);
+  if not FileExists(tmpFileUrl) then
+  begin
+    tmpFileUrl := ChangeFileExt(tmpFileUrl, '.sdet');
+  end;
+  //tmpFileUrl := 'E:\StockApp\sdata\sdetsina\600000\600000_20151125.sdet';
+  if FileExists(tmpFileUrl) then
+  begin
+    LoadStockDetailData(
+      App,
+      fDataViewerData.DetailDataAccess,
+      tmpFileUrl);
+  end;            
+  LoadDetailTreeView;
+end;
+
 procedure TfmeDataViewer.vtDayDatasGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: WideString);
