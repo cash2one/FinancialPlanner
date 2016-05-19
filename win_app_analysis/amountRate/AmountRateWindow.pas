@@ -37,7 +37,7 @@ implementation
 uses
   IniFiles,
   UIBaseWndProc,
-  Define_Message,
+  windef_msg,
   Define_DealItem,
   define_stock_quotes_instant,
   StockInstantData_Get_Sina,
@@ -299,7 +299,7 @@ var
   tmpInstantArray: TInstantArray;  
   tmpIdx: integer;
   tmpCount: integer;
-  tmpNetSession: TNetClientSession;
+  tmpNetSession: THttpClientSession;
 begin
   Result := 0;
   FillChar(tmpNetSession, SizeOf(tmpNetSession), 0); 
