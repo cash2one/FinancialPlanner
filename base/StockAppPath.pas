@@ -20,8 +20,9 @@ type
     function GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString; override;
     function GetInstallPath: WideString; override;
   public                    
-    constructor Create(App: TBaseApp); override;
-    function GetRelativeFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;     
+    constructor Create(App: TBaseApp); override;    
+    function GetRootPath: WideString; override;
+    function GetFileRelativePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;    
     function GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;
     function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
     function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
@@ -42,6 +43,56 @@ begin
   inherited;
   FillChar(fStockAppPathData, SizeOf(fStockAppPathData), 0);
   fStockAppPathData.DBPathRoot := FilePath_StockData;
+end;
+                          
+function TStockAppPath.GetRootPath: WideString;
+begin
+  Result := GetInstallPath;
+end;
+                    
+function TStockAppPath.GetFileRelativePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; 
+var
+  tmpDataSrcCode: string;
+  tmpIni: TIniFile;
+begin
+  Result := '';
+  tmpDataSrcCode := GetDataSrcCode(ADataSrc);
+  if FilePath_DBType_DayData = ADBType then
+    Result := fStockAppPathData.DBPathRoot + '\' + FileExt_StockDay + tmpDataSrcCode + '\';
+  if FilePath_DBType_DayDataWeight  = ADBType then
+    Result := fStockAppPathData.DBPathRoot + '\' + FileExt_StockDayWeight + tmpDataSrcCode + '\';
+  if FilePath_DBType_InstantData = ADBType then
+    Result := fStockAppPathData.DBPathRoot + '\' + FileExt_StockInstant + tmpDataSrcCode + '\';
+  if FilePath_DBType_DetailData = ADBType then
+  begin
+    if '' = fStockAppPathData.DetailDBPath then
+    begin
+      tmpIni := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
+      try
+        fStockAppPathData.DetailDBPath := tmpIni.ReadString('Path', 'DetailRoot_' + tmpDataSrcCode, '');
+        if '' = fStockAppPathData.DetailDBPath then
+        begin
+          fStockAppPathData.DetailDBPath := fStockAppPathData.DBPathRoot + '\' + FileExt_StockDetail + tmpDataSrcCode + '\';
+        end;
+        tmpIni.WriteString('Path', 'DetailRoot_' + tmpDataSrcCode, fStockAppPathData.DetailDBPath);
+      finally
+        tmpIni.Free;
+      end;
+    end;
+    Result := fStockAppPathData.DetailDBPath;
+  end;
+  if FilePath_DBType_ValueData = ADBType then
+    Result := fStockAppPathData.DBPathRoot + '\' + FileExt_StockValue + tmpDataSrcCode + '\';
+      
+  if FilePath_DBType_ItemDB = ADBType then
+    Result := fStockAppPathData.DBPathRoot + '\' + 's_dic' + '\';
+  if '' = Result then
+  begin
+    if '' <> tmpDataSrcCode then
+      Result := fStockAppPathData.DBPathRoot + '\' + 's' + tmpDataSrcCode + '\'
+    else
+      Result := fStockAppPathData.DBPathRoot + '\';
+  end;
 end;
 
 function TStockAppPath.GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString;
@@ -91,11 +142,6 @@ begin
   begin
     Sysutils.ForceDirectories(Result);
   end;
-end;
-
-function TStockAppPath.GetRelativeFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
-begin
-  Result := '';
 end;
 
 function TStockAppPath.GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
@@ -213,7 +259,15 @@ var
   tmpFileName: AnsiString;
   tmpFilePath: AnsiString;
 begin
-  Result := '';
+  Result := '';             
+  if FilePath_DBType_ItemDB = ADBType then
+  begin
+    Result := ChangeFileExt(ParamStr(0), '.dic');
+    if FileExists(Result) then
+    begin
+      exit;
+    end;
+  end;
   tmpFilePath := GetFilePath(ADBType, ADataSrc, AParamType, AParam);
   tmpFileName := GetFileName(ADBType, ADataSrc, AParamType, AParam, AFileExt);  
   if ('' <> tmpFilePath) and ('' <> tmpFileName) then
