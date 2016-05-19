@@ -4,14 +4,11 @@ interface
 
 uses
   BaseWinApp,
-  BaseStockApp,
-  StockInstantDataAccess;
+  BaseStockApp;
 
 type
   TBollAnalysisApp = class(TBaseStockApp)
   protected
-    fLastStockInstant: TDBStockInstant;
-    fCurrentStockInstant: TDBStockInstant;
   public   
     constructor Create(AppClassId: AnsiString); override;
     destructor Destroy; override;
@@ -19,8 +16,6 @@ type
     function Initialize: Boolean; override;
     procedure Finalize; override;
     procedure Run; override;  
-    property LastStockInstant: TDBStockInstant read fLastStockInstant;
-    property CurrentStockInstant: TDBStockInstant read fCurrentStockInstant;
   end;  
 
 var
@@ -40,8 +35,6 @@ uses
 constructor TBollAnalysisApp.Create(AppClassId: AnsiString);
 begin
   inherited;
-  fLastStockInstant := nil;
-  fCurrentStockInstant := nil;
 end;
 
 destructor TBollAnalysisApp.Destroy;
@@ -64,10 +57,6 @@ end;
 
 procedure TBollAnalysisApp.Finalize;
 begin
-  if nil <> fCurrentStockInstant then
-    FreeAndNil(fCurrentStockInstant);
-  if nil <> fLastStockInstant then
-    FreeAndNil(fLastStockInstant);
   inherited;
 end;
 

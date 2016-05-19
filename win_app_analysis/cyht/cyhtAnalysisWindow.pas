@@ -8,7 +8,6 @@ uses
   Sysutils,
   BaseApp,
   QuickList_double,
-  UtilsHttp,
   win.thread,
   UIBaseWin,
   ui.color,
@@ -39,8 +38,6 @@ uses
   UIBaseWndProc,
   windef_msg,
   Define_DealItem,
-  define_stock_quotes_instant,
-  StockInstantData_Get_Sina,
   cyhtAnalysisWinApp  //,Graphics
   ;
 
@@ -209,39 +206,6 @@ begin
         );
 end;
 
-procedure RefreshRateList(cyhtAnalysisWindow: PRT_cyhtAnalysisWindow);   
-var
-  i: integer;
-  tmpCurrentQuote: PRT_InstantQuote;
-  tmpLastQuote: PRT_InstantQuote;  
-begin
-  cyhtAnalysisWindow.RateList.Clear;
-  for i := 0 to GlobalApp.CurrentStockInstant.RecordCount - 1 do
-  begin
-    tmpCurrentQuote := GlobalApp.CurrentStockInstant.RecordItem[i];
-    if 0 < tmpCurrentQuote.Amount then
-    begin
-      tmpLastQuote := tmpCurrentQuote.ExtendParam;
-      if nil = tmpLastQuote then
-      begin
-        tmpLastQuote := GlobalApp.LastStockInstant.FindItem(tmpCurrentQuote.Item);
-      end;
-      if nil <> tmpLastQuote then
-      begin
-        if tmpLastQuote.Item.sCode = tmpCurrentQuote.Item.sCode then
-        begin
-          tmpCurrentQuote.ExtendParam := tmpLastQuote;
-          if 0 < tmpLastQuote.Amount then
-          begin
-            cyhtAnalysisWindow.RateList.AddObject(tmpCurrentQuote.Amount / tmpLastQuote.Amount, TObject(tmpCurrentQuote.Item));
-          end;
-        end;
-      end;
-    end;
-  end;
-  cyhtAnalysisWindow.RateList.Sort;
-end;
-
 function cyhtAnalysisWindowWndProcA(cyhtAnalysisWindow: PRT_cyhtAnalysisWindow; AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
 begin
   Result := 0;
@@ -283,7 +247,6 @@ begin
     CM_INVALIDATE: begin
       Windows.BringWindowToTop(AWnd);
 
-      RefreshRateList(cyhtAnalysisWindow);
       Paint_cyhtAnalysisWindow_Layered(cyhtAnalysisWindow);
 //      //Windows.InvalidateRect(AWnd, nil, true);
     end;
@@ -293,98 +256,8 @@ begin
 end;
                 
 function ThreadProc_RefreshData(AParam: PRT_cyhtAnalysisWindow): HResult; stdcall;
-var
-  i: integer;
-  tmpHour, tmpMin, tmpSec, tmpMSec: Word; 
-  tmpInstantArray: TInstantArray;  
-  tmpIdx: integer;
-  tmpCount: integer;
-  tmpNetSession: THttpClientSession;
 begin
   Result := 0;
-  FillChar(tmpNetSession, SizeOf(tmpNetSession), 0); 
-  while true do
-  begin           
-    Sleep(20);
-    if nil = AParam.BaseApp then
-      Break;
-    if 0 = AParam.IsFirstGot then
-    begin
-      AParam.IsFirstGot := 1;
-    end else
-    begin
-      DecodeTime(now, tmpHour, tmpMin, tmpSec, tmpMSec);
-      if 9 > tmpHour then
-        Continue;
-      if 15 < tmpHour then
-        Continue;
-      if 9 = tmpHour then
-      begin
-        if 29 > tmpMin then
-          Continue;
-      end;
-      if 11 = tmpHour then
-      begin
-        if 30 < tmpMin then
-          Continue;
-      end;
-      if 12 = tmpHour then
-        Continue;
-    end;
-    if 0 <> AParam.BaseApp.IsActiveStatus then
-    begin
-//      DataGet_InstantArray_Sina(AParam.BaseApp, @AParam.StockQuoteInstants);
-      tmpIdx := 0;
-      FillChar(tmpInstantArray, SizeOf(tmpInstantArray), 0);
-      tmpCount := 0;
-      for i := 0 to GlobalApp.CurrentStockInstant.RecordCount - 1 do
-      begin                 
-        if nil <> AParam.BaseApp then
-        begin
-          if 0 <> AParam.BaseApp.IsActiveStatus then
-          begin
-            tmpInstantArray.Data[tmpIdx] := GlobalApp.CurrentStockInstant.RecordItem[i];
-            Inc(tmpIdx);
-            if tmpIdx >= Length(tmpInstantArray.Data) then
-            begin
-              DataGet_InstantArray_Sina(GlobalApp, @tmpInstantArray, @tmpNetSession);
-              FillChar(tmpInstantArray, SizeOf(tmpInstantArray), 0);
-              tmpIdx := 0;  
-              Sleep(100);
-              Inc(tmpCount);
-              if 10 < tmpCount then
-              begin
-                //Break;
-              end;     
-              //PostMessage(AParam.BaseWindow.WindowHandle, DefineWinMsg.CM_INVALIDATE, 0, 0);
-            end;
-          end else
-            Break;
-        end else
-          Break;
-      end;
-      if nil <> AParam.BaseApp then
-      begin
-        if 0 <> AParam.BaseApp.IsActiveStatus then
-        begin
-          DataGet_InstantArray_Sina(GlobalApp, @tmpInstantArray, @tmpNetSession);
-          PostMessage(AParam.BaseWindow.UIWndHandle, CM_INVALIDATE, 0, 0);
-        end;
-      end;
-    end else
-    begin
-      Break;
-    end;
-    // 三分钟 更新一次排名
-    for i := 1 to 3 * 60 * 50 do
-    begin
-      Sleep(20);
-      if nil = AParam.BaseApp then
-        Break;
-      if 0 = AParam.BaseApp.IsActiveStatus then
-        Break;
-    end;
-  end;
   ExitThread(Result);
 end;
 

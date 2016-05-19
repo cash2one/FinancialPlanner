@@ -8,15 +8,14 @@ uses
   Sysutils,
   BaseApp,
   QuickList_double,
-  UtilsHttp,
   win.thread,
   UIBaseWin,
   ui.color,
   uiwin.memdc;
 
 type
-  PRT_AmountRateWindow = ^TRT_AmountRateWindow;
-  TRT_AmountRateWindow = record
+  PRT_bdzxAnalysisWindow = ^TRT_bdzxAnalysisWindow;
+  TRT_bdzxAnalysisWindow = record
     BaseApp       : TBaseApp;
     BaseWindow    : TUIBaseWnd;
     DataThread    : TSysWinThread;
@@ -28,9 +27,9 @@ type
     RateList      : TALDoubleList;
   end;
 
-  function CreateAmountRateWindow(App: TBaseApp): Boolean; overload;
-  procedure CreateRefreshDataThread(AmountRateWindow: PRT_AmountRateWindow);
-  procedure ShowAmountRateWindow; overload;
+  function CreatebdzxAnalysisWindow(App: TBaseApp): Boolean; overload;
+  procedure CreateRefreshDataThread(bdzxAnalysisWindow: PRT_bdzxAnalysisWindow);
+  procedure ShowbdzxAnalysisWindow; overload;
 
 implementation
               
@@ -39,25 +38,23 @@ uses
   UIBaseWndProc,
   windef_msg,
   Define_DealItem,
-  define_stock_quotes_instant,
-  StockInstantData_Get_Sina,
   bdzxAnalysisWinApp  //,Graphics
   ;
 
-procedure SaveLayout(AmountRateWindow: PRT_AmountRateWindow);
+procedure SaveLayout(bdzxAnalysisWindow: PRT_bdzxAnalysisWindow);
 var
   tmpIni: TIniFile;
 begin
   tmpIni := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
   try
-    tmpIni.WriteInteger('win', 'left', AmountRateWindow.BaseWindow.WindowRect.Left);
-    tmpIni.WriteInteger('win', 'top', AmountRateWindow.BaseWindow.WindowRect.Top);
+    tmpIni.WriteInteger('win', 'left', bdzxAnalysisWindow.BaseWindow.WindowRect.Left);
+    tmpIni.WriteInteger('win', 'top', bdzxAnalysisWindow.BaseWindow.WindowRect.Top);
   finally
     tmpIni.Free;
   end;
 end;
 
-procedure Paint_AmountRateWindow(ADC: HDC; AmountRateWindow: PRT_AmountRateWindow);
+procedure Paint_bdzxAnalysisWindow(ADC: HDC; bdzxAnalysisWindow: PRT_bdzxAnalysisWindow);
 var
 //  tmpQuote: PRT_InstantQuote;
   i: integer;
@@ -81,29 +78,29 @@ begin
   //tmpOldPen := SelectObject(ADC, GetStockObject(BLACK_PEN));
   //tmpOldPen := SelectObject(ADC, GetStockObject(WHITE_PEN));
   //tmpOldBrush := SelectObject(ADC, GetStockObject(GRAY_BRUSH));
-  //Windows.MoveToEx(ADC, 0, AmountRateWindow.BaseWindow.ClientRect.Bottom - 1, nil);
-  //Windows.LineTo(ADC, AmountRateWindow.BaseWindow.ClientRect.Right, AmountRateWindow.BaseWindow.ClientRect.Bottom - 1);
+  //Windows.MoveToEx(ADC, 0, bdzxAnalysisWindow.BaseWindow.ClientRect.Bottom - 1, nil);
+  //Windows.LineTo(ADC, bdzxAnalysisWindow.BaseWindow.ClientRect.Right, bdzxAnalysisWindow.BaseWindow.ClientRect.Bottom - 1);
   //SelectObject(ADC, tmpOldBrush);
   //SelectObject(ADC, tmpOldPen);  
-  //FillRect(ADC, AmountRateWindow.BaseWindow.ClientRect, GetStockObject(WHITE_BRUSH));
-  //FrameRect(ADC, AmountRateWindow.BaseWindow.ClientRect, GetStockObject(BLACK_BRUSH));
+  //FillRect(ADC, bdzxAnalysisWindow.BaseWindow.ClientRect, GetStockObject(WHITE_BRUSH));
+  //FrameRect(ADC, bdzxAnalysisWindow.BaseWindow.ClientRect, GetStockObject(BLACK_BRUSH));
 
-  tmpOldFont := SelectObject(ADC, AmountRateWindow.Font);
+  tmpOldFont := SelectObject(ADC, bdzxAnalysisWindow.Font);
   try
     SetTextColor(ADC, $FF000000);
-    tmpIdx := AmountRateWindow.RateList.Count - 1;
-    for i := 0 to AmountRateWindow.RowCount - 1 do
+    tmpIdx := bdzxAnalysisWindow.RateList.Count - 1;
+    for i := 0 to bdzxAnalysisWindow.RowCount - 1 do
     begin
       tmpRate := 0;
       if 0 <= tmpIdx then
       begin
-        tmpRate := AmountRateWindow.RateList[tmpIdx];
+        tmpRate := bdzxAnalysisWindow.RateList[tmpIdx];
       end;
       tmpText := 'A';
       if 0 < tmpRate then
       begin
         tmpIdx := tmpIdx - 1;
-        tmpText := PRT_DealItem(AmountRateWindow.RateList.Objects[tmpIdx]).sCode;
+        tmpText := PRT_DealItem(bdzxAnalysisWindow.RateList.Objects[tmpIdx]).sCode;
       end;
 //        if '' <> tmpQuote.Item.Name then
 //        begin
@@ -134,7 +131,7 @@ begin
   end;
 end;
                  
-function WMPaint_AmountRateWindowWndProcA(AmountRateWindow: PRT_AmountRateWindow; AWnd: HWND): LRESULT;
+function WMPaint_bdzxAnalysisWindowWndProcA(bdzxAnalysisWindow: PRT_bdzxAnalysisWindow; AWnd: HWND): LRESULT;
 var
   tmpPS: TPaintStruct;
   tmpDC: HDC;
@@ -142,30 +139,30 @@ begin
   Result := 0;
   tmpDC := BeginPaint(AWnd, tmpPS);
   try
-    Paint_AmountRateWindow(tmpDC, AmountRateWindow);
+    Paint_bdzxAnalysisWindow(tmpDC, bdzxAnalysisWindow);
   finally
   end;
   EndPaint(AWnd, tmpPS);
 end;
                        
-procedure Paint_AmountRateWindow_Layered(AmountRateWindow: PRT_AmountRateWindow);
+procedure Paint_bdzxAnalysisWindow_Layered(bdzxAnalysisWindow: PRT_bdzxAnalysisWindow);
 var
   tmpBlend: TBLENDFUNCTION;
   i, j: Integer;  
   tmpColor: PColor32Array;
 begin
-  if 0 = AmountRateWindow.MemDC.DCHandle then
+  if 0 = bdzxAnalysisWindow.MemDC.DCHandle then
   begin
-    UpdateMemDC(@AmountRateWindow.MemDC,
-        AmountRateWindow.BaseWindow.ClientRect.Right,
-        AmountRateWindow.BaseWindow.ClientRect.Bottom);
+    UpdateMemDC(@bdzxAnalysisWindow.MemDC,
+        bdzxAnalysisWindow.BaseWindow.ClientRect.Right,
+        bdzxAnalysisWindow.BaseWindow.ClientRect.Bottom);
   end;                                   
-  tmpColor := AmountRateWindow.MemDC.MemBitmap.BitsData;
+  tmpColor := bdzxAnalysisWindow.MemDC.MemBitmap.BitsData;
   if tmpColor <> nil then
   begin
-    for i := 0 to AmountRateWindow.MemDC.Height - 1 do
+    for i := 0 to bdzxAnalysisWindow.MemDC.Height - 1 do
     begin
-      for j := 0 to AmountRateWindow.MemDC.Width - 1 do
+      for j := 0 to bdzxAnalysisWindow.MemDC.Width - 1 do
       begin
         //PColor32Entry(tmpColor).A := 255;
         PColor32Entry(tmpColor).A := 1;       
@@ -174,13 +171,13 @@ begin
       end;
     end;
   end;
-  Paint_AmountRateWindow(AmountRateWindow.MemDC.DCHandle, AmountRateWindow);  
-  tmpColor := AmountRateWindow.MemDC.MemBitmap.BitsData;
+  Paint_bdzxAnalysisWindow(bdzxAnalysisWindow.MemDC.DCHandle, bdzxAnalysisWindow);  
+  tmpColor := bdzxAnalysisWindow.MemDC.MemBitmap.BitsData;
   if tmpColor <> nil then
   begin
-    for i := 0 to AmountRateWindow.MemDC.Height - 1 do
+    for i := 0 to bdzxAnalysisWindow.MemDC.Height - 1 do
     begin
-      for j := 0 to AmountRateWindow.MemDC.Width - 1 do
+      for j := 0 to bdzxAnalysisWindow.MemDC.Width - 1 do
       begin
         //if 2 <> PColor32Entry(tmpColor).ARGB then
         if 1 <> PColor32Entry(tmpColor).A then
@@ -198,60 +195,27 @@ begin
   tmpBlend.SourceConstantAlpha := 255; //$FF;
   tmpBlend.AlphaFormat := AC_SRC_ALPHA;// $FF;
   UpdateLayeredWindow(
-    AmountRateWindow.BaseWindow.UIWndHandle, 0,
-        @AmountRateWindow.BaseWindow.WindowRect.TopLeft,
-        @AmountRateWindow.BaseWindow.ClientRect.BottomRight,
-        AmountRateWindow.MemDC.DCHandle,
-        @AmountRateWindow.BaseWindow.ClientRect.TopLeft,
+    bdzxAnalysisWindow.BaseWindow.UIWndHandle, 0,
+        @bdzxAnalysisWindow.BaseWindow.WindowRect.TopLeft,
+        @bdzxAnalysisWindow.BaseWindow.ClientRect.BottomRight,
+        bdzxAnalysisWindow.MemDC.DCHandle,
+        @bdzxAnalysisWindow.BaseWindow.ClientRect.TopLeft,
         0, // crKey: COLORREF
         @tmpBlend,// pblend: PBLENDFUNCTION;
         ULW_ALPHA // dwFlags: DWORD
         );
 end;
 
-procedure RefreshRateList(AmountRateWindow: PRT_AmountRateWindow);   
-var
-  i: integer;
-  tmpCurrentQuote: PRT_InstantQuote;
-  tmpLastQuote: PRT_InstantQuote;  
-begin
-  AmountRateWindow.RateList.Clear;
-  for i := 0 to GlobalApp.CurrentStockInstant.RecordCount - 1 do
-  begin
-    tmpCurrentQuote := GlobalApp.CurrentStockInstant.RecordItem[i];
-    if 0 < tmpCurrentQuote.Amount then
-    begin
-      tmpLastQuote := tmpCurrentQuote.ExtendParam;
-      if nil = tmpLastQuote then
-      begin
-        tmpLastQuote := GlobalApp.LastStockInstant.FindItem(tmpCurrentQuote.Item);
-      end;
-      if nil <> tmpLastQuote then
-      begin
-        if tmpLastQuote.Item.sCode = tmpCurrentQuote.Item.sCode then
-        begin
-          tmpCurrentQuote.ExtendParam := tmpLastQuote;
-          if 0 < tmpLastQuote.Amount then
-          begin
-            AmountRateWindow.RateList.AddObject(tmpCurrentQuote.Amount / tmpLastQuote.Amount, TObject(tmpCurrentQuote.Item));
-          end;
-        end;
-      end;
-    end;
-  end;
-  AmountRateWindow.RateList.Sort;
-end;
-
-function AmountRateWindowWndProcA(AmountRateWindow: PRT_AmountRateWindow; AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
+function bdzxAnalysisWindowWndProcA(bdzxAnalysisWindow: PRT_bdzxAnalysisWindow; AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
 begin
   Result := 0;
   case AMsg of
     WM_Paint: begin
-      WMPaint_AmountRateWindowWndProcA(AmountRateWindow, AWnd);
+      WMPaint_bdzxAnalysisWindowWndProcA(bdzxAnalysisWindow, AWnd);
     end;
     WM_LBUTTONDBLCLK: begin
-      SaveLayout(AmountRateWindow);
-      AmountRateWindow.BaseApp.IsActiveStatus := 0;
+      SaveLayout(bdzxAnalysisWindow);
+      bdzxAnalysisWindow.BaseApp.IsActiveStatus := 0;
       // sleep wait thread exit
       Sleep(500);
       PostQuitMessage(0);
@@ -268,7 +232,7 @@ begin
 //      begin
 //
 //      end;
-      if (PSmallPoint(@lParam).y - AmountRateWindow.BaseWindow.WindowRect.Top) > AmountRateWindow.BaseWindow.ClientRect.Bottom - 3 then
+      if (PSmallPoint(@lParam).y - bdzxAnalysisWindow.BaseWindow.WindowRect.Top) > bdzxAnalysisWindow.BaseWindow.ClientRect.Bottom - 3 then
       begin
         //Result := HTBOTTOM;
       end;
@@ -276,127 +240,36 @@ begin
     WM_WINDOWPOSCHANGED: begin   
       if ((PWindowPos(LParam).flags and SWP_NOSIZE) = 0) then
       begin
-        UpdateMemDC(@AmountRateWindow.MemDC, PWindowPos(LParam).cx, PWindowPos(LParam).cy);
+        UpdateMemDC(@bdzxAnalysisWindow.MemDC, PWindowPos(LParam).cx, PWindowPos(LParam).cy);
       end;
-      Result := UIWndProcA(@AmountRateWindow.BaseWindow, AWnd, AMsg, wParam, lParam);
+      Result := UIWndProcA(@bdzxAnalysisWindow.BaseWindow, AWnd, AMsg, wParam, lParam);
     end;
     CM_INVALIDATE: begin
       Windows.BringWindowToTop(AWnd);
 
-      RefreshRateList(AmountRateWindow);
-      Paint_AmountRateWindow_Layered(AmountRateWindow);
+      Paint_bdzxAnalysisWindow_Layered(bdzxAnalysisWindow);
 //      //Windows.InvalidateRect(AWnd, nil, true);
     end;
     else
-      Result := UIWndProcA(@AmountRateWindow.BaseWindow, AWnd, AMsg, wParam, lParam);
+      Result := UIWndProcA(@bdzxAnalysisWindow.BaseWindow, AWnd, AMsg, wParam, lParam);
   end;
 end;
                 
-function ThreadProc_RefreshData(AParam: PRT_AmountRateWindow): HResult; stdcall;
-var
-  i: integer;
-  tmpHour, tmpMin, tmpSec, tmpMSec: Word; 
-  tmpInstantArray: TInstantArray;  
-  tmpIdx: integer;
-  tmpCount: integer;
-  tmpNetSession: THttpClientSession;
+function ThreadProc_RefreshData(AParam: PRT_bdzxAnalysisWindow): HResult; stdcall;
 begin
   Result := 0;
-  FillChar(tmpNetSession, SizeOf(tmpNetSession), 0); 
-  while true do
-  begin           
-    Sleep(20);
-    if nil = AParam.BaseApp then
-      Break;
-    if 0 = AParam.IsFirstGot then
-    begin
-      AParam.IsFirstGot := 1;
-    end else
-    begin
-      DecodeTime(now, tmpHour, tmpMin, tmpSec, tmpMSec);
-      if 9 > tmpHour then
-        Continue;
-      if 15 < tmpHour then
-        Continue;
-      if 9 = tmpHour then
-      begin
-        if 29 > tmpMin then
-          Continue;
-      end;
-      if 11 = tmpHour then
-      begin
-        if 30 < tmpMin then
-          Continue;
-      end;
-      if 12 = tmpHour then
-        Continue;
-    end;
-    if 0 <> AParam.BaseApp.IsActiveStatus then
-    begin
-//      DataGet_InstantArray_Sina(AParam.BaseApp, @AParam.StockQuoteInstants);
-      tmpIdx := 0;
-      FillChar(tmpInstantArray, SizeOf(tmpInstantArray), 0);
-      tmpCount := 0;
-      for i := 0 to GlobalApp.CurrentStockInstant.RecordCount - 1 do
-      begin                 
-        if nil <> AParam.BaseApp then
-        begin
-          if 0 <> AParam.BaseApp.IsActiveStatus then
-          begin
-            tmpInstantArray.Data[tmpIdx] := GlobalApp.CurrentStockInstant.RecordItem[i];
-            Inc(tmpIdx);
-            if tmpIdx >= Length(tmpInstantArray.Data) then
-            begin
-              DataGet_InstantArray_Sina(GlobalApp, @tmpInstantArray, @tmpNetSession);
-              FillChar(tmpInstantArray, SizeOf(tmpInstantArray), 0);
-              tmpIdx := 0;  
-              Sleep(100);
-              Inc(tmpCount);
-              if 10 < tmpCount then
-              begin
-                //Break;
-              end;     
-              //PostMessage(AParam.BaseWindow.WindowHandle, DefineWinMsg.CM_INVALIDATE, 0, 0);
-            end;
-          end else
-            Break;
-        end else
-          Break;
-      end;
-      if nil <> AParam.BaseApp then
-      begin
-        if 0 <> AParam.BaseApp.IsActiveStatus then
-        begin
-          DataGet_InstantArray_Sina(GlobalApp, @tmpInstantArray, @tmpNetSession);
-          PostMessage(AParam.BaseWindow.UIWndHandle, CM_INVALIDATE, 0, 0);
-        end;
-      end;
-    end else
-    begin
-      Break;
-    end;
-    // 三分钟 更新一次排名
-    for i := 1 to 3 * 60 * 50 do
-    begin
-      Sleep(20);
-      if nil = AParam.BaseApp then
-        Break;
-      if 0 = AParam.BaseApp.IsActiveStatus then
-        Break;
-    end;
-  end;
   ExitThread(Result);
 end;
 
-procedure CreateRefreshDataThread(AmountRateWindow: PRT_AmountRateWindow);
+procedure CreateRefreshDataThread(bdzxAnalysisWindow: PRT_bdzxAnalysisWindow);
 begin
-  AmountRateWindow.DataThread.Core.ThreadHandle := Windows.CreateThread(nil, 0, @ThreadProc_RefreshData,
-      AmountRateWindow, Create_Suspended,
-      AmountRateWindow.DataThread.Core.ThreadID);
-  Windows.ResumeThread(AmountRateWindow.DataThread.Core.ThreadHandle);
+  bdzxAnalysisWindow.DataThread.Core.ThreadHandle := Windows.CreateThread(nil, 0, @ThreadProc_RefreshData,
+      bdzxAnalysisWindow, Create_Suspended,
+      bdzxAnalysisWindow.DataThread.Core.ThreadID);
+  Windows.ResumeThread(bdzxAnalysisWindow.DataThread.Core.ThreadHandle);
 end;
 
-function CreateAmountRateWindow(App: TBaseApp; AmountRateWindow: PRT_AmountRateWindow; AWndProc: TFNWndProc): Boolean; overload;
+function CreatebdzxAnalysisWindow(App: TBaseApp; bdzxAnalysisWindow: PRT_bdzxAnalysisWindow; AWndProc: TFNWndProc): Boolean; overload;
 var
   tmpRegWndClass: TWndClassA;
   tmpCheckWndClass: TWndClassA;  
@@ -411,18 +284,18 @@ var
 begin
   FillChar(tmpRegWndClass, SizeOf(tmpRegWndClass), 0);
   FillChar(tmpCheckWndClass, SizeOf(tmpCheckWndClass), 0);
-  if not IsWindow(AmountRateWindow.BaseWindow.UIWndHandle) then
+  if not IsWindow(bdzxAnalysisWindow.BaseWindow.UIWndHandle) then
   begin
-    //FillChar(AmountRateWindow^, SizeOf(TRT_AmountRateWindow), 0);
-    AmountRateWindow.BaseWindow.UIWndHandle := 0;
+    //FillChar(bdzxAnalysisWindow^, SizeOf(TRT_bdzxAnalysisWindow), 0);
+    bdzxAnalysisWindow.BaseWindow.UIWndHandle := 0;
   end;
   
-  if nil = AmountRateWindow.RateList then
+  if nil = bdzxAnalysisWindow.RateList then
   begin
-    AmountRateWindow.RateList := TALDoubleList.Create;
+    bdzxAnalysisWindow.RateList := TALDoubleList.Create;
   end;
 
-  AmountRateWindow.BaseApp := App;
+  bdzxAnalysisWindow.BaseApp := App;
   FillChar(tmpLogFontA, SizeOf(tmpLogFontA), 0);
   tmpLogFontA.lfHeight := 12;
   tmpLogFontA.lfHeight := 10;  
@@ -430,11 +303,11 @@ begin
   tmpLogFontA.lfFaceName := 'MS Sans Serif';
   tmpLogFontA.lfCharSet := DEFAULT_CHARSET;
   tmpLogFontA.lfPitchAndFamily := FIXED_PITCH;
-  AmountRateWindow.Font := Windows.CreateFontIndirectA(tmpLogFontA);
+  bdzxAnalysisWindow.Font := Windows.CreateFontIndirectA(tmpLogFontA);
 
   tmpDC := GetDC(0);
   try
-    tmpOldFont := SelectObject(tmpDC, AmountRateWindow.Font);
+    tmpOldFont := SelectObject(tmpDC, bdzxAnalysisWindow.Font);
     try
       tmpText := '你 100.00';
       Windows.GetTextExtentPoint32A(tmpDC, PAnsiChar(@tmpText[1]), Length(tmpText), tmpSize);
@@ -445,22 +318,22 @@ begin
     ReleaseDC(0, tmpDC);
   end;
 
-  AmountRateWindow.RowCount := 0;
+  bdzxAnalysisWindow.RowCount := 0;
   tmpIni := TIniFile.Create(ChangeFileExt(ParamStr(0), '.ini'));
   try
-    AmountRateWindow.BaseWindow.WindowRect.Left := tmpIni.ReadInteger('win', 'left', 0);
-    AmountRateWindow.BaseWindow.WindowRect.Top := tmpIni.ReadInteger('win', 'top', 0);
+    bdzxAnalysisWindow.BaseWindow.WindowRect.Left := tmpIni.ReadInteger('win', 'left', 0);
+    bdzxAnalysisWindow.BaseWindow.WindowRect.Top := tmpIni.ReadInteger('win', 'top', 0);
 
-    AmountRateWindow.RowCount := tmpIni.ReadInteger('rate', 'rows', 5);
+    bdzxAnalysisWindow.RowCount := tmpIni.ReadInteger('rate', 'rows', 5);
 
     
     Windows.SystemParametersInfo(SPI_GETWORKAREA, 0, @tmpRect, 0);
-    if AmountRateWindow.BaseWindow.WindowRect.Top > tmpRect.Bottom - 100 then
-      AmountRateWindow.BaseWindow.WindowRect.Top := tmpRect.Bottom - 100;
-    if AmountRateWindow.BaseWindow.WindowRect.Left > tmpRect.Right - 100 then
-      AmountRateWindow.BaseWindow.WindowRect.Left := tmpRect.Right - 100;
-    tmpIni.WriteInteger('win', 'left', AmountRateWindow.BaseWindow.WindowRect.Left);
-    tmpIni.WriteInteger('win', 'top', AmountRateWindow.BaseWindow.WindowRect.Top);
+    if bdzxAnalysisWindow.BaseWindow.WindowRect.Top > tmpRect.Bottom - 100 then
+      bdzxAnalysisWindow.BaseWindow.WindowRect.Top := tmpRect.Bottom - 100;
+    if bdzxAnalysisWindow.BaseWindow.WindowRect.Left > tmpRect.Right - 100 then
+      bdzxAnalysisWindow.BaseWindow.WindowRect.Left := tmpRect.Right - 100;
+    tmpIni.WriteInteger('win', 'left', bdzxAnalysisWindow.BaseWindow.WindowRect.Left);
+    tmpIni.WriteInteger('win', 'top', bdzxAnalysisWindow.BaseWindow.WindowRect.Top);
   finally
     tmpIni.Free;
   end;
@@ -471,7 +344,7 @@ begin
   tmpRegWndClass.hbrBackground := GetStockObject(WHITE_BRUSH);  
   tmpRegWndClass.hCursor := LoadCursorA(0, IDC_ARROW);
   tmpRegWndClass.lpfnWndProc := AWndProc;
-  tmpRegWndClass.lpszClassName := 'AmountRate1';
+  tmpRegWndClass.lpszClassName := 'bdzxAnalysis1';
   
   tmpIsRegistered := Windows.GetClassInfoA(HInstance, tmpRegWndClass.lpszClassName, tmpCheckWndClass);
 
@@ -487,73 +360,73 @@ begin
   begin
     Windows.RegisterClassA(tmpRegWndClass);
   end;
-  AmountRateWindow.BaseWindow.Style := WS_POPUP;
-  AmountRateWindow.BaseWindow.ExStyle := WS_EX_TOOLWINDOW
+  bdzxAnalysisWindow.BaseWindow.Style := WS_POPUP;
+  bdzxAnalysisWindow.BaseWindow.ExStyle := WS_EX_TOOLWINDOW
       or WS_EX_LAYERED 
       or WS_EX_TOPMOST;
 
   if 0 < tmpSize.cx then
   begin
-    AmountRateWindow.BaseWindow.ClientRect.Right := tmpSize.cx + 8;
+    bdzxAnalysisWindow.BaseWindow.ClientRect.Right := tmpSize.cx + 8;
   end else
   begin
-    AmountRateWindow.BaseWindow.ClientRect.Right := 80;
+    bdzxAnalysisWindow.BaseWindow.ClientRect.Right := 80;
   end;
   if 0 < tmpSize.cy then
   begin
-    AmountRateWindow.BaseWindow.ClientRect.Bottom := AmountRateWindow.RowCount * (tmpSize.cy + 4) + 4;
+    bdzxAnalysisWindow.BaseWindow.ClientRect.Bottom := bdzxAnalysisWindow.RowCount * (tmpSize.cy + 4) + 4;
   end;
                      
-  UpdateMemDC(@AmountRateWindow.MemDC,
-      AmountRateWindow.BaseWindow.ClientRect.Right,
-      AmountRateWindow.BaseWindow.ClientRect.Bottom);
+  UpdateMemDC(@bdzxAnalysisWindow.MemDC,
+      bdzxAnalysisWindow.BaseWindow.ClientRect.Right,
+      bdzxAnalysisWindow.BaseWindow.ClientRect.Bottom);
 
-  AmountRateWindow.BaseWindow.UIWndHandle := Windows.CreateWindowExA(
-    AmountRateWindow.BaseWindow.ExStyle,
+  bdzxAnalysisWindow.BaseWindow.UIWndHandle := Windows.CreateWindowExA(
+    bdzxAnalysisWindow.BaseWindow.ExStyle,
     tmpRegWndClass.lpszClassName,
     '',
-    AmountRateWindow.BaseWindow.Style {+ 0},
-    AmountRateWindow.BaseWindow.WindowRect.Left,
-    AmountRateWindow.BaseWindow.WindowRect.Top,
-    AmountRateWindow.BaseWindow.ClientRect.Right,
-    AmountRateWindow.BaseWindow.ClientRect.Bottom, 0, 0, HInstance, nil);
+    bdzxAnalysisWindow.BaseWindow.Style {+ 0},
+    bdzxAnalysisWindow.BaseWindow.WindowRect.Left,
+    bdzxAnalysisWindow.BaseWindow.WindowRect.Top,
+    bdzxAnalysisWindow.BaseWindow.ClientRect.Right,
+    bdzxAnalysisWindow.BaseWindow.ClientRect.Bottom, 0, 0, HInstance, nil);
     
-  Result := IsWindow(AmountRateWindow.BaseWindow.UIWndHandle);
+  Result := IsWindow(bdzxAnalysisWindow.BaseWindow.UIWndHandle);
 end;
           
-procedure ShowAmountRateWindow(AmountRateWindow: PRT_AmountRateWindow); overload;
+procedure ShowbdzxAnalysisWindow(bdzxAnalysisWindow: PRT_bdzxAnalysisWindow); overload;
 begin
-  ShowWindow(AmountRateWindow.BaseWindow.UIWndHandle, SW_SHOW);
-  UpdateWindow(AmountRateWindow.BaseWindow.UIWndHandle); 
-  Paint_AmountRateWindow_Layered(AmountRateWindow);
-  CreateRefreshDataThread(AmountRateWindow);
+  ShowWindow(bdzxAnalysisWindow.BaseWindow.UIWndHandle, SW_SHOW);
+  UpdateWindow(bdzxAnalysisWindow.BaseWindow.UIWndHandle); 
+  Paint_bdzxAnalysisWindow_Layered(bdzxAnalysisWindow);
+  CreateRefreshDataThread(bdzxAnalysisWindow);
 end;
              
 var
-  Global_AmountRateWindow_1: TRT_AmountRateWindow;
+  Global_bdzxAnalysisWindow_1: TRT_bdzxAnalysisWindow;
                       
-function AmountRateWndProcA_1(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
+function bdzxAnalysisWndProcA_1(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
 begin
-  Result := AmountRateWindowWndProcA(@Global_AmountRateWindow_1, AWnd, AMsg, wParam, lParam);
+  Result := bdzxAnalysisWindowWndProcA(@Global_bdzxAnalysisWindow_1, AWnd, AMsg, wParam, lParam);
 end;
 
-function CreateAmountRateWindow(App: TBaseApp): Boolean;
+function CreatebdzxAnalysisWindow(App: TBaseApp): Boolean;
 begin
-  Result := CreateAmountRateWindow(App, @Global_AmountRateWindow_1, @AmountRateWndProcA_1);
+  Result := CreatebdzxAnalysisWindow(App, @Global_bdzxAnalysisWindow_1, @bdzxAnalysisWndProcA_1);
 end;
 
-procedure ShowAmountRateWindow;
+procedure ShowbdzxAnalysisWindow;
 begin
-  ShowAmountRateWindow(@Global_AmountRateWindow_1);
+  ShowbdzxAnalysisWindow(@Global_bdzxAnalysisWindow_1);
 end;
 
-procedure AmountRateWindowInitialize;
+procedure bdzxAnalysisWindowInitialize;
 begin
-  FillChar(Global_AmountRateWindow_1, SizeOf(Global_AmountRateWindow_1), 0);
+  FillChar(Global_bdzxAnalysisWindow_1, SizeOf(Global_bdzxAnalysisWindow_1), 0);
 end;
 
 initialization
-  AmountRateWindowInitialize;
+  bdzxAnalysisWindowInitialize;
 
 end.
 

@@ -4,14 +4,11 @@ interface
 
 uses
   BaseWinApp,
-  BaseStockApp,
-  StockInstantDataAccess;
+  BaseStockApp;
 
 type
   TBdzxAnalysisApp = class(TBaseStockApp)
   protected
-    fLastStockInstant: TDBStockInstant;
-    fCurrentStockInstant: TDBStockInstant;
   public   
     constructor Create(AppClassId: AnsiString); override;
     destructor Destroy; override;
@@ -19,8 +16,6 @@ type
     function Initialize: Boolean; override;
     procedure Finalize; override;
     procedure Run; override;  
-    property LastStockInstant: TDBStockInstant read fLastStockInstant;
-    property CurrentStockInstant: TDBStockInstant read fCurrentStockInstant;
   end;  
 
 var
@@ -40,8 +35,6 @@ uses
 constructor TBdzxAnalysisApp.Create(AppClassId: AnsiString);
 begin
   inherited;
-  fLastStockInstant := nil;
-  fCurrentStockInstant := nil;
 end;
 
 destructor TBdzxAnalysisApp.Destroy;
@@ -64,18 +57,14 @@ end;
 
 procedure TBdzxAnalysisApp.Finalize;
 begin
-  if nil <> fCurrentStockInstant then
-    FreeAndNil(fCurrentStockInstant);
-  if nil <> fLastStockInstant then
-    FreeAndNil(fLastStockInstant);
   inherited;
 end;
 
 procedure TBdzxAnalysisApp.Run;
 begin
   inherited;
-  ShowAmountRateWindow;
-  RunAppMsgLoop;
+  //ShowbdzxAnalysisWindow;
+  //RunAppMsgLoop;
 end;
 
 end.
