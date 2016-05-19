@@ -17,6 +17,7 @@ uses
   BaseThread in '..\..\..\devwintech\v0001\obj\app_base\BaseThread.pas',
   BaseFile in '..\..\..\devwintech\v0001\obj\app_base\BaseFile.pas',
   BaseWinApp in '..\..\..\devwintech\v0001\obj\win_app\BaseWinApp.pas',
+  BaseForm in '..\..\..\devwintech\v0001\obj\win_uiform\BaseForm.pas' {frmBase},
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
   ui.color in '..\..\..\devwintech\v0000\uibase\ui.color.pas',
   UIBaseWin in '..\..\..\devwintech\v0000\win_base\UIBaseWin.pas',
@@ -44,7 +45,8 @@ uses
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   bdzxAnalysisWinApp in 'bdzxAnalysisWinApp.pas',
-  bdzxAnalysisWindow in 'bdzxAnalysisWindow.pas';
+  bdzxAnalysisWindow in 'bdzxAnalysisWindow.pas',
+  bdzxAnalysisForm in 'bdzxAnalysisForm.pas' {frmBdzxAnalysis};
 
 {$R *.res}
 
