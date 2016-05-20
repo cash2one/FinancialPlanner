@@ -19,7 +19,16 @@ type
     headDealVolume,
     headDealAmount,
     headDealType); 
-                   
+                 
+  THeaderColumn = record      
+    Col_DealTime    : Integer;
+    Col_DealPrice   : Integer;
+    Col_DealPriceOffset: Integer;
+    Col_DealVolume  : Integer;
+    Col_DealAmount  : Integer;
+    Col_DealType    : Integer;
+  end;
+    
   PRT_DealDetailData_HeaderSina = ^TRT_DealDetailData_HeaderSina;
   TRT_DealDetailData_HeaderSina = record
     IsReady         : Byte;          
@@ -42,25 +51,131 @@ implementation
 uses
   Classes,
   define_dealstore_file,
-  define_datasrc;
-  
+  define_datasrc,
+  define_price,  
+  define_stock_quotes,
+  StockDetailDataAccess,
+  StockDetailData_Save;
+                
+function GetRowData(ADatas: TStringList; ARowIndex: Integer): string;
+begin
+  Result := '';
+  if ADatas.Count > ARowIndex then
+  begin
+    if 0 <= ARowIndex then
+    begin
+      Result := Trim(ADatas[ARowIndex]);
+    end;
+  end;
+end;
+     
+function DataParse_DetailData_Sina(ADetailData: TStockDetailDataAccess; ARetData: TStrings): Boolean;
+var                
+  tmpIsFindHead: Boolean;
+  tmpHeader: TRT_DealDetailData_HeaderSina;
+  tmpCellDatas: TStringList;
+  iRow: integer;
+  iCol: integer;    
+  tmpTimeIndex: integer;   
+  tmpDetailData: PRT_Quote_M2;      
+  tmpText: string;      
+  tmpPrice: double;
+begin
+  Result := false;
+  FillChar(tmpHeader, SizeOf(tmpHeader), 0);  
+  FillChar(tmpHeader.HeadNameIndex, SizeOf(tmpHeader.HeadNameIndex), -1);
+  tmpCellDatas := TStringList.Create;
+  try
+    tmpIsFindHead := False; 
+    for iRow := 0 to ARetData.Count - 1 do
+    begin
+      tmpCellDatas.Text :=  StringReplace(Trim(ARetData[iRow]), #9, #13#10, [rfReplaceAll]);
+          
+      if not tmpIsFindHead then
+      begin
+        for iCol := 0 to tmpCellDatas.Count - 1 do
+        begin
+          tmpText := Trim(tmpCellDatas[iCol]);
+          if SameText('成交时间', tmpText) then
+          begin            
+            Result := true;
+            tmpIsFindHead := true;
+            tmpHeader.HeadNameIndex[headDealTime] := iCol;
+          end;         
+          if SameText('成交价', tmpText) then
+          begin
+            tmpIsFindHead := true;
+            tmpHeader.HeadNameIndex[headDealPrice] := iCol;
+          end;          
+          if Pos('成交量', tmpText) > 0 then
+          begin
+            tmpIsFindHead := true;
+            tmpHeader.HeadNameIndex[headDealVolume] := iCol;
+          end;
+          if Pos('成交额', tmpText) > 0 then
+          begin
+            tmpIsFindHead := true;
+            tmpHeader.HeadNameIndex[headDealAmount] := iCol;
+          end;       
+          if SameText('性质', tmpText) then
+          begin
+            tmpIsFindHead := true;
+            tmpHeader.HeadNameIndex[headDealType] := iCol;
+          end;
+        end;
+      end else
+      begin    
+        tmpText := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealTime]);
+        // 15:00:02 09:25:05
+        tmpTimeIndex := GetDetailTimeIndex(tmpText);
+        if 0 < tmpTimeIndex then
+        begin      
+          Result := true;
+          tmpDetailData := ADetailData.NewRecord(tmpTimeIndex);
+          if nil <> tmpDetailData then
+          begin
+            tmpText := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealPrice]);
+            //tmpText := '18.9';
+            TryStrToFloat(tmptext, tmpPrice);
+            //tmpText := formatFloat('0.00',tmpText);
+            SetRTPricePack(@tmpDetailData.Price, tmpPrice);
+            tmpDetailData.DealVolume := StrToIntDef(GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealVolume]), 0);
+            tmpDetailData.DealAmount := StrToIntDef(GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealAmount]), 0);
+            tmpText := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealType]);
+            if Pos('卖', tmpText) > 0 then
+            begin
+              tmpDetailData.DealType := DealType_Sale;
+            end else
+            begin
+              if Pos('买', tmpText) > 0 then
+              begin
+                tmpDetailData.DealType := DealType_Buy;
+              end else
+              begin
+                if Pos('中性', tmpText) > 0 then
+                begin
+                  tmpDetailData.DealType := DealType_Neutral;
+                end;
+              end;
+            end;
+          end;   
+        end;
+      end;
+    end;
+  finally
+    tmpCellDatas.Free;
+  end;
+end;
+
 function GetStockDayDetailData_Sina(App: TBaseApp; AStockItem: PRT_DealItem; ANetSession: PHttpClientSession; ADealDay: Word): Boolean;
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;  
-  tmpFilePathRoot: AnsiString;
   tmpFilePathYear: AnsiString;
   tmpFileName: AnsiString;
-//  tmpFileName2: AnsiString;  
-  tmpFileExt: AnsiString; 
   tmpHttpHeadParse: THttpHeadParseSession;  
   tmpRowDatas: TStringList;
-  tmpCellDatas: TStringList;
-  tmpIsFindHead: Boolean;
-  iRow: integer;
-  iCol: integer;
-  tmpText: string;
-  tmpHeader: TRT_DealDetailData_HeaderSina;
+  tmpDetailData: TStockDetailDataAccess;
 begin
   Result := false;
   tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_Sina, ADealDay, AStockItem);
@@ -70,9 +185,6 @@ begin
     Result := true;
     exit;
   end;
-  tmpFilePathRoot := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_Sina, 0, AStockItem);
-  tmpFileExt := ExtractFileExt(tmpFileName);
-  
   tmpUrl := BaseSinaDetailUrl1 + 'date=' + FormatDateTime('yyyy-mm-dd', ADealDay) + '&' + 'symbol=' + GetStockCode_Sina(AStockItem);
   tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession);
   if nil <> tmpHttpData then
@@ -81,57 +193,25 @@ begin
     HttpBufferHeader_Parser(tmpHttpData, @tmpHttpHeadParse);
     if 0 < tmpHttpHeadParse.HeadEndPos then
     begin
-      tmpRowDatas := TStringList.Create;     
-      tmpCellDatas := TStringList.Create;
+      tmpRowDatas := TStringList.Create;   
       try
         tmpRowDatas.Text := AnsiString(@tmpHttpData.Data[tmpHttpHeadParse.HeadEndPos + 1]);
-        //
-        FillChar(tmpHeader, SizeOf(tmpHeader), 0);  
-        FillChar(tmpHeader.HeadNameIndex, SizeOf(tmpHeader.HeadNameIndex), -1);
-        tmpIsFindHead := False;
-        for iRow := 0 to tmpRowDatas.Count - 1 do
-        begin
-          tmpCellDatas.Text :=  StringReplace(Trim(tmpRowDatas[iRow]), #9, #13#10, [rfReplaceAll]);
-          
-          if not tmpIsFindHead then
+        //                           
+        tmpDetailData := TStockDetailDataAccess.Create(AStockItem, DataSrc_Sina);
+        try
+          tmpDetailData.DealDate := ADealDay;
+          Result := DataParse_DetailData_Sina(tmpDetailData, tmpRowDatas);
+          if 0 < tmpDetailData.RecordCount then
           begin
-            for iCol := 0 to tmpCellDatas.Count - 1 do
-            begin
-              tmpText := Trim(tmpCellDatas[iCol]);
-              if SameText('成交时间', tmpText) then
-              begin            
-                Result := true;
-                tmpIsFindHead := true;
-                tmpHeader.HeadNameIndex[headDealTime] := iCol;
-              end;         
-              if SameText('成交价', tmpText) then
-              begin
-                tmpIsFindHead := true;
-                tmpHeader.HeadNameIndex[headDealPrice] := iCol;
-              end;          
-              if Pos('成交量', tmpText) > 0 then
-              begin
-                tmpIsFindHead := true;
-                tmpHeader.HeadNameIndex[headDealVolume] := iCol;
-              end;
-              if Pos('成交额', tmpText) > 0 then
-              begin
-                tmpIsFindHead := true;
-                tmpHeader.HeadNameIndex[headDealAmount] := iCol;
-              end;       
-              if SameText('性质', tmpText) then
-              begin
-                tmpIsFindHead := true;
-                tmpHeader.HeadNameIndex[headDealType] := iCol;
-              end;
-            end;
-          end else
-          begin
+            tmpDetailData.Sort;
+            SaveStockDetailData(App, tmpDetailData);
           end;
+          //Sysutils.DeleteFile(tmpDownloadFileUrl);
+        finally
+          tmpDetailData.Free;
         end;
       finally
         tmpRowDatas.Free;
-        tmpCellDatas.Free;
       end; 
     end;
   end;
