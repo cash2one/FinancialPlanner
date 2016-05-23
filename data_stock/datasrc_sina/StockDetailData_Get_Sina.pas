@@ -50,6 +50,7 @@ implementation
 
 uses
   Classes,
+  UtilsLog,
   define_dealstore_file,
   define_datasrc,
   define_price,  
@@ -139,8 +140,10 @@ begin
             TryStrToFloat(tmptext, tmpPrice);
             //tmpText := formatFloat('0.00',tmpText);
             SetRTPricePack(@tmpDetailData.Price, tmpPrice);
-            tmpDetailData.DealVolume := StrToIntDef(GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealVolume]), 0);
-            tmpDetailData.DealAmount := StrToIntDef(GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealAmount]), 0);
+            tmptext := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealVolume]);
+            tmpDetailData.DealVolume := StrToIntDef(tmptext, 0);
+            tmptext := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealAmount]);
+            tmpDetailData.DealAmount := StrToIntDef(tmptext, 0);
             tmpText := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealType]);
             if Pos('Âô', tmpText) > 0 then
             begin
@@ -218,12 +221,44 @@ begin
 end;
 
 function GetStockDataDetail_Sina(App: TBaseApp; AStockDayAccess: TStockDayDataAccess; ANetSession: PHttpClientSession): Boolean;
+var
+  i: integer;
+  tmpFilePathYear: string;
+  tmpFileName: string;
+  tmpYear, tmpMonth, tmpDay: Word;
 begin             
   Result := false;
   if 0 < AStockDayAccess.LastDealDate then
   begin
-    // Trunc(now) - 2
-    GetStockDayDetailData_Sina(App, AStockDayAccess.StockItem, ANetSession, AStockDayAccess.LastDealDate);
+    // Trunc(now) - 2                             
+    for i := AStockDayAccess.LastDealDate downto AStockDayAccess.FirstDealDate do
+    begin                   
+      DecodeDate(i, tmpYear, tmpMonth, tmpDay);
+      if 2016 > tmpYear then
+        Break;
+      tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_Sina, i, AStockDayAccess.StockItem);
+      tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_Sina, i, AStockDayAccess.StockItem, '');
+      if '' <> tmpFileName then
+      begin
+        if not FileExists(tmpFilePathYear + tmpFileName) then
+        begin
+          if not FileExists(ChangeFileExt(tmpFilePathYear + tmpFileName, '.sdet')) then
+          begin
+            GetStockDayDetailData_Sina(App, AStockDayAccess.StockItem, ANetSession, i);
+            Log('', tmpFilePathYear + tmpFileName);
+          end else
+          begin
+            Break;
+          end;
+        end else
+        begin
+          Break;
+        end;
+      end else
+      begin
+        Break;
+      end;
+    end;
   end;
 end;
 

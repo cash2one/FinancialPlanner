@@ -13,6 +13,7 @@ implementation
         
 uses
   Windows,
+  Sysutils,
   BaseWinFile,
   define_dealstore_file,
   define_stock_quotes,
@@ -36,6 +37,9 @@ var
   tmpFileMapView: Pointer;
   tmpFileNewSize: integer;
 begin
+  if '' = AFileUrl then
+    exit;
+  ForceDirectories(ExtractFilePath(AFileUrl));
   tmpWinFile := TWinFile.Create;
   try
     if tmpWinFile.OpenFile(AFileUrl, true) then
