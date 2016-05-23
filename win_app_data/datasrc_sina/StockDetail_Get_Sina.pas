@@ -27,14 +27,20 @@ var
   tmpDayData: TStockDayDataAccess;
 begin                   
   tmpDayData := TStockDayDataAccess.Create(AStockItem, DataSrc_163, false);
-  try                   
-    if LoadStockDayData(App, tmpDayData) then
-    begin
-      Log('', 'Dowload Stock Detail:' + AStockItem.sCode);
-      GetStockDataDetail_Sina(App, tmpDayData, AHttpClientSession);    
-      Sleep(500);
+  try
+    try
+      if LoadStockDayData(App, tmpDayData) then
+      begin
+        Log('', 'Dowload Stock Detail:' + AStockItem.sCode);
+        if GetStockDataDetail_Sina(App, tmpDayData, AHttpClientSession) then
+        begin
+          Log('', 'Dowload Stock Detail ok:' + AStockItem.sCode);
+          Sleep(500);
+        end;
+      end;
+    except
     end;
-  except
+  finally
     tmpDayData.Free;
   end;
 end;
