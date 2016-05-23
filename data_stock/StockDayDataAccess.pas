@@ -45,6 +45,7 @@ type
     function FindRecord(ADate: Integer): PRT_Quote_M1_Day;
     function CheckOutRecord(ADate: Integer): PRT_Quote_M1_Day;
     procedure Sort; override;
+    procedure Clear; override;
     property FirstDealDate: Word read GetFirstDealDate;
     property LastDealDate: Word read GetLastDealDate;
     property EndDealDate: Word read GetEndDealDate write SetEndDealDate;
@@ -65,7 +66,7 @@ uses
 procedure AddDealDayData(ADataAccess: TStockDayDataAccess; ATempDealDayData: PRT_Quote_M1_Day);
 var
   tmpAddDealDayData: PRT_Quote_M1_Day;
-  tmpDate: string;
+//  tmpDate: string;
 begin
   if (nil = ATempDealDayData) then
     exit;
@@ -103,18 +104,26 @@ begin
 end;
 
 destructor TStockDayDataAccess.Destroy;
+begin
+  Clear;
+  FreeAndNil(fStockDayData.DayDealData);
+  inherited;
+end;
+                
+procedure TStockDayDataAccess.Clear;   
 var
   i: integer;
   tmpQuoteDay: PRT_Quote_M1_Day;
 begin
-  for i := fStockDayData.DayDealData.Count - 1 downto 0 do
+  if nil <> fStockDayData.DayDealData then
   begin
-    tmpQuoteDay := PRT_Quote_M1_Day(fStockDayData.DayDealData.Objects[i]);
-    FreeMem(tmpQuoteDay);
+    for i := fStockDayData.DayDealData.Count - 1 downto 0 do
+    begin
+      tmpQuoteDay := PRT_Quote_M1_Day(fStockDayData.DayDealData.Objects[i]);
+      FreeMem(tmpQuoteDay);
+    end;
+    fStockDayData.DayDealData.Clear;
   end;
-  fStockDayData.DayDealData.Clear;
-  fStockDayData.DayDealData.Free;
-  inherited;
 end;
 
 procedure TStockDayDataAccess.SetStockItem(AStockItem: PRT_DealItem);

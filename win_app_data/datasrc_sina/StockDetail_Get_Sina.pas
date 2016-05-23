@@ -10,12 +10,14 @@ uses
 implementation
 
 uses
+  Windows,
   define_datasrc,
   DB_DealItem,
   DB_DealItem_Load,
   DB_DealItem_Save,    
   define_dealitem,  
-  UtilsHttp,
+  UtilsHttp,       
+  UtilsLog,
   StockDayDataAccess,
   StockDayData_Load,
   StockDetailData_Get_Sina;                 
@@ -28,7 +30,9 @@ begin
   try                   
     if LoadStockDayData(App, tmpDayData) then
     begin
-      GetStockDataDetail_Sina(App, tmpDayData, AHttpClientSession);
+      Log('', 'Dowload Stock Detail:' + AStockItem.sCode);
+      GetStockDataDetail_Sina(App, tmpDayData, AHttpClientSession);    
+      Sleep(500);
     end;
   except
     tmpDayData.Free;

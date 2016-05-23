@@ -112,7 +112,7 @@ end;
 destructor TStockDetailDataAccess.Destroy;
 begin
   Clear;
-  fDetailDealData.Free;
+  FreeAndNil(fDetailDealData);
   inherited;
 end;
 
@@ -163,8 +163,9 @@ begin
 end;
 
 procedure TStockDetailDataAccess.Sort;
-begin
-  fDetailDealData.Sort;
+begin                   
+  if nil <> fDetailDealData then
+    fDetailDealData.Sort;
 end;
 
 procedure TStockDetailDataAccess.Clear;  
@@ -172,13 +173,16 @@ var
   i: integer;
   tmpQuote: PRT_Quote_M2;
 begin
-  inherited;        
-  for i := fDetailDealData.Count - 1 downto 0 do
+  inherited;
+  if nil <> fDetailDealData then
   begin
-    tmpQuote := PRT_Quote_M2(fDetailDealData.Objects[i]);
-    FreeMem(tmpQuote);
+    for i := fDetailDealData.Count - 1 downto 0 do
+    begin
+      tmpQuote := PRT_Quote_M2(fDetailDealData.Objects[i]);
+      FreeMem(tmpQuote);
+    end;
+    fDetailDealData.Clear;
   end;
-  fDetailDealData.Clear;
 end;
 
 function TStockDetailDataAccess.NewRecord(ADateTime: Integer): PRT_Quote_M2;

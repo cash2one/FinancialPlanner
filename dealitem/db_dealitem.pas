@@ -61,6 +61,7 @@ end;
 
 destructor TDBDealItem.Destroy;
 begin
+  Clear;
   fDealItemList.Free;
   inherited;
 end;
