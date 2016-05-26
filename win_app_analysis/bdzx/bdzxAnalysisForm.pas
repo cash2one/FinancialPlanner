@@ -29,6 +29,8 @@ implementation
 uses
   define_dealitem,
   define_datasrc,
+  QuickSortList,
+  QuickList_double,
   StockDayData_Load,
   BaseStockApp;
             
@@ -42,34 +44,60 @@ procedure TfrmBdzxAnalysis.btn1Click(Sender: TObject);
 var
   i: integer;
   tmpStockItem: PRT_DealItem;
+  tmpAj: double;
+  tmpBDZX: TALDoubleList;
+  tmpResultOutput: TStringList;
 begin
-  for i := 0 to TBaseStockApp(App).StockItemDB.RecordCount - 1 do
-  begin
-    tmpStockItem := TBaseStockApp(App).StockItemDB.RecordItem[i];   
-    if 0 = tmpStockItem.EndDealDate then
+  tmpBDZX := TALDoubleList.Create;
+  try
+    tmpBDZX.Duplicates := lstDupAccept;
+
+    for i := 0 to TBaseStockApp(App).StockItemDB.RecordCount - 1 do
     begin
-      if nil <> fBdzxAnalysisData.StockDayDataAccess then
-        fBdzxAnalysisData.StockDayDataAccess.Free;
-      fBdzxAnalysisData.StockDayDataAccess := TStockDayDataAccess.Create(tmpStockItem, DataSrc_163, false);
-
-      StockDayData_Load.LoadStockDayData(App, fBdzxAnalysisData.StockDayDataAccess);
-
-      if (0 < fBdzxAnalysisData.StockDayDataAccess.RecordCount) then
+      tmpStockItem := TBaseStockApp(App).StockItemDB.RecordItem[i];   
+      if 0 = tmpStockItem.EndDealDate then
       begin
-        if nil <> fBdzxAnalysisData.Rule_BDZX_Price then
-        begin
-          FreeAndNil(fBdzxAnalysisData.Rule_BDZX_Price);
-        end;
-        fBdzxAnalysisData.Rule_BDZX_Price := TRule_BDZX_Price.Create();
+        if nil <> fBdzxAnalysisData.StockDayDataAccess then
+          fBdzxAnalysisData.StockDayDataAccess.Free;
+        fBdzxAnalysisData.StockDayDataAccess := TStockDayDataAccess.Create(tmpStockItem, DataSrc_163, false);
 
-        fBdzxAnalysisData.Rule_BDZX_Price.OnGetDataLength := fBdzxAnalysisData.StockDayDataAccess.DoGetRecords;
-        fBdzxAnalysisData.Rule_BDZX_Price.OnGetPriceOpen := fBdzxAnalysisData.StockDayDataAccess.DoGetStockOpenPrice;
-        fBdzxAnalysisData.Rule_BDZX_Price.OnGetPriceClose := fBdzxAnalysisData.StockDayDataAccess.DoGetStockClosePrice;
-        fBdzxAnalysisData.Rule_BDZX_Price.OnGetPriceHigh := fBdzxAnalysisData.StockDayDataAccess.DoGetStockHighPrice;
-        fBdzxAnalysisData.Rule_BDZX_Price.OnGetPriceLow := fBdzxAnalysisData.StockDayDataAccess.DoGetStockLowPrice;
-        fBdzxAnalysisData.Rule_BDZX_Price.Execute;
+        StockDayData_Load.LoadStockDayData(App, fBdzxAnalysisData.StockDayDataAccess);
+
+        if (0 < fBdzxAnalysisData.StockDayDataAccess.RecordCount) then
+        begin
+          if nil <> fBdzxAnalysisData.Rule_BDZX_Price then
+          begin
+            FreeAndNil(fBdzxAnalysisData.Rule_BDZX_Price);
+          end;
+          fBdzxAnalysisData.Rule_BDZX_Price := TRule_BDZX_Price.Create();
+
+          fBdzxAnalysisData.Rule_BDZX_Price.OnGetDataLength := fBdzxAnalysisData.StockDayDataAccess.DoGetRecords;
+          fBdzxAnalysisData.Rule_BDZX_Price.OnGetPriceOpen := fBdzxAnalysisData.StockDayDataAccess.DoGetStockOpenPrice;
+          fBdzxAnalysisData.Rule_BDZX_Price.OnGetPriceClose := fBdzxAnalysisData.StockDayDataAccess.DoGetStockClosePrice;
+          fBdzxAnalysisData.Rule_BDZX_Price.OnGetPriceHigh := fBdzxAnalysisData.StockDayDataAccess.DoGetStockHighPrice;
+          fBdzxAnalysisData.Rule_BDZX_Price.OnGetPriceLow := fBdzxAnalysisData.StockDayDataAccess.DoGetStockLowPrice;
+          fBdzxAnalysisData.Rule_BDZX_Price.Execute;
+
+          tmpAj := fBdzxAnalysisData.Rule_BDZX_Price.Ret_AJ.value[fBdzxAnalysisData.StockDayDataAccess.RecordCount - 1];
+          tmpBDZX.AddObject(tmpAj, TObject(tmpStockItem));
+        end;
       end;
     end;
+    tmpBDZX.Sort;
+    
+    tmpResultOutput := TStringList.Create;
+    try
+      for i := 0 to tmpBDZX.Count - 1 do
+      begin
+        tmpStockItem := PRT_DealItem(tmpBDZX.Objects[i]);
+        tmpResultOutput.Add(FloatToStr(tmpBDZX[i]) + ' -- ' + tmpStockItem.sCode);
+      end;
+      tmpResultOutput.SaveToFile('bdzx' + FormatDateTime('yyyymmdd', now) + '.txt');
+    finally
+      tmpResultOutput.Free;
+    end;
+  finally
+    tmpBDZX.Free;
   end;
 end;
 
