@@ -98,8 +98,47 @@ begin
 end;
 
 destructor TRule_BDZX_Price.Destroy;
-begin
+begin             
+  if fBDZX_Price_Data.Var2_Float <> nil then
+  begin
+    SetLength(fBDZX_Price_Data.Var2_Float.value, 0);
+    FreeMem(fBDZX_Price_Data.Var2_Float);
+    fBDZX_Price_Data.Var2_Float := nil;
+  end;
 
+  if fBDZX_Price_Data.Var5_Float <> nil then
+  begin
+    SetLength(fBDZX_Price_Data.Var5_Float.value, 0);
+    FreeMem(fBDZX_Price_Data.Var5_Float);
+    fBDZX_Price_Data.Var5_Float := nil;
+  end;
+  
+  if fBDZX_Price_Data.Var6_Float <> nil then
+  begin
+    SetLength(fBDZX_Price_Data.Var6_Float.value, 0);
+    FreeMem(fBDZX_Price_Data.Var6_Float);
+    fBDZX_Price_Data.Var6_Float := nil;
+  end;
+  
+  if fBDZX_Price_Data.Ret_AK_Float <> nil then
+  begin
+    SetLength(fBDZX_Price_Data.Ret_AK_Float.value, 0);
+    FreeMem(fBDZX_Price_Data.Ret_AK_Float);
+    fBDZX_Price_Data.Ret_AK_Float := nil;
+  end;
+
+  if fBDZX_Price_Data.Ret_AJ <> nil then
+  begin
+    SetLength(fBDZX_Price_Data.Ret_AJ.value, 0);
+    FreeMem(fBDZX_Price_Data.Ret_AJ);
+    fBDZX_Price_Data.Ret_AJ := nil;
+  end;
+    
+  fBDZX_Price_Data.Var3_EMA.Free;
+  fBDZX_Price_Data.Var4_STD.Free;
+  fBDZX_Price_Data.Var6_EMA.Free;
+  fBDZX_Price_Data.Ret_VAR_AK_EMA.Free;
+  fBDZX_Price_Data.Ret_AD1_EMA.Free;
   inherited;
 end;
 
