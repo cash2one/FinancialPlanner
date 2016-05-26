@@ -3,12 +3,18 @@ unit bdzxAnalysisWinApp;
 interface
 
 uses
+  BaseForm,
   BaseWinApp,
   BaseStockApp;
 
 type
+  TBdzxAnalysisAppData = record
+    MainForm: TfrmBase;
+  end;
+  
   TBdzxAnalysisApp = class(TBaseStockApp)
   protected
+    fBdzxAnalysisAppData: TBdzxAnalysisAppData;
   public   
     constructor Create(AppClassId: AnsiString); override;
     destructor Destroy; override;
@@ -25,6 +31,7 @@ implementation
 
 uses
   SysUtils,
+  Forms,
   define_datasrc,
   define_dealstore_file,
   bdzxAnalysisForm,
@@ -35,6 +42,7 @@ uses
 constructor TBdzxAnalysisApp.Create(AppClassId: AnsiString);
 begin
   inherited;
+  FillChar(fBdzxAnalysisAppData, SizeOf(fBdzxAnalysisAppData), 0);
 end;
 
 destructor TBdzxAnalysisApp.Destroy;
@@ -44,14 +52,23 @@ end;
            
 function TBdzxAnalysisApp.Initialize: Boolean;
 begin
-  inherited Initialize;
-  Result := false;
-  InitializeDBStockItem;
-  if nil <> fBaseStockAppData.StockItemDB then
+  Result := inherited Initialize;
+  if result then
   begin
-    if 0 < fBaseStockAppData.StockItemDB.RecordCount then
+    InitializeDBStockItem;
+    Result := false;
+    if nil <> fBaseStockAppData.StockItemDB then
     begin
+      if 0 < fBaseStockAppData.StockItemDB.RecordCount then
+      begin
+        Result := true;
+      end;
     end;
+  end;
+  if Result then
+  begin
+    Application.Initialize;
+    Application.MainFormOnTaskBar := true;
   end;
 end;
 
@@ -65,6 +82,9 @@ begin
   inherited;
   //ShowbdzxAnalysisWindow;
   //RunAppMsgLoop;
+  Application.CreateForm(TfrmBdzxAnalysis, fBdzxAnalysisAppData.MainForm);
+  fBdzxAnalysisAppData.MainForm.Initialize(Self);   
+  Application.Run;
 end;
 
 end.

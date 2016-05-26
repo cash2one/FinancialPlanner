@@ -44,6 +44,14 @@ type
     
     function FindRecord(ADate: Integer): PRT_Quote_M1_Day;
     function CheckOutRecord(ADate: Integer): PRT_Quote_M1_Day;
+
+    
+    function DoGetRecords: integer; 
+    function DoGetStockOpenPrice(AIndex: integer): double;
+    function DoGetStockClosePrice(AIndex: integer): double;
+    function DoGetStockHighPrice(AIndex: integer): double;
+    function DoGetStockLowPrice(AIndex: integer): double;
+
     procedure Sort; override;
     procedure Clear; override;
     property FirstDealDate: Word read GetFirstDealDate;
@@ -220,6 +228,32 @@ begin
   tmpPos := fStockDayData.DayDealData.IndexOf(ADate);
   if 0 <= tmpPos then
     Result := PRT_Quote_M1_Day(fStockDayData.DayDealData.Objects[tmpPos]);
+end;
+
+function TStockDayDataAccess.DoGetStockOpenPrice(AIndex: integer): double;
+begin
+  Result := PRT_Quote_M1_Day(RecordItem[AIndex]).PriceRange.PriceOpen.Value;
+end;
+                          
+function TStockDayDataAccess.DoGetStockClosePrice(AIndex: integer): double;
+begin
+  Result := PRT_Quote_M1_Day(RecordItem[AIndex]).PriceRange.PriceClose.Value;
+end;
+
+function TStockDayDataAccess.DoGetStockHighPrice(AIndex: integer): double;
+begin
+  Result := PRT_Quote_M1_Day(RecordItem[AIndex]).PriceRange.PriceHigh.Value;
+end;
+
+function TStockDayDataAccess.DoGetStockLowPrice(AIndex: integer): double;
+begin
+  Result := PRT_Quote_M1_Day(RecordItem[AIndex]).PriceRange.PriceLow.Value;
+end;
+
+
+function TStockDayDataAccess.DoGetRecords: integer;
+begin          
+  Result := Self.RecordCount;
 end;
 
 end.

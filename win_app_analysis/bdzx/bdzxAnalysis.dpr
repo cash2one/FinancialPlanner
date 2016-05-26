@@ -36,9 +36,16 @@ uses
   define_datasrc in '..\..\basedefine\define_datasrc.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
+  Rule_BDZX in '..\..\baserule\Rule_BDZX.pas',
+  Rule_STD in '..\..\baserule\Rule_STD.pas',
+  Rule_EMA in '..\..\baserule\Rule_EMA.pas',
+  BaseRule in '..\..\baserule\BaseRule.pas',
   bdzxAnalysisWinApp in 'bdzxAnalysisWinApp.pas',
   bdzxAnalysisWindow in 'bdzxAnalysisWindow.pas',
-  bdzxAnalysisForm in 'bdzxAnalysisForm.pas' {frmBdzxAnalysis};
+  bdzxAnalysisForm in 'bdzxAnalysisForm.pas' {frmBdzxAnalysis},
+  StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
+  StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
+  define_stock_quotes in '..\..\basedefine\define_stock_quotes.pas';
 
 {$R *.res}
 
