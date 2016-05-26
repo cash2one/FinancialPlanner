@@ -1,4 +1,4 @@
-program bdzxAnalysis;
+program AnalysisBdzx;
 
 uses
   Windows,
