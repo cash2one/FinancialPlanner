@@ -3,12 +3,18 @@ unit cyhtAnalysisWinApp;
 interface
 
 uses
+  BaseForm,
   BaseWinApp,
   BaseStockApp;
 
 type
+  TCyhtAnalysisAppData = record
+    MainForm: TfrmBase;
+  end;
+  
   TcyhtAnalysisApp = class(TBaseStockApp)
   protected
+    fCyhtAnalysisAppData: TCyhtAnalysisAppData;
   public   
     constructor Create(AppClassId: AnsiString); override;
     destructor Destroy; override;
@@ -25,6 +31,7 @@ implementation
 
 uses
   SysUtils,
+  Forms,
   define_datasrc,
   define_dealstore_file,
   cyhtAnalysisForm,
@@ -35,6 +42,7 @@ uses
 constructor TcyhtAnalysisApp.Create(AppClassId: AnsiString);
 begin
   inherited;
+  FillChar(fCyhtAnalysisAppData, SizeOf(fCyhtAnalysisAppData), 0);
 end;
 
 destructor TcyhtAnalysisApp.Destroy;
@@ -44,14 +52,23 @@ end;
            
 function TcyhtAnalysisApp.Initialize: Boolean;
 begin
-  inherited Initialize;
-  Result := false;
-  InitializeDBStockItem;
-  if nil <> fBaseStockAppData.StockItemDB then
+  Result := inherited Initialize;
+  if result then
   begin
-    if 0 < fBaseStockAppData.StockItemDB.RecordCount then
+    InitializeDBStockItem;
+    Result := false;
+    if nil <> fBaseStockAppData.StockItemDB then
     begin
+      if 0 < fBaseStockAppData.StockItemDB.RecordCount then
+      begin
+        Result := true;
+      end;
     end;
+  end;
+  if Result then
+  begin
+    Application.Initialize;
+    Application.MainFormOnTaskBar := true;
   end;
 end;
 
@@ -65,6 +82,9 @@ begin
   inherited;
   //ShowcyhtAnalysisWindow;
   //RunAppMsgLoop;
+  Application.CreateForm(TfrmCyhtAnalysis, fCyhtAnalysisAppData.MainForm);
+  fCyhtAnalysisAppData.MainForm.Initialize(Self);   
+  Application.Run;
 end;
 
 end.

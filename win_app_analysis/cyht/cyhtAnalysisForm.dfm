@@ -9,5 +9,6 @@ inherited frmCyhtAnalysis: TfrmCyhtAnalysis
     Height = 25
     Caption = 'btn1'
     TabOrder = 0
+    OnClick = btn1Click
   end
 end
