@@ -1,0 +1,5 @@
+http://gu.qq.com/sh601857
+
+下载成交明细
+http://stock.gtimg.cn/data/index.php?appn=detail&action=download&c=sh601857&d=20160506
+
