@@ -29,28 +29,13 @@ uses
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   db_dealitem_save in '..\..\dealitem\db_dealitem_save.pas',
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
-  StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas';
+  StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
+  StockDetailDataAccess in '..\..\data_stock\StockDetailDataAccess.pas',
+  StockDetailData_Load in '..\..\data_stock\StockDetailData_Load.pas',   
+  StockDetailData_Save in '..\..\data_stock\StockDetailData_Save.pas',
+  StockDetail_PackApp in 'StockDetail_PackApp.pas';
 
 {$R *.res}
-
-type
-  TStockDetailPackApp = class(TBaseStockApp)
-  protected
-  public     
-    constructor Create(AppClassId: AnsiString); override;
-    procedure Run; override;
-  end;
-
-{ TStockDay163App }
-
-constructor TStockDetailPackApp.Create(AppClassId: AnsiString);
-begin
-  inherited;
-end;
-
-procedure TStockDetailPackApp.Run;
-begin
-end;
 
 var
   GlobalApp: TStockDetailPackApp;
