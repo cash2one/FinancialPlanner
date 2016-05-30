@@ -317,9 +317,10 @@ begin
     fDataViewerData.DetailDataAccess := TStockDetailDataAccess.Create(fDataViewerData.DayDataAccess.StockItem, DataSrc_Sina);
   fDataViewerData.DetailDataAccess.Clear;
   fDataViewerData.DetailDataAccess.StockItem := fDataViewerData.DayDataAccess.StockItem;
-
+  fDataViewerData.DetailDataAccess.FirstDealDate := tmpNodeData.QuoteData.DealDate.Value;
+  
   tmpFileUrl := TBaseStockApp(App).StockAppPath.GetFileUrl(FilePath_DBType_DetailData, DataSrc_Sina,
-    tmpNodeData.QuoteData.DealDateTime.Value,
+    tmpNodeData.QuoteData.DealDate.Value,
     fDataViewerData.DayDataAccess.StockItem);
   if not FileExists(tmpFileUrl) then
   begin
@@ -355,7 +356,7 @@ begin
       end;
       if Integer(colDate) = Column then
       begin
-        CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData.DealDateTime.Value);
+        CellText := FormatDateTime('yyyymmdd', tmpNodeData.QuoteData.DealDate.Value);
         exit;
       end;
       if Integer(colOpen) = Column then

@@ -43,7 +43,7 @@ type
     destructor Destroy; override;
     
     function FindRecord(ADate: Integer): PRT_Quote_M1_Day;
-    function CheckOutRecord(ADate: Integer): PRT_Quote_M1_Day;
+    function CheckOutRecord(ADate: Word): PRT_Quote_M1_Day;
 
     
     function DoGetRecords: integer; 
@@ -78,7 +78,7 @@ var
 begin
   if (nil = ATempDealDayData) then
     exit;
-  if (ATempDealDayData.DealDateTime.Value > 0) and
+  if (ATempDealDayData.DealDate.Value > 0) and
                  (ATempDealDayData.PriceRange.PriceOpen.Value > 0) and
                  (ATempDealDayData.PriceRange.PriceClose.Value > 0) and
                  (ATempDealDayData.DealVolume > 0) and
@@ -88,7 +88,7 @@ begin
 //    if '' <> tmpDate then
 //    begin
 //    end;
-    tmpAddDealDayData := ADataAccess.CheckOutRecord(ATempDealDayData.DealDateTime.Value);
+    tmpAddDealDayData := ADataAccess.CheckOutRecord(ATempDealDayData.DealDate.Value);
     tmpAddDealDayData.PriceRange.PriceHigh := ATempDealDayData.PriceRange.PriceHigh;
     tmpAddDealDayData.PriceRange.PriceLow := ATempDealDayData.PriceRange.PriceLow;
     tmpAddDealDayData.PriceRange.PriceOpen := ATempDealDayData.PriceRange.PriceOpen;
@@ -199,7 +199,7 @@ begin
   fStockDayData.DayDealData.Sort;
 end;
 
-function TStockDayDataAccess.CheckOutRecord(ADate: Integer): PRT_Quote_M1_Day;
+function TStockDayDataAccess.CheckOutRecord(ADate: Word): PRT_Quote_M1_Day;
 begin             
   Result := nil;
   if ADate < 1 then
@@ -215,7 +215,7 @@ begin
       fStockDayData.LastDealDate := ADate;
     Result := System.New(PRT_Quote_M1_Day);
     FillChar(Result^, SizeOf(TRT_Quote_M1_Day), 0);
-    Result.DealDateTime.Value := ADate;
+    Result.DealDate.Value := ADate;
     fStockDayData.DayDealData.AddObject(ADate, TObject(Result));
   end;
 end;

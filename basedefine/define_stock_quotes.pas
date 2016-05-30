@@ -15,17 +15,22 @@ type
   TRT_WeightFull      = record
     Value             : double;
   end;
+                
+  PRT_DatePack        = ^TRT_DateTimePack;
+  TRT_DatePack        = record
+    Value             : Word;
+  end;
+                                        
+  PRT_TimePack        = ^TRT_TimePack;
+  TRT_TimePack        = record
+    Value             : Word;
+  end;
 
   PRT_DateTimePack    = ^TRT_DateTimePack;
   TRT_DateTimePack    = record
-    Value             : Integer;
+    DealDate          : Word;
+    DealTime          : Word;
   end;
-                                          
-  PRT_TimePack        = ^TRT_TimePack;
-  TRT_TimePack        = record
-    Value             : Integer;
-  end;
-
 
   PRT_DateTimeFull    = ^TRT_DateTimeFull;
   TRT_DateTimeFull    = record
@@ -35,7 +40,7 @@ type
   { 日线数据 }
   PRT_Quote_M1_Day    = ^TRT_Quote_M1_Day;
   TRT_Quote_M1_Day    = record           // 56
-    DealDateTime      : TRT_DateTimePack;    // 4
+    DealDate          : TRT_DatePack;    // 4
     PriceRange        : TRT_PricePack_Range; // 16 - 20
     DealVolume        : Int64;               // 8 - 28 成交量
     DealAmount        : Int64;               // 8 - 36 成交金额

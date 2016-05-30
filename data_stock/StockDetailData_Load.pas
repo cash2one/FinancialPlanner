@@ -12,6 +12,7 @@ uses
 implementation
 
 uses
+  SysUtils,
   BaseWinFile,          
   Define_Price,
   define_stock_quotes,
@@ -55,10 +56,13 @@ var
   tmpStoreDetailData: PStore_Quote32_M2_V1;
   
   tmpRTDetailData: PRT_Quote_M2;
-  tmpRecordCount: integer; 
+  tmpRecordCount: integer;
+  tmpDate: Word;
   i: integer;
+  tmpDateStr: string;
 begin
-  tmpHead := AMemory;    
+  tmpHead := AMemory;
+  tmpDate := 0;    
   if tmpHead.Header.BaseHeader.HeadSize = SizeOf(TStore_Quote_M2_Detail_Header_V1Rec) then
   begin
     if (tmpHead.Header.BaseHeader.DataType = DataType_Stock) then
@@ -73,9 +77,22 @@ begin
           Inc(tmpHead);
           tmpStoreDetailData := PStore_Quote32_M2_V1(tmpHead);
           for i := 0 to tmpRecordCount - 1 do
-          begin             
-            tmpRTDetailData := ADataAccess.CheckOutRecord(tmpStoreDetailData.Quote.QuoteDealDate,
-                tmpStoreDetailData.Quote.QuoteDealTime);
+          begin
+            tmpDate := tmpStoreDetailData.Quote.QuoteDealDate;
+            if 0 = tmpDate then
+            begin
+              tmpDate := tmpHead.Header.BaseHeader.FirstDealDate;  
+              if 0 = tmpDate then
+                tmpDate := ADataAccess.FirstDealDate;
+              if 0 < tmpDate then
+              begin
+                tmpDateStr := FormatDateTime('yyyymmdd', tmpDate);
+                if '' = tmpDateStr then
+                begin
+                end;
+              end;
+            end;
+            tmpRTDetailData := ADataAccess.CheckOutRecord(tmpDate, tmpStoreDetailData.Quote.QuoteDealTime);
             if nil <> tmpRTDetailData then
             begin
               StorePrice2RTPricePack(@tmpRTDetailData.Price, @tmpStoreDetailData.Quote.Price);   
