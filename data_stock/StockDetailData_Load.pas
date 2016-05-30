@@ -92,13 +92,20 @@ begin
                 end;
               end;
             end;
-            tmpRTDetailData := ADataAccess.CheckOutRecord(tmpDate, tmpStoreDetailData.Quote.QuoteDealTime);
-            if nil <> tmpRTDetailData then
+            if 0 < tmpDate then
             begin
-              StorePrice2RTPricePack(@tmpRTDetailData.Price, @tmpStoreDetailData.Quote.Price);   
-              tmpRTDetailData.DealVolume := tmpStoreDetailData.Quote.DealVolume;
-              tmpRTDetailData.DealAmount := tmpStoreDetailData.Quote.DealAmount;
-              tmpRTDetailData.DealType := tmpStoreDetailData.Quote.DealType;         
+              if (0 < tmpStoreDetailData.Quote.DealVolume) and
+                 (0 < tmpStoreDetailData.Quote.DealAmount) then
+              begin
+                tmpRTDetailData := ADataAccess.CheckOutRecord(tmpDate, tmpStoreDetailData.Quote.QuoteDealTime);
+                if nil <> tmpRTDetailData then
+                begin
+                  StorePrice2RTPricePack(@tmpRTDetailData.Price, @tmpStoreDetailData.Quote.Price);   
+                  tmpRTDetailData.DealVolume := tmpStoreDetailData.Quote.DealVolume;
+                  tmpRTDetailData.DealAmount := tmpStoreDetailData.Quote.DealAmount;
+                  tmpRTDetailData.DealType := tmpStoreDetailData.Quote.DealType;
+                end;
+              end;
             end;
             Inc(tmpStoreDetailData);
           end;
