@@ -104,7 +104,8 @@ begin
       RTPricePack2StorePrice(@tmpStoreDetailData.Quote.Price, @tmpRTDetailData.Price); 
       tmpStoreDetailData.Quote.DealVolume          := tmpRTDetailData.DealVolume;         // 8 - 24 成交量
       tmpStoreDetailData.Quote.DealAmount          := tmpRTDetailData.DealAmount;         // 8 - 32 成交金额
-      tmpStoreDetailData.Quote.QuoteDealTime       := tmpRTDetailData.DealTime.Value;       // 4 - 36 交易日期
+      tmpStoreDetailData.Quote.QuoteDealTime       := tmpRTDetailData.DealDateTime.TimeValue;       // 4 - 36 交易日期
+      tmpStoreDetailData.Quote.QuoteDealDate       := tmpRTDetailData.DealDateTime.DateValue;
       tmpStoreDetailData.Quote.DealType       := tmpRTDetailData.DealType;
       Inc(tmpStoreDetailData);
     end;

@@ -477,8 +477,8 @@ begin
     begin
       if Integer(colTime) = Column then
       begin
-        tmpHour := Trunc(tmpNodeData.QuoteData.DealTime.Value div 3600);
-        tmpSecond := tmpNodeData.QuoteData.DealTime.Value - tmpHour * 3600;
+        tmpHour := Trunc(tmpNodeData.QuoteData.DealDateTime.TimeValue div 3600);
+        tmpSecond := tmpNodeData.QuoteData.DealDateTime.TimeValue - tmpHour * 3600;
         tmpMinute := Trunc(tmpSecond div 60);
         tmpSecond := tmpSecond - tmpMinute * 60;
         CellText := IntToStr(tmpHour + 9) + ':' + IntToStr(tmpMinute) + ':' + IntToStr(tmpSecond);

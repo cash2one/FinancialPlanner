@@ -81,6 +81,8 @@ var
   tmpDetailData: PRT_Quote_M2;      
   tmpText: string;      
   tmpPrice: double;
+  tmpDealVolume: integer;   
+  tmpDealAmount: integer;
 begin
   Result := false;
   FillChar(tmpHeader, SizeOf(tmpHeader), 0);  
@@ -130,38 +132,43 @@ begin
         // 15:00:02 09:25:05
         tmpTimeIndex := GetDetailTimeIndex(tmpText);
         if 0 < tmpTimeIndex then
-        begin      
-          Result := true;
-          tmpDetailData := ADetailData.NewRecord(ADealDay, tmpTimeIndex);
-          if nil <> tmpDetailData then
+        begin                
+          tmptext := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealVolume]);
+          tmpDealVolume := StrToIntDef(tmptext, 0);
+          tmptext := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealAmount]);
+          tmpDealAmount := StrToIntDef(tmptext, 0);
+          if (0 < tmpDealVolume) and (0 < tmpDealAmount) then
           begin
-            tmpText := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealPrice]);
-            //tmpText := '18.9';
-            TryStrToFloat(tmptext, tmpPrice);
-            //tmpText := formatFloat('0.00',tmpText);
-            SetRTPricePack(@tmpDetailData.Price, tmpPrice);
-            tmptext := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealVolume]);
-            tmpDetailData.DealVolume := StrToIntDef(tmptext, 0);
-            tmptext := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealAmount]);
-            tmpDetailData.DealAmount := StrToIntDef(tmptext, 0);
-            tmpText := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealType]);
-            if Pos('卖', tmpText) > 0 then
+            Result := true;
+            tmpDetailData := ADetailData.NewRecord(ADealDay, tmpTimeIndex);
+            if nil <> tmpDetailData then
             begin
-              tmpDetailData.DealType := DealType_Sale;
-            end else
-            begin
-              if Pos('买', tmpText) > 0 then
+              tmpText := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealPrice]);
+              //tmpText := '18.9';
+              TryStrToFloat(tmptext, tmpPrice);
+              //tmpText := formatFloat('0.00',tmpText);
+              SetRTPricePack(@tmpDetailData.Price, tmpPrice);
+              tmpDetailData.DealVolume := tmpDealVolume;   
+              tmpDetailData.DealAmount := tmpDealAmount;
+              tmpText := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealType]);
+              if Pos('卖', tmpText) > 0 then
               begin
-                tmpDetailData.DealType := DealType_Buy;
+                tmpDetailData.DealType := DealType_Sale;
               end else
               begin
-                if Pos('中性', tmpText) > 0 then
+                if Pos('买', tmpText) > 0 then
                 begin
-                  tmpDetailData.DealType := DealType_Neutral;
+                  tmpDetailData.DealType := DealType_Buy;
+                end else
+                begin
+                  if Pos('中性', tmpText) > 0 then
+                  begin
+                    tmpDetailData.DealType := DealType_Neutral;
+                  end;
                 end;
               end;
             end;
-          end;   
+          end;
         end;
       end;
     end;

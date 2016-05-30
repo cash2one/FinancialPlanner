@@ -201,11 +201,16 @@ begin
 end;
 
 function TStockDetailDataAccess.NewRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
+var
+  tmpIndex: integer;
 begin
   Result := System.New(PRT_Quote_M2);
   FillChar(Result^, SizeOf(TRT_Quote_M2), 0);
-  Result.DealTime.Value := ADealTime;
-  fDetailDealData.AddObject(ADealTime, TObject(Result));
+  Result.DealDateTime.DateValue := ADealDay;
+  Result.DealDateTime.TimeValue := ADealTime;
+
+  tmpIndex := Integer(Result.DealDateTime);
+  fDetailDealData.AddObject(tmpIndex, TObject(Result));
 end;
 
 function TStockDetailDataAccess.CheckOutRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
@@ -223,13 +228,20 @@ end;
 function TStockDetailDataAccess.FindRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
 var
   tmpPos: integer;
+  tmpDealDateTime: TRT_DateTimePack; 
+  tmpIndex: integer;
 begin
   Result := nil;
   tmpPos := fDetailDealData.IndexOf(ADealTime);
-  if 0 <= tmpPos then
+  if 0 > tmpPos then
   begin
-    Result := PRT_Quote_M2(fDetailDealData.Objects[tmpPos]);
+    tmpDealDateTime.DateValue := ADealDay;
+    tmpDealDateTime.TimeValue := ADealTime;     
+    tmpIndex := Integer(tmpDealDateTime);
+    tmpPos := fDetailDealData.IndexOf(tmpIndex);
   end;
+  if 0 <= tmpPos then
+    Result := PRT_Quote_M2(fDetailDealData.Objects[tmpPos]);
 end;
 
 end.

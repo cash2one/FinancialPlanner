@@ -66,7 +66,7 @@ begin
       RTPricePackRange2StorePriceRange(@tmpStoreDayData.PriceRange, @tmpRTDayData.PriceRange); 
       tmpStoreDayData.DealVolume          := tmpRTDayData.DealVolume;         // 8 - 24 成交量
       tmpStoreDayData.DealAmount          := tmpRTDayData.DealAmount;         // 8 - 32 成交金额
-      tmpStoreDayData.DealDate            := tmpRTDayData.DealDateTime.Value;       // 4 - 36 交易日期
+      tmpStoreDayData.DealDate            := tmpRTDayData.DealDate.Value;       // 4 - 36 交易日期
       tmpStoreDayData.Weight.Value        := tmpRTDayData.Weight.Value; // 4 - 40 复权权重 * 100
       tmpStoreDayData.TotalValue          := tmpRTDayData.TotalValue;         // 8 - 48 总市值
       tmpStoreDayData.DealValue           := tmpRTDayData.DealValue;         // 8 - 56 流通市值

@@ -28,8 +28,8 @@ type
 
   PRT_DateTimePack    = ^TRT_DateTimePack;
   TRT_DateTimePack    = record
-    DealDate          : Word;
-    DealTime          : Word;
+    DateValue         : Word;
+    TimeValue         : Word;
   end;
 
   PRT_DateTimeFull    = ^TRT_DateTimeFull;
@@ -63,7 +63,7 @@ type
   { 交易明细 }
   PRT_Quote_M2        = ^TRT_Quote_M2;
   TRT_Quote_M2        = record
-    DealTime          : TRT_TimePack;    // 4 - 4
+    DealDateTime      : TRT_DateTimePack;    // 4 - 4
     Price             : TRT_PricePack;       // 4 - 8
     DealVolume        : Integer;             // 4 - 12 成交量
     DealAmount        : Integer;             // 4 - 16
