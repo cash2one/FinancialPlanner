@@ -74,7 +74,8 @@ begin
           tmpStoreDetailData := PStore_Quote32_M2_V1(tmpHead);
           for i := 0 to tmpRecordCount - 1 do
           begin             
-            tmpRTDetailData := ADataAccess.CheckOutRecord(tmpStoreDetailData.Quote.QuoteDealTime);
+            tmpRTDetailData := ADataAccess.CheckOutRecord(tmpStoreDetailData.Quote.QuoteDealDate,
+                tmpStoreDetailData.Quote.QuoteDealTime);
             if nil <> tmpRTDetailData then
             begin
               StorePrice2RTPricePack(@tmpRTDetailData.Price, @tmpStoreDetailData.Quote.Price);   

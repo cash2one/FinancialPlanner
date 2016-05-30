@@ -30,9 +30,9 @@ type
     constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
     destructor Destroy; override;
     
-    function FindRecord(ADateTime: Integer): PRT_Quote_M2;
-    function CheckOutRecord(ADateTime: Integer): PRT_Quote_M2;
-    function NewRecord(ADateTime: Integer): PRT_Quote_M2;
+    function FindRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
+    function CheckOutRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
+    function NewRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
     procedure Sort; override;    
     procedure Clear; override;
     property FirstDealDate: Word read GetFirstDealDate write SetFirstDealDate;
@@ -200,34 +200,36 @@ begin
   end;
 end;
 
-function TStockDetailDataAccess.NewRecord(ADateTime: Integer): PRT_Quote_M2;
+function TStockDetailDataAccess.NewRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
 begin
   Result := System.New(PRT_Quote_M2);
   FillChar(Result^, SizeOf(TRT_Quote_M2), 0);
-  Result.DealTime.Value := ADateTime;
-  fDetailDealData.AddObject(ADateTime, TObject(Result));
+  Result.DealTime.Value := ADealTime;
+  fDetailDealData.AddObject(ADealTime, TObject(Result));
 end;
 
-function TStockDetailDataAccess.CheckOutRecord(ADateTime: Integer): PRT_Quote_M2;
+function TStockDetailDataAccess.CheckOutRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
 begin
   Result := nil;
-  if ADateTime < 1 then
+  if ADealTime < 1 then
     exit;
-  Result := FindRecord(ADateTime);
+  Result := FindRecord(ADealDay, ADealTime);
   if nil = Result then
   begin
-    Result := NewRecord(ADateTime);
+    Result := NewRecord(ADealDay, ADealTime);
   end;
 end;
 
-function TStockDetailDataAccess.FindRecord(ADateTime: Integer): PRT_Quote_M2;
+function TStockDetailDataAccess.FindRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
 var
   tmpPos: integer;
 begin
   Result := nil;
-  tmpPos := fDetailDealData.IndexOf(ADateTime);
+  tmpPos := fDetailDealData.IndexOf(ADealTime);
   if 0 <= tmpPos then
+  begin
     Result := PRT_Quote_M2(fDetailDealData.Objects[tmpPos]);
+  end;
 end;
 
 end.

@@ -70,7 +70,7 @@ begin
   end;
 end;
      
-function DataParse_DetailData_Sina(ADetailData: TStockDetailDataAccess; ARetData: TStrings): Boolean;
+function DataParse_DetailData_Sina(ADetailData: TStockDetailDataAccess; ARetData: TStrings; ADealDay: Word): Boolean;
 var                
   tmpIsFindHead: Boolean;
   tmpHeader: TRT_DealDetailData_HeaderSina;
@@ -132,7 +132,7 @@ begin
         if 0 < tmpTimeIndex then
         begin      
           Result := true;
-          tmpDetailData := ADetailData.NewRecord(tmpTimeIndex);
+          tmpDetailData := ADetailData.NewRecord(ADealDay, tmpTimeIndex);
           if nil <> tmpDetailData then
           begin
             tmpText := GetRowData(tmpCellDatas, tmpHeader.HeadNameIndex[headDealPrice]);
@@ -204,7 +204,7 @@ begin
         try
           tmpDetailData.FirstDealDate := ADealDay;
           tmpDetailData.LastDealDate := ADealDay;          
-          Result := DataParse_DetailData_Sina(tmpDetailData, tmpRowDatas);
+          Result := DataParse_DetailData_Sina(tmpDetailData, tmpRowDatas, ADealDay);
           if 0 < tmpDetailData.RecordCount then
           begin
             tmpDetailData.Sort;
