@@ -113,7 +113,8 @@ type
   // 只有一个价格 必然是 及时报价数据
   PStore_Quote_M2       = ^TStore_Quote_M2;
   TStore_Quote_M2       = packed record  // 8     
-    QuoteDateTime       : Integer;       // 4 - 8 1 小时 3600 秒  9 -- 15  
+    QuoteDealTime       : Word;       // 4 - 8 1 小时 3600 秒  9 -- 15
+    QuoteDealDate       : Word;            
     Price               : TStore_Price;  // 4 - 4
     DealVolume          : Integer;          // 4 - 12 成交量
     DealAmount          : Integer;          // 4 - 16 成交金额

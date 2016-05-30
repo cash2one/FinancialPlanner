@@ -50,7 +50,7 @@ implementation
 
 uses
   Classes,
-  UtilsLog,
+  //UtilsLog,
   define_dealstore_file,
   define_datasrc,
   define_price,  
@@ -202,7 +202,8 @@ begin
         //                           
         tmpDetailData := TStockDetailDataAccess.Create(AStockItem, DataSrc_Sina);
         try
-          tmpDetailData.DealDate := ADealDay;
+          tmpDetailData.FirstDealDate := ADealDay;
+          tmpDetailData.LastDealDate := ADealDay;          
           Result := DataParse_DetailData_Sina(tmpDetailData, tmpRowDatas);
           if 0 < tmpDetailData.RecordCount then
           begin
@@ -243,9 +244,11 @@ begin
         if not FileExists(tmpFilePathYear + tmpFileName) then
         begin
           if not FileExists(ChangeFileExt(tmpFilePathYear + tmpFileName, '.sdet')) then
-          begin
+          begin           
+            Result := true;
             GetStockDayDetailData_Sina(App, AStockDayAccess.StockItem, ANetSession, i);
-            Log('', tmpFilePathYear + tmpFileName);
+            Sleep(100);
+            //Log('', tmpFilePathYear + tmpFileName);
           end else
           begin
             Break;

@@ -41,8 +41,8 @@ type
     property DataSourceId: integer read fDataSourceId write fDataSourceId;
   end;
           
-  function GetDetailTimeIndex(ADetailTime: string): Integer;
-  function DecodeTimeIndex(ADetailTime: Integer;
+  function GetDetailTimeIndex(ADetailTime: string): Word;
+  function DecodeTimeIndex(ADetailTime: Word;
       var AHour: integer;
       var AMinute: integer;
       var ASecond: integer): Boolean;
@@ -53,7 +53,7 @@ uses
   SysUtils,
   QuickSortList;
                        
-function DecodeTimeIndex(ADetailTime: Integer;
+function DecodeTimeIndex(ADetailTime: Word;
       var AHour: integer;
       var AMinute: integer;
       var ASecond: integer): Boolean;
@@ -76,7 +76,7 @@ begin
   end;
 end;
 
-function GetDetailTimeIndex(ADetailTime: string): Integer;
+function GetDetailTimeIndex(ADetailTime: string): Word;
 var
   tmpHour: integer;
   tmpMinute: integer;
