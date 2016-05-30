@@ -23,7 +23,7 @@ procedure LoadStockDetailDataFromBuffer(App: TBaseApp; ADataAccess: TStockDetail
 procedure LoadStockDetailData(App: TBaseApp; ADataAccess: TStockDetailDataAccess);
 begin
   LoadStockDetailData(App, ADataAccess,
-      App.Path.GetFileUrl(FilePath_DBType_DetailData, ADataAccess.DataSourceId, ADataAccess.DealDate, ADataAccess.StockItem));
+      App.Path.GetFileUrl(FilePath_DBType_DetailData, ADataAccess.DataSourceId, ADataAccess.FirstDealDate, ADataAccess.StockItem));
 end;
              
 procedure LoadStockDetailData(App: TBaseApp; ADataAccess: TStockDetailDataAccess; AFileUrl: AnsiString);
@@ -59,17 +59,17 @@ var
   i: integer;
 begin
   tmpHead := AMemory;    
-  if tmpHead.Header.HeadSize = SizeOf(TStore_Quote_M2_Detail_Header_V1Rec) then
+  if tmpHead.Header.BaseHeader.HeadSize = SizeOf(TStore_Quote_M2_Detail_Header_V1Rec) then
   begin
-    if (tmpHead.Header.DataType = DataType_Stock) then
+    if (tmpHead.Header.BaseHeader.DataType = DataType_Stock) then
     begin
-      if (tmpHead.Header.DataMode = DataMode_DayDetailDataM2) then
+      if (tmpHead.Header.BaseHeader.DataMode = DataMode_DayDetailDataM2) then
       begin
         if 0 = ADataAccess.DataSourceId then
-          ADataAccess.DataSourceId  := tmpHead.Header.DataSourceId;
-        if ADataAccess.DataSourceId = tmpHead.Header.DataSourceId then
+          ADataAccess.DataSourceId  := tmpHead.Header.BaseHeader.DataSourceId;
+        if ADataAccess.DataSourceId = tmpHead.Header.BaseHeader.DataSourceId then
         begin
-          tmpRecordCount := tmpHead.Header.RecordCount;
+          tmpRecordCount := tmpHead.Header.BaseHeader.RecordCount;
           Inc(tmpHead);
           tmpStoreDetailData := PStore_Quote32_M2_V1(tmpHead);
           for i := 0 to tmpRecordCount - 1 do

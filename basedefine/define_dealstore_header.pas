@@ -108,13 +108,19 @@ type
     Code                : array[0..11] of AnsiChar; // 12 - 32
     // ----------------------------------------------------
     StorePriceFactor    : Word;             // 2 - 34
-    DealDate            : Word;
+    FirstDealDate       : Word;
+    LastDealDate        : Word;    
   end;
-
+                 
+  PStore_Quote_M2_Detail_Header_V1 = ^TStore_Quote_M2_Detail_Header_V1;
+  TStore_Quote_M2_Detail_Header_V1 = packed record
+    BaseHeader: TStore_Quote_M2_Header_V1;
+  end;
+  
   PStore_Quote_M2_Detail_Header_V1Rec = ^TStore_Quote_M2_Detail_Header_V1Rec;
   TStore_Quote_M2_Detail_Header_V1Rec = packed record
-    Header: TStore_Quote_M2_Header_V1;
-    Reserve: array[0..64 - SizeOf(TStore_Quote_M2_Header_V1) - 1] of Byte;
+    Header: TStore_Quote_M2_Detail_Header_V1;
+    Reserve: array[0..64 - SizeOf(TStore_Quote_M2_Detail_Header_V1) - 1] of Byte;
   end;
 
 const

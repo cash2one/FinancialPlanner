@@ -27,7 +27,7 @@ var
   tmpFileUrl: string;
 begin
   tmpFileUrl := App.Path.GetFileUrl(define_dealstore_file.FilePath_DBType_DetailData,
-    ADataAccess.DataSourceId, ADataAccess.DealDate, ADataAccess.StockItem);
+    ADataAccess.DataSourceId, ADataAccess.FirstDealDate, ADataAccess.StockItem);
   SaveStockDetailData2File(App, ADataAccess, tmpFileUrl);
 end;
 
@@ -68,31 +68,32 @@ var
   i: integer;
 begin
   tmpHead := AMemory;  
-  tmpHead.Header.Signature.Signature := 7784; // 6
-  tmpHead.Header.Signature.DataVer1  := 1;
-  tmpHead.Header.Signature.DataVer2  := 0;
-  tmpHead.Header.Signature.DataVer3  := 0;
+  tmpHead.Header.BaseHeader.Signature.Signature := 7784; // 6
+  tmpHead.Header.BaseHeader.Signature.DataVer1  := 1;
+  tmpHead.Header.BaseHeader.Signature.DataVer2  := 0;
+  tmpHead.Header.BaseHeader.Signature.DataVer3  := 0;
   // 字节存储顺序 java 和 delphi 不同
   // 00
   // 01
-  tmpHead.Header.Signature.BytesOrder:= 1;
-  tmpHead.Header.HeadSize            := SizeOf(TStore_Quote_M2_Detail_Header_V1Rec);             // 1 -- 7
-  tmpHead.Header.StoreSizeMode.Value := 16;  // 1 -- 8 page size mode
+  tmpHead.Header.BaseHeader.Signature.BytesOrder:= 1;
+  tmpHead.Header.BaseHeader.HeadSize            := SizeOf(TStore_Quote_M2_Detail_Header_V1Rec);             // 1 -- 7
+  tmpHead.Header.BaseHeader.StoreSizeMode.Value := 16;  // 1 -- 8 page size mode
   { 表明是什么数据 }
-  tmpHead.Header.DataType            := DataType_Stock;             // 2 -- 10
-  tmpHead.Header.DataMode            := DataMode_DayDetailDataM2;             // 1 -- 11
-  tmpHead.Header.RecordSizeMode.Value:= 6;  // 1 -- 12
-  tmpHead.Header.RecordCount         := ADataAccess.RecordCount;          // 4 -- 16
-  tmpHead.Header.CompressFlag        := 0;             // 1 -- 17
-  tmpHead.Header.EncryptFlag         := 0;             // 1 -- 18
-  tmpHead.Header.DataSourceId        := ADataAccess.DataSourceId;             // 2 -- 20
-  CopyMemory(@tmpHead.Header.Code[0], @ADataAccess.StockItem.sCode[1], Length(ADataAccess.StockItem.sCode));
+  tmpHead.Header.BaseHeader.DataType            := DataType_Stock;             // 2 -- 10
+  tmpHead.Header.BaseHeader.DataMode            := DataMode_DayDetailDataM2;             // 1 -- 11
+  tmpHead.Header.BaseHeader.RecordSizeMode.Value:= 6;  // 1 -- 12
+  tmpHead.Header.BaseHeader.RecordCount         := ADataAccess.RecordCount;          // 4 -- 16
+  tmpHead.Header.BaseHeader.CompressFlag        := 0;             // 1 -- 17
+  tmpHead.Header.BaseHeader.EncryptFlag         := 0;             // 1 -- 18
+  tmpHead.Header.BaseHeader.DataSourceId        := ADataAccess.DataSourceId;             // 2 -- 20
+  CopyMemory(@tmpHead.Header.BaseHeader.Code[0], @ADataAccess.StockItem.sCode[1], Length(ADataAccess.StockItem.sCode));
   //Move(ADataAccess.StockItem.Code, tmpHead.Header.BaseHeader.Code[0], Length(ADataAccess.StockItem.Code)); // 12 - 32
   // ----------------------------------------------------
-  tmpHead.Header.StorePriceFactor    := 1000;             // 2 - 34
+  tmpHead.Header.BaseHeader.StorePriceFactor    := 1000;             // 2 - 34
                                                 
-  tmpHead.Header.DealDate           := ADataAccess.DealDate;             // 2 - 36
-
+  tmpHead.Header.BaseHeader.FirstDealDate       := ADataAccess.FirstDealDate;             // 2 - 36
+  tmpHead.Header.BaseHeader.LastDealDate       := ADataAccess.LastDealDate;             // 2 - 36
+  
   Inc(tmpHead);
   tmpStoreDetailData := PStore_Quote32_M2_V1(tmpHead);
   for i := 0 to ADataAccess.RecordCount - 1 do

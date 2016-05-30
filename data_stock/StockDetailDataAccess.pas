@@ -14,9 +14,13 @@ type
     fStockItem: PRT_DealItem;  
     fDetailDealData: TALIntegerList;
     fDataSourceId: integer;
-    fDealDate: Word;
-    function GetDealDate: Word;
-    procedure SetDealDate(const Value: Word);
+    fFirstDealDate: Word;
+    fLastDealDate: Word;    
+    function GetFirstDealDate: Word;
+    procedure SetFirstDealDate(const Value: Word);
+
+    function GetLastDealDate: Word;
+    procedure SetLastDealDate(const Value: Word);
 
     procedure SetStockItem(AStockItem: PRT_DealItem);
     
@@ -31,7 +35,8 @@ type
     function NewRecord(ADateTime: Integer): PRT_Quote_M2;
     procedure Sort; override;    
     procedure Clear; override;
-    property DealDate: Word read GetDealDate write SetDealDate;
+    property FirstDealDate: Word read GetFirstDealDate write SetFirstDealDate;
+    property LastDealDate: Word read GetLastDealDate write SetLastDealDate;
     property StockItem: PRT_DealItem read fStockItem write SetStockItem;
     property DataSourceId: integer read fDataSourceId write fDataSourceId;
   end;
@@ -132,14 +137,24 @@ begin
   end;
 end;
                            
-function TStockDetailDataAccess.GetDealDate: Word;
+function TStockDetailDataAccess.GetFirstDealDate: Word;
 begin
-  Result := fDealDate;
+  Result := fFirstDealDate;
 end;
 
-procedure TStockDetailDataAccess.SetDealDate(const Value: Word);
+procedure TStockDetailDataAccess.SetFirstDealDate(const Value: Word);
 begin
-  fDealDate := Value;
+  fFirstDealDate := Value;
+end;
+                    
+function TStockDetailDataAccess.GetLastDealDate: Word;
+begin
+  Result := fLastDealDate;
+end;
+                    
+procedure TStockDetailDataAccess.SetLastDealDate(const Value: Word);
+begin
+  fLastDealDate := Value;
 end;
 
 function TStockDetailDataAccess.GetRecordCount: Integer;
