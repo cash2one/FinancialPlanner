@@ -193,13 +193,13 @@ begin
   Result := false;
   tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_Sina, ADealDay, AStockItem);
   tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_Sina, ADealDay, AStockItem, ''); 
-  Log('', 'GetStockDayDetailData_Sina:' + tmpFilePathYear + tmpFileName + ':' + FormatDateTime('yyyymmdd', ADealDay)); 
+  //Log('', 'GetStockDayDetailData_Sina:' + tmpFilePathYear + tmpFileName + ':' + FormatDateTime('yyyymmdd', ADealDay)); 
   if FileExists(tmpFilePathYear + tmpFileName) then
   begin
     Result := true;
     exit;
   end;
-  Log('', 'GetStockDayDetailData_Sina begin' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
+  //Log('', 'GetStockDayDetailData_Sina begin' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
     
   tmpUrl := BaseSinaDetailUrl1 + 'date=' + FormatDateTime('yyyy-mm-dd', ADealDay) + '&' + 'symbol=' + GetStockCode_Sina(AStockItem);
   tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession);
@@ -221,7 +221,7 @@ begin
           if 0 < tmpDetailData.RecordCount then
           begin
             tmpDetailData.Sort;
-            Log('', 'GetStockDayDetailData_Sina ok' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
+            //Log('', 'GetStockDayDetailData_Sina ok' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
             SaveStockDetailData(App, tmpDetailData);
           end;
           //Sysutils.DeleteFile(tmpDownloadFileUrl);
@@ -240,6 +240,7 @@ var
   i: integer;
   tmpFilePathYear: string;
   tmpFileName: string;
+  tmpFileUrl: string;
   tmpYear, tmpMonth, tmpDay: Word;
   tmpDealDay: PRT_Quote_M1_Day;
 begin             
@@ -264,13 +265,15 @@ begin
       begin
         if not FileExists(tmpFilePathYear + tmpFileName) then
         begin
-          if not FileExists(ChangeFileExt(tmpFilePathYear + tmpFileName, '.sdet')) then
+          tmpFileUrl := ChangeFileExt(tmpFilePathYear + tmpFileName, '.sdet');
+          if not FileExists(tmpFileUrl) then
           begin           
             Result := true;
             GetStockDayDetailData_Sina(App, AStockDayAccess.StockItem, ANetSession, tmpDealDay.DealDate.Value);
             Sleep(100);
           end else
           begin
+            //RenameFile(tmpFileUrl, tmpFilePathYear + tmpFileName);
             //Break;
           end;
         end else

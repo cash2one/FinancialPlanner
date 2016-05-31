@@ -84,8 +84,8 @@ begin
   begin
     if nil <> AStockDetailPack_Month.StockDetails then
     begin               
-      Log('StockDetail_PackApp.pas', 'PackStockDetailPack_Month' + AStockDetailPack_Month.StockItem.sCode + ':' +
-         IntToStr(AStockDetailPack_Month.Year) + '/' + IntToStr(AStockDetailPack_Month.Month));  
+      //Log('StockDetail_PackApp.pas', 'PackStockDetailPack_Month' + AStockDetailPack_Month.StockItem.sCode + ':' +
+      //   IntToStr(AStockDetailPack_Month.Year) + '/' + IntToStr(AStockDetailPack_Month.Month));  
       AStockDetailPack_Month.StockDetails.Sort;
       tmpMonthDetailData := TStockDetailDataAccess.Create(AStockDetailPack_Month.StockItem, AStockDetailPack_Month.DataSrcId);
       try
@@ -178,21 +178,26 @@ begin
         begin
           tmpDetailData := TStockDetailDataAccess.Create(AStockDayAccess.StockItem, ADataSrcId);
           tmpDetailPackData.StockDetails.AddObject(tmpDealDay.DealDate.Value, tmpDetailData);
+          
           tmpDetailData.FirstDealDate := tmpDealDay.DealDate.Value;
-          tmpDetailData.LastDealDate := tmpDealDay.DealDate.Value;          
+          tmpDetailData.LastDealDate := tmpDealDay.DealDate.Value;
+
           LoadStockDetailData(App, tmpDetailData, tmpFileUrl);
           if 1 > tmpDetailData.RecordCount then
           begin
             tmpDetailPackData.IsReady := 1;    
             Log('StockDetail_PackApp.pas', 'Load Detail Data Error Data Empty:' +
                 AStockDayAccess.StockItem.sCode + ':' +
-                FormatDateTime('yyyy-mm-dd', tmpDealDay.DealDate.Value));
+                FormatDateTime('yyyy-mm-dd', tmpDealDay.DealDate.Value) + ' ' +
+                tmpFileUrl);
           end;
         end else
         begin
           tmpDetailPackData.IsReady := 1; 
-          Log('StockDetail_PackApp.pas', 'Load Detail Data Error File not Exists:' + AStockDayAccess.StockItem.sCode + ':' +
-            FormatDateTime('yyyy-mm-dd', tmpDealDay.DealDate.Value) + ' ' + tmpFileUrl);
+          Log('StockDetail_PackApp.pas', 'Load Detail Data Error File not Exists:' +
+              AStockDayAccess.StockItem.sCode + ':' +
+              FormatDateTime('yyyy-mm-dd', tmpDealDay.DealDate.Value) + ' ' +
+              tmpFileUrl);
         end;
       end;
     end;

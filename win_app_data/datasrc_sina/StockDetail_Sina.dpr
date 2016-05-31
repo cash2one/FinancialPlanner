@@ -2,6 +2,7 @@
 
 uses
   Windows,
+  Sysutils,
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
@@ -42,6 +43,7 @@ uses
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDetailDataAccess in '..\..\data_stock\StockDetailDataAccess.pas',
   StockDetailData_Save in '..\..\data_stock\StockDetailData_Save.pas',
+  StockDetailData_Load in '..\..\data_stock\StockDetailData_Load.pas',
   StockDetailData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDetailData_Get_Sina.pas',
   StockDetail_Get_Sina in 'StockDetail_Get_Sina.pas';
 
@@ -49,7 +51,8 @@ uses
 
 type
   TStockDetailSinaApp = class(TBaseStockApp)
-  protected
+  protected                
+    procedure Test1;
   public     
     constructor Create(AppClassId: AnsiString); override;
     procedure Run; override;
@@ -62,8 +65,36 @@ begin
   inherited;
 end;
 
+
+procedure TStockDetailSinaApp.Test1;
+var
+  tmpDetailData: TStockDetailDataAccess;
+  tmpStockItem: TRT_DealItem;
+  tmpPath: string;
+  tmpFileName: string;
+begin
+  FillChar(tmpStockItem, SizeOf(tmpStockItem), 0);
+  tmpStockItem.sMarketCode := 'sh';
+  tmpStockItem.sCode := '600000';
+  tmpDetailData := TStockDetailDataAccess.Create(@tmpStockItem, DataSrc_Sina);
+  try
+    tmpPath := 'E:\StockApp\sdata\sdtsina\6000\600000\2016\';
+    tmpFileName := '600000_20160215.sdt31';
+    tmpDetailData.FirstDealDate := Trunc(EncodeDate(2016, 2, 15));
+    tmpDetailData.LastDealDate := tmpDetailData.FirstDealDate;
+    
+    LoadStockDetailData(Self, tmpDetailData, tmpPath + tmpFileName);
+    if 0 < tmpDetailData.RecordCount then
+    begin
+    end;
+  finally
+    tmpDetailData.Free;
+  end;
+end;
+
 procedure TStockDetailSinaApp.Run;
 begin
+  //Test1;  
   GetStockDataDetail_Sina_All(Self);
 end;
 
