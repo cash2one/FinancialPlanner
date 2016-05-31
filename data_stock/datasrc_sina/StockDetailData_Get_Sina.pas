@@ -39,6 +39,9 @@ type
 const
   // 获取代码为sh600900，在2011-07-08的成交明细，数据为xls格式
   BaseSinaDetailUrl1 = 'http://market.finance.sina.com.cn/downxls.php?';
+
+  // http://market.finance.sina.com.cn/downxls.php?date=2016-05-29&symbol=sh600000
+  // http://market.finance.sina.com.cn/downxls.php?date=2016-05-30&symbol=sh601988
                
   DealDetailDataHeadNames_Sina: array[TDealDetailDataHeadName_Sina] of string = ('',
     '成交时间', '成交价', '价格变动',
@@ -50,7 +53,7 @@ implementation
 
 uses
   Classes,
-  //UtilsLog,
+  UtilsLog,
   define_dealstore_file,
   define_datasrc,
   define_price,  
@@ -189,12 +192,15 @@ var
 begin
   Result := false;
   tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_Sina, ADealDay, AStockItem);
-  tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_Sina, ADealDay, AStockItem, '');  
+  tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_Sina, ADealDay, AStockItem, ''); 
+  Log('', 'GetStockDayDetailData_Sina:' + tmpFilePathYear + tmpFileName + ':' + FormatDateTime('yyyymmdd', ADealDay)); 
   if FileExists(tmpFilePathYear + tmpFileName) then
   begin
     Result := true;
     exit;
   end;
+  Log('', 'GetStockDayDetailData_Sina begin' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
+    
   tmpUrl := BaseSinaDetailUrl1 + 'date=' + FormatDateTime('yyyy-mm-dd', ADealDay) + '&' + 'symbol=' + GetStockCode_Sina(AStockItem);
   tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession);
   if nil <> tmpHttpData then
@@ -215,6 +221,7 @@ begin
           if 0 < tmpDetailData.RecordCount then
           begin
             tmpDetailData.Sort;
+            Log('', 'GetStockDayDetailData_Sina ok' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
             SaveStockDetailData(App, tmpDetailData);
           end;
           //Sysutils.DeleteFile(tmpDownloadFileUrl);
@@ -234,18 +241,25 @@ var
   tmpFilePathYear: string;
   tmpFileName: string;
   tmpYear, tmpMonth, tmpDay: Word;
+  tmpDealDay: PRT_Quote_M1_Day;
 begin             
   Result := false;
   if 0 < AStockDayAccess.LastDealDate then
   begin
-    // Trunc(now) - 2                             
-    for i := AStockDayAccess.LastDealDate downto AStockDayAccess.FirstDealDate do
-    begin                   
-      DecodeDate(i, tmpYear, tmpMonth, tmpDay);
+    // Trunc(now) - 2
+    AStockDayAccess.Sort;                      
+    for i := AStockDayAccess.RecordCount - 1 downto 0 do
+    begin
+      tmpDealDay := AStockDayAccess.RecordItem[i];
+      if 1 > tmpDealDay.DealVolume then
+        Continue;
+      if 1 > tmpDealDay.DealAmount then
+        Continue;
+      DecodeDate(tmpDealDay.DealDate.Value, tmpYear, tmpMonth, tmpDay);
       if 2016 > tmpYear then
         Break;
-      tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_Sina, i, AStockDayAccess.StockItem);
-      tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_Sina, i, AStockDayAccess.StockItem, '');
+      tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_Sina, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem);
+      tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_Sina, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem, '');
       if '' <> tmpFileName then
       begin
         if not FileExists(tmpFilePathYear + tmpFileName) then
@@ -253,20 +267,19 @@ begin
           if not FileExists(ChangeFileExt(tmpFilePathYear + tmpFileName, '.sdet')) then
           begin           
             Result := true;
-            GetStockDayDetailData_Sina(App, AStockDayAccess.StockItem, ANetSession, i);
+            GetStockDayDetailData_Sina(App, AStockDayAccess.StockItem, ANetSession, tmpDealDay.DealDate.Value);
             Sleep(100);
-            //Log('', tmpFilePathYear + tmpFileName);
           end else
           begin
-            Break;
+            //Break;
           end;
         end else
         begin
-          Break;
+          //Break;
         end;
       end else
       begin
-        Break;
+        //Break;
       end;
     end;
   end;

@@ -102,7 +102,8 @@ begin
             tmpMonthDetailRec := tmpMonthDetailData.NewRecord(tmpDayDetailRec.DealDateTime.DateValue, tmpDayDetailRec.DealDateTime.TimeValue);
             tmpMonthDetailRec^ := tmpDayDetailRec^; 
           end;
-        end;     
+        end;
+        //tmpMonthDetailData.Sort;
         //SaveStockDetailData(App, tmpMonthDetailData);
       finally
         tmpMonthDetailData.Free;
@@ -113,7 +114,7 @@ end;
 
 procedure StockDetailPack_Item(App: TBaseApp; AStockDayAccess: TStockDayDataAccess; ADataSrcId: Integer); overload;
 var
-  i, j: integer;  
+  i: integer;  
   tmpYear, tmpMonth, tmpDay: Word;
   tmpDetailPackData: TStockDetailPack_Month;  
   tmpDetailData: TStockDetailDataAccess;
@@ -121,14 +122,21 @@ var
   tmpFilePathYear: string;
   tmpFileName: string;
   tmpFileUrl: string;
+  tmpDealDay: PRT_Quote_M1_Day;
 begin
   FillChar(tmpDetailPackData, SizeOf(tmpDetailPackData), 0);
   tmpDetailPackData.StockItem := AStockDayAccess.StockItem;
   tmpDetailPackData.DataSrcId := ADataSrcId; 
   tmpIsNew := false;
-  for i := AStockDayAccess.LastDealDate downto AStockDayAccess.FirstDealDate do
+  for i := AStockDayAccess.RecordCount - 1 downto 0 do
   begin
-    DecodeDate(i, tmpYear, tmpMonth, tmpDay);
+    tmpDealDay := AStockDayAccess.RecordItem[i];
+    if 1 > tmpDealDay.DealVolume then
+      Continue;
+    if 1 > tmpDealDay.DealAmount then
+      Continue;
+
+    DecodeDate(tmpDealDay.DealDate.Value, tmpYear, tmpMonth, tmpDay);
     if tmpYear <> tmpDetailPackData.Year then
       tmpIsNew := true;
     if tmpMonth <> tmpDetailPackData.Month then
@@ -159,8 +167,8 @@ begin
     end;
     if 0 = tmpDetailPackData.IsReady then
     begin
-      tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, ADataSrcId, i, AStockDayAccess.StockItem);
-      tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, ADataSrcId, i, AStockDayAccess.StockItem, '');
+      tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, ADataSrcId, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem);
+      tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, ADataSrcId, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem, '');
       if '' <> tmpFileName then
       begin
         tmpFileUrl := tmpFilePathYear + tmpFileName;
@@ -169,19 +177,22 @@ begin
         if FileExists(tmpFileUrl) then
         begin
           tmpDetailData := TStockDetailDataAccess.Create(AStockDayAccess.StockItem, ADataSrcId);
-          tmpDetailPackData.StockDetails.AddObject(i, tmpDetailData);
-          tmpDetailData.FirstDealDate := i;
-          tmpDetailData.LastDealDate := i;          
+          tmpDetailPackData.StockDetails.AddObject(tmpDealDay.DealDate.Value, tmpDetailData);
+          tmpDetailData.FirstDealDate := tmpDealDay.DealDate.Value;
+          tmpDetailData.LastDealDate := tmpDealDay.DealDate.Value;          
           LoadStockDetailData(App, tmpDetailData, tmpFileUrl);
           if 1 > tmpDetailData.RecordCount then
           begin
             tmpDetailPackData.IsReady := 1;    
-            Log('StockDetail_PackApp.pas', 'Load Detail Data Error Data Empty:' + AStockDayAccess.StockItem.sCode + ':' + FormatDateTime('yyyy-mm-dd', i));
+            Log('StockDetail_PackApp.pas', 'Load Detail Data Error Data Empty:' +
+                AStockDayAccess.StockItem.sCode + ':' +
+                FormatDateTime('yyyy-mm-dd', tmpDealDay.DealDate.Value));
           end;
         end else
         begin
           tmpDetailPackData.IsReady := 1; 
-          Log('StockDetail_PackApp.pas', 'Load Detail Data Error File not Exists:' + AStockDayAccess.StockItem.sCode + ':' + FormatDateTime('yyyy-mm-dd', i));
+          Log('StockDetail_PackApp.pas', 'Load Detail Data Error File not Exists:' + AStockDayAccess.StockItem.sCode + ':' +
+            FormatDateTime('yyyy-mm-dd', tmpDealDay.DealDate.Value) + ' ' + tmpFileUrl);
         end;
       end;
     end;
