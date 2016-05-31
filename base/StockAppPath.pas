@@ -20,14 +20,19 @@ type
     function GetDataBasePath(ADBType: integer; ADataSrc: integer): WideString; override;
     function GetInstallPath: WideString; override;
   public                    
-    constructor Create(App: TBaseApp); override;    
+    constructor Create(App: TBaseApp); override;
+
     function GetRootPath: WideString; override;
-    function GetFileRelativePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;    
+    function GetFileRelativePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;
     function GetFilePath(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;
-    function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
-    function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
+
+    function GetFileName(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override; 
+    function GetFileExt(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString; override;
+
     function GetFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
-    
+
+    function CheckOutFileUrl(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer; AFileExt: WideString): WideString; override;
+
     property DBPathRoot: string read fStockAppPathData.DBPathRoot write fStockAppPathData.DBPathRoot;
   end;
   
@@ -208,7 +213,7 @@ begin
       end;
     end else
     begin
-      Result := Result + '.' + FileExt_StockDetail + IntToStr(ADataSrc);
+      Result := Result + '.' + GetFileExt(ADBType, ADataSrc, AParamType, AParam);
     end;
     exit;
   end;              
@@ -216,7 +221,7 @@ begin
   begin
     if nil <> AParam then
     begin
-      Result := PRT_DealItem(AParam).sCode + '.' + FileExt_StockDay + IntToStr(ADataSrc);
+      Result := PRT_DealItem(AParam).sCode + '.' + GetFileExt(ADBType, ADataSrc, AParamType, AParam);
     end;
     exit;
   end;
@@ -224,7 +229,7 @@ begin
   begin
     if nil <> AParam then
     begin
-      Result := PRT_DealItem(AParam).sCode + '.' + FileExt_StockDayWeight + IntToStr(ADataSrc);
+      Result := PRT_DealItem(AParam).sCode + '.' + GetFileExt(ADBType, ADataSrc, AParamType, AParam);
     end;
     exit;
   end;
@@ -234,7 +239,36 @@ begin
   end;      
   if FilePath_DBType_ItemDB = ADBType then
   begin
-    Result := 'items.dic';
+    Result := 'items.' + GetFileExt(ADBType, ADataSrc, AParamType, AParam);
+    exit;
+  end;
+end;
+
+function TStockAppPath.GetFileExt(ADBType: integer; ADataSrc: integer; AParamType: integer; AParam: Pointer): WideString;
+begin
+  Result := '';
+  if FilePath_DBType_DetailData = ADBType then
+  begin
+    Result := FileExt_StockDetail + IntToStr(ADataSrc);
+    exit;
+  end;
+  if FilePath_DBType_DayData = ADBType then
+  begin
+    Result := FileExt_StockDay + IntToStr(ADataSrc);
+    exit;
+  end;
+  if FilePath_DBType_DayDataWeight = ADBType then
+  begin                                             
+    Result := FileExt_StockDayWeight + IntToStr(ADataSrc);
+    exit;
+  end;
+  if FilePath_DBType_InstantData = ADBType then
+  begin
+    exit;
+  end;
+  if FilePath_DBType_ItemDB = ADBType then
+  begin
+    Result := 'dic';
     exit;
   end;
 end;

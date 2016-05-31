@@ -16,6 +16,7 @@ uses
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
   win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
   UtilsDateTime in '..\..\..\devwintech\v0000\win_utils\UtilsDateTime.pas',
+  UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',
   BaseStockApp in '..\..\base\BaseStockApp.pas',
   StockAppPath in '..\..\base\StockAppPath.pas',
   define_dealmarket in '..\..\basedefine\define_dealmarket.pas',
@@ -31,7 +32,7 @@ uses
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDetailDataAccess in '..\..\data_stock\StockDetailDataAccess.pas',
-  StockDetailData_Load in '..\..\data_stock\StockDetailData_Load.pas',   
+  StockDetailData_Load in '..\..\data_stock\StockDetailData_Load.pas',
   StockDetailData_Save in '..\..\data_stock\StockDetailData_Save.pas',
   StockDetail_PackApp in 'StockDetail_PackApp.pas';
 
