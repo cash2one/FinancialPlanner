@@ -41,7 +41,7 @@ uses
 var
   GlobalApp: TStockDetailPackApp;
 begin
-  GlobalApp := TStockDetailPackApp.Create('');
+  GlobalApp := TStockDetailPackApp.Create('TStockDetailPackApp');
   try
     if GlobalApp.Initialize then
       GlobalApp.Run;

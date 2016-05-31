@@ -182,14 +182,15 @@ begin
           tmpDetailData.FirstDealDate := tmpDealDay.DealDate.Value;
           tmpDetailData.LastDealDate := tmpDealDay.DealDate.Value;
 
-          LoadStockDetailData(App, tmpDetailData, tmpFileUrl);
+          LoadStockDetailData(App, tmpDetailData, tmpFileUrl, false);
           if 1 > tmpDetailData.RecordCount then
           begin
             tmpDetailPackData.IsReady := 1;    
             Log('StockDetail_PackApp.pas', 'Load Detail Data Error Data Empty:' +
                 AStockDayAccess.StockItem.sCode + ':' +
                 FormatDateTime('yyyy-mm-dd', tmpDealDay.DealDate.Value) + ' ' +
-                tmpFileUrl);
+                tmpFileUrl);    
+            LoadStockDetailData(App, tmpDetailData, tmpFileUrl, true);
           end;
         end else
         begin
