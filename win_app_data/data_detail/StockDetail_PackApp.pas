@@ -175,14 +175,13 @@ begin
           LoadStockDetailData(App, tmpDetailData, tmpFileUrl);
           if 1 > tmpDetailData.RecordCount then
           begin
-            tmpDetailPackData.IsReady := 1;
-          end else
-          begin
+            tmpDetailPackData.IsReady := 1;    
             Log('StockDetail_PackApp.pas', 'Load Detail Data Error Data Empty:' + AStockDayAccess.StockItem.sCode + ':' + FormatDateTime('yyyy-mm-dd', i));
           end;
         end else
         begin
-          tmpDetailPackData.IsReady := 1;
+          tmpDetailPackData.IsReady := 1; 
+          Log('StockDetail_PackApp.pas', 'Load Detail Data Error File not Exists:' + AStockDayAccess.StockItem.sCode + ':' + FormatDateTime('yyyy-mm-dd', i));
         end;
       end;
     end;
