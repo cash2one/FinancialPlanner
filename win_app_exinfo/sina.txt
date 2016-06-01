@@ -1,0 +1,11 @@
+流通股股东 全部
+http://vip.stock.finance.sina.com.cn/corp/go.php/vCI_CirculateStockHolder/stockid/600000.phtml#
+
+流通股股东 3期
+http://vip.stock.finance.sina.com.cn/corp/go.php/vCI_CirculateStockHolder/stockid/002414/displaytype/30.phtml
+
+股本结构
+http://vip.stock.finance.sina.com.cn/corp/go.php/vCI_StockStructure/stockid/002414.phtml
+
+基金持股
+http://vip.stock.finance.sina.com.cn/corp/go.php/vCI_FundStockHolder/stockid/600000.phtml
