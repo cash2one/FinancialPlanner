@@ -39,8 +39,6 @@ uses
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina.pas',
-  StockDetailData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDetailData_Get_Sina.pas',
-  FuturesData_Get_Sina in '..\..\data_futures\datasrc_sina\FuturesData_Get_Sina.pas',
   StockDay_Get_Sina in 'StockDay_Get_Sina.pas';
 
 {$R *.res}
