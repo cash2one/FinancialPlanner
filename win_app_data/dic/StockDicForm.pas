@@ -215,7 +215,7 @@ begin
       end;                        
       if 0 < Pos('.dic', lowercase(tmpFileUrl)) then
       begin
-        db_dealItem_LoadIni.LoadDBStockItemIniFromFile(GlobalApp, GlobalApp.StockItemDB, tmpFileUrl);
+        db_dealItem_Load.LoadDBStockItemDicFromFile(GlobalApp, GlobalApp.StockItemDB, tmpFileUrl);
         tmpIsDone := true;
       end;
     end;
