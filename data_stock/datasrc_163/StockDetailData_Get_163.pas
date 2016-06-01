@@ -177,19 +177,23 @@ begin
   tmpHttpData := GetHttpUrlData(tmpUrl, AHttpClientSession);
   if nil <> tmpHttpData then
   begin
-    FillChar(tmpHttpHeadParse, SizeOf(tmpHttpHeadParse), 0);
-    HttpBufferHeader_Parser(tmpHttpData, @tmpHttpHeadParse);
-    if (199 < tmpHttpHeadParse.RetCode) and (300 > tmpHttpHeadParse.RetCode) then
-    begin
-      if 0 < tmpHttpHeadParse.HeadEndPos then
+    try
+      FillChar(tmpHttpHeadParse, SizeOf(tmpHttpHeadParse), 0);
+      HttpBufferHeader_Parser(tmpHttpData, @tmpHttpHeadParse);
+      if (199 < tmpHttpHeadParse.RetCode) and (300 > tmpHttpHeadParse.RetCode) then
       begin
-        tmpUrl := 'e:\' + GetStockCode_163(AStockItem) + '.xls';
-        SaveHttpResponseToFile(tmpHttpData, @tmpHttpHeadParse, tmpUrl);
-        if FileExists(tmpUrl) then
+        if 0 < tmpHttpHeadParse.HeadEndPos then
         begin
-          Parser_163Xls(App, AStockItem, tmpUrl);
+          tmpUrl := 'e:\' + GetStockCode_163(AStockItem) + '.xls';
+          SaveHttpResponseToFile(tmpHttpData, @tmpHttpHeadParse, tmpUrl);
+          if FileExists(tmpUrl) then
+          begin
+            Parser_163Xls(App, AStockItem, tmpUrl);
+          end;
         end;
       end;
+    finally
+      CheckInIOBuffer(tmpHttpData);
     end;
   end;
 end;

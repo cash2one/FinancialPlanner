@@ -87,15 +87,19 @@ begin
   tmpRetData := GetHttpUrlData(tmpUrl, nil); 
   if nil <> tmpRetData then
   begin
-    FillChar(tmpHttpParse, SizeOf(tmpHttpParse), 0);
-    HttpBufferHeader_Parser(tmpRetData, @tmpHttpParse);
-    if 200 = tmpHttpParse.RetCode then
-    begin
-      if 0 < tmpHttpParse.HeadEndPos  then
+    try
+      FillChar(tmpHttpParse, SizeOf(tmpHttpParse), 0);
+      HttpBufferHeader_Parser(tmpRetData, @tmpHttpParse);
+      if 200 = tmpHttpParse.RetCode then
       begin
-    // parse result data
-        DataParse_Instant_Sina(AInstant, PAnsiChar(@PIOBufferX(tmpRetData).Data[tmpHttpParse.HeadEndPos + 1]));
+        if 0 < tmpHttpParse.HeadEndPos  then
+        begin
+      // parse result data
+          DataParse_Instant_Sina(AInstant, PAnsiChar(@PIOBufferX(tmpRetData).Data[tmpHttpParse.HeadEndPos + 1]));
+        end;
       end;
+    finally
+      CheckInIOBuffer(tmpRetData);
     end;
   end;
 end;
@@ -188,14 +192,18 @@ begin
     tmpRetData := GetHttpUrlData(tmpUrl, AHttpClientSession);
     if nil <> tmpRetData then
     begin
-      FillChar(tmpHttpParse, SizeOf(tmpHttpParse), 0);
-      HttpBufferHeader_Parser(tmpRetData, @tmpHttpParse);
-      if 200 = tmpHttpParse.RetCode then
-      begin
-        if 0 < tmpHttpParse.HeadEndPos  then
+      try
+        FillChar(tmpHttpParse, SizeOf(tmpHttpParse), 0);
+        HttpBufferHeader_Parser(tmpRetData, @tmpHttpParse);
+        if 200 = tmpHttpParse.RetCode then
         begin
-          DataParse_InstantArray_Sina(AInstantArray, PAnsiChar(@PIOBufferX(tmpRetData).Data[tmpHttpParse.HeadEndPos + 1]));
+          if 0 < tmpHttpParse.HeadEndPos  then
+          begin
+            DataParse_InstantArray_Sina(AInstantArray, PAnsiChar(@PIOBufferX(tmpRetData).Data[tmpHttpParse.HeadEndPos + 1]));
+          end;
         end;
+      finally
+        CheckInIOBuffer(tmpRetData);
       end;
     end;
   end;

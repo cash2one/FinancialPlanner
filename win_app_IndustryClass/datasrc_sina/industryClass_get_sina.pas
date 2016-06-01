@@ -87,17 +87,23 @@ begin
   FillChar(tmpHttpClientSession, SizeOf(tmpHttpClientSession), 0);
   tmpHttpClientSession.IsKeepAlive := True;
   tmpHttpData := GetHttpUrlData(tmpUrl, @tmpHttpClientSession);
-
-  HttpBufferHeader_Parser(tmpHttpData, @tmpHttpHead);
-  if 200 = tmpHttpHead.RetCode then
+  if nil <> tmpHttpData then
   begin
-    tmpStrs := TStringList.Create;
     try
-      tmpStrs.Text := AnsiString(PAnsiChar(@tmpHttpData.Data[tmpHttpHead.HeadEndPos + 1]));
-      tmpStrs.SaveToFile('e:\sina_mkt.html');
+      HttpBufferHeader_Parser(tmpHttpData, @tmpHttpHead);
+      if 200 = tmpHttpHead.RetCode then
+      begin
+        tmpStrs := TStringList.Create;
+        try
+          tmpStrs.Text := AnsiString(PAnsiChar(@tmpHttpData.Data[tmpHttpHead.HeadEndPos + 1]));
+          tmpStrs.SaveToFile('e:\sina_mkt.html');
+        finally
+          tmpStrs.Free;
+        end;  
+      end;
     finally
-      tmpStrs.Free;
-    end;  
+      CheckInIOBuffer(tmpHttpData);
+    end;
   end;
 end;
 

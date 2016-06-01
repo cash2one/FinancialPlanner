@@ -75,8 +75,12 @@ begin
   tmpUrl := BaseSinaFuturesData5MinUrl + ADealItem.sCode;
   tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession);
   if nil <> tmpHttpData then
-  begin
-    ParseFuturesData_Sina(tmpHttpData);
+  begin       
+    try
+      ParseFuturesData_Sina(tmpHttpData);
+    finally
+      CheckInIOBuffer(tmpHttpData);
+    end;
   end;
 end;
 

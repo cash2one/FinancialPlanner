@@ -359,11 +359,18 @@ begin
       exit;
     // parse result data
     tmpHttpData := GetHttpUrlData(tmpUrl, AHttpSession);
-    if ParseStockDataDay_163(tmpStockDataAccess, tmpHttpData) then
-    begin        
-      Result := true;
-      SaveStockDayData(App, tmpStockDataAccess);
-    end;     
+    if nil <> tmpHttpData then
+    begin
+      try
+        if ParseStockDataDay_163(tmpStockDataAccess, tmpHttpData) then
+        begin
+          Result := true;
+          SaveStockDayData(App, tmpStockDataAccess);
+        end;
+      finally
+        CheckInIOBuffer(tmpHttpData);
+      end;
+    end;
     if 0 = AStockItem.FirstDealDate then
     begin
       if 0 < tmpStockDataAccess.RecordCount then
