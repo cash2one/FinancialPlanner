@@ -29,6 +29,7 @@ var
   tmpItemRec: PStore_DealItem32Rec;
   i: integer;
   tmpRTItem: PRT_DealItem;
+  tmpLen: integer;
   tmpCode: AnsiString;
   tmpName: WideString;
 begin
@@ -64,7 +65,12 @@ begin
     tmpItemRec.ItemRecord.FirstDealDate := tmpRTItem.FirstDealDate;
     tmpItemRec.ItemRecord.EndDate := tmpRTItem.EndDealDate;
     tmpName := tmpRTItem.Name;
-    CopyMemory(@tmpItemRec.ItemRecord.Name[0], @tmpName[1], Length(tmpName) * SizeOf(WideChar));
+
+    tmpLen := Length(tmpName);
+    if 5 < tmpLen then
+      tmpLen := 5;
+    CopyMemory(@tmpItemRec.ItemRecord.Name[0], @tmpName[1], tmpLen * SizeOf(WideChar));
+    tmpItemRec.ItemRecord.Name[tmpLen] := #0;
     Inc(tmpItemRec);
   end;
 end;
