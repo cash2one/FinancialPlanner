@@ -205,32 +205,36 @@ begin
   tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession);
   if nil <> tmpHttpData then
   begin
-    FillChar(tmpHttpHeadParse, SizeOf(tmpHttpHeadParse), 0);
-    HttpBufferHeader_Parser(tmpHttpData, @tmpHttpHeadParse);
-    if 0 < tmpHttpHeadParse.HeadEndPos then
-    begin
-      tmpRowDatas := TStringList.Create;   
-      try
-        tmpRowDatas.Text := AnsiString(@tmpHttpData.Data[tmpHttpHeadParse.HeadEndPos + 1]);
-        //                           
-        tmpDetailData := TStockDetailDataAccess.Create(AStockItem, DataSrc_Sina);
+    try
+      FillChar(tmpHttpHeadParse, SizeOf(tmpHttpHeadParse), 0);
+      HttpBufferHeader_Parser(tmpHttpData, @tmpHttpHeadParse);
+      if 0 < tmpHttpHeadParse.HeadEndPos then
+      begin
+        tmpRowDatas := TStringList.Create;   
         try
-          tmpDetailData.FirstDealDate := ADealDay;
-          tmpDetailData.LastDealDate := ADealDay;          
-          Result := DataParse_DetailData_Sina(tmpDetailData, tmpRowDatas, ADealDay);
-          if 0 < tmpDetailData.RecordCount then
-          begin
-            tmpDetailData.Sort;
-            //Log('', 'GetStockDayDetailData_Sina ok' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
-            SaveStockDetailData(App, tmpDetailData);
+          tmpRowDatas.Text := AnsiString(@tmpHttpData.Data[tmpHttpHeadParse.HeadEndPos + 1]);
+          //                           
+          tmpDetailData := TStockDetailDataAccess.Create(AStockItem, DataSrc_Sina);
+          try
+            tmpDetailData.FirstDealDate := ADealDay;
+            tmpDetailData.LastDealDate := ADealDay;          
+            Result := DataParse_DetailData_Sina(tmpDetailData, tmpRowDatas, ADealDay);
+            if 0 < tmpDetailData.RecordCount then
+            begin
+              tmpDetailData.Sort;
+              //Log('', 'GetStockDayDetailData_Sina ok' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
+              SaveStockDetailData(App, tmpDetailData);
+            end;
+            //Sysutils.DeleteFile(tmpDownloadFileUrl);
+          finally
+            tmpDetailData.Free;
           end;
-          //Sysutils.DeleteFile(tmpDownloadFileUrl);
         finally
-          tmpDetailData.Free;
-        end;
-      finally
-        tmpRowDatas.Free;
-      end; 
+          tmpRowDatas.Free;
+        end; 
+      end;
+    finally
+      CheckInIOBuffer(tmpHttpData);
     end;
   end;
 end;
@@ -257,7 +261,7 @@ begin
       if 1 > tmpDealDay.DealAmount then
         Continue;
       DecodeDate(tmpDealDay.DealDate.Value, tmpYear, tmpMonth, tmpDay);
-      if 2016 > tmpYear then
+      if 2014 > tmpYear then
         Break;
       tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_Sina, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem);
       tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_Sina, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem, '');

@@ -44,7 +44,9 @@ const
 const
   BaseSinaDayUrl1 = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/';
   BaseSinaDayUrl2 = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_FuQuanMarketHistory/stockid/';
-  (*//
+  (*//           
+  // http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_FuQuanMarketHistory/stockid/600000.phtml
+  // http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/600000.phtml
   // 上证指数
   // http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/000001/type/S.phtml?year=2015&jidu=1
      深圳成分
@@ -99,7 +101,7 @@ begin
     case AHeadCol of
       headDay: begin
         TryStrToDate(AStringData, tmpDate, DateFormat_Sina);
-        ADealDayData.DealDateTime.Value := Trunc(tmpDate);
+        ADealDayData.DealDate.Value := Trunc(tmpDate);
       end; // 1 日期,
       headPrice_Open: begin // 7开盘价,
         SetRTPricePack(@ADealDayData.PriceRange.PriceOpen, StrToFloatDef(AStringData, 0.00));
@@ -438,7 +440,7 @@ begin
       if 0 < tmpStockDataAccess.RecordCount then
       begin
         tmpQuoteDay := tmpStockDataAccess.RecordItem[0];
-        AStockItem.FirstDealDate := tmpQuoteDay.DealDateTime.Value;
+        AStockItem.FirstDealDate := tmpQuoteDay.DealDate.Value;
         AStockItem.IsDataChange := 1;
       end;
     end;   
