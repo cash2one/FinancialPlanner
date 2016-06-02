@@ -22,7 +22,8 @@ const
                                                      
   function GetStockCode_163(AStockItem: PRT_DealItem): AnsiString;
   function GetStockCode_Sina(AStockItem: PRT_DealItem): AnsiString;
-              
+  function GetStockCode_QQ(AStockItem: PRT_DealItem): AnsiString;
+
 implementation
          
 function GetDataSrcCode(ADataSrc: integer): AnsiString;
@@ -62,6 +63,11 @@ begin
   begin
     Result := 'sz' + AStockItem.sCode;
   end;
+end;
+
+function GetStockCode_QQ(AStockItem: PRT_DealItem): AnsiString;
+begin
+  Result := GetStockCode_Sina(AStockItem);
 end;
 
 end.

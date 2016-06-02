@@ -1,4 +1,4 @@
-﻿program StockInstant_Sina;
+﻿program StockInstant_QQ;
 
 uses
   Windows,
@@ -36,13 +36,13 @@ uses
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   db_dealitem_save in '..\..\dealitem\db_dealitem_save.pas',
   StockInstantDataAccess in '..\..\data_stock\StockInstantDataAccess.pas',
-  StockInstantData_Get_Sina in '..\..\data_stock\datasrc_sina\StockInstantData_Get_Sina.pas',
-  StockInstant_Get_Sina in 'StockInstant_Get_Sina.pas';
+  StockInstantData_Get_QQ in '..\..\data_stock\datasrc_qq\StockInstantData_Get_QQ.pas',
+  StockInstant_Get_QQ in 'StockInstant_Get_QQ.pas';
 
 {$R *.res}
 
 type
-  TStockInstantSinaApp = class(TBaseStockApp)
+  TStockInstantQQApp = class(TBaseStockApp)
   protected
   public     
     constructor Create(AppClassId: AnsiString); override;
@@ -51,20 +51,20 @@ type
 
 { TStockDay163App }
 
-constructor TStockInstantSinaApp.Create(AppClassId: AnsiString);
+constructor TStockInstantQQApp.Create(AppClassId: AnsiString);
 begin
   inherited;
 end;
 
-procedure TStockInstantSinaApp.Run;
+procedure TStockInstantQQApp.Run;
 begin
-  GetStockDataInstant_Sina_All(Self);
+  GetStockDataInstant_QQ_All(Self);
 end;
 
 var
-  GlobalApp: TStockInstantSinaApp;
+  GlobalApp: TStockInstantQQApp;
 begin
-  GlobalApp := TStockInstantSinaApp.Create('');
+  GlobalApp := TStockInstantQQApp.Create('');
   try
     if GlobalApp.Initialize then
       GlobalApp.Run;
