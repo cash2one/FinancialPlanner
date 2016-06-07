@@ -38,7 +38,8 @@ begin
           Sleep(100);
         end;
       end;
-    except
+    except             
+      Log('', 'Dowload Stock Detail error:' + AStockItem.sCode);
     end;
   finally
     tmpDayData.Free;
