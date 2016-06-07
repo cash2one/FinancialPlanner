@@ -43,6 +43,7 @@ implementation
 uses
   Classes,
   nexcel,
+  define_price,
   StockDetailDataAccess,
   StockDetailData_Save,
   define_stock_quotes,
@@ -61,88 +62,110 @@ begin
   end;
 end;
 
-function Parser_163Xls(App: TBaseApp; AStockItem: PRT_DealItem; AFileUrl: string): Boolean;
+function DataParse_DetailData_163(App: TBaseApp; ADetailData: TStockDetailDataAccess; ADataStream: TStream): Boolean;
 var
   tmpXls: TXLSWorkbook;
   tmpSheet: IXLSWorkSheet;
   tmpRowIdx: integer;
   tmpColIdx: integer;
-  tmpCellText: WideString;
   tmpParse163: TRT_DealDetailData_HeaderSina;
   tmp163head: TDealDetailDataHeadName_163;
-  tmpDetailData: TStockDetailDataAccess;
-  tmpDetailRecord: PRT_Quote_M2;
-  tmpQuote: TRT_Quote_M2;
+                           
+  tmpText: WideString;      
+  tmpTimeIndex: integer;   
+  tmpDetailData: PRT_Quote_M2; 
+  tmpDealVolume: integer;   
+  tmpDealAmount: integer;   
+  tmpPrice: double;
 begin
   Result := false;
   tmpXls := TXLSWorkbook.Create;
   try
-    tmpXls.Open(AFileUrl);
-    if nil <> tmpXls.WorkSheets then
-    begin
-      if 0 < tmpXls.WorkSheets.Count then
+    //tmpXls.Open(AFileUrl);
+    tmpXls.Open(ADataStream);
+    if nil = tmpXls.WorkSheets then
+      exit;
+    if 1 > tmpXls.WorkSheets.Count then
+      exit;
+    try
+      tmpSheet := tmpXls.WorkSheets.Entries[1];
+      if nil = tmpSheet then
+        exit;
+      if '' = tmpSheet.Name then
+        exit;
+      if 1 > tmpSheet._RowInfo.RowCount then
+        exit;
+      if nil = tmpSheet.Cells then
+        exit;
+      FillChar(tmpParse163, SizeOf(tmpParse163), 0);     
+      for tmpRowIdx := 1 to tmpSheet._RowInfo.RowCount do
       begin
-        try
-          tmpSheet := tmpXls.WorkSheets.Entries[1];
-          if nil <> tmpSheet then
+        if 0 = tmpParse163.IsReady then
+        begin       
+          for tmpColIdx := 1 to 6{tmpSheet._ColumnInfo.ColCount - 1} do
           begin
-            if '' <> tmpSheet.Name then
+            tmpText := GetCellText(tmpSheet, tmpRowIdx, tmpColIdx);
+            if '' <> tmpText then
             begin
-              if 0 < tmpSheet._RowInfo.RowCount then
+              for tmp163head := Low(TDealDetailDataHeadName_163) to High(TDealDetailDataHeadName_163) do
               begin
-                if nil <> tmpSheet.Cells then
+                if 0 < Pos(DealDetailDataHeadNames_163[tmp163head], tmpText) then
                 begin
-                  FillChar(tmpParse163, SizeOf(tmpParse163), 0);     
-                                        
-                  tmpDetailData := TStockDetailDataAccess.Create(AStockItem, DataSrc_163);
-                  try
-                    for tmpRowIdx := 1 to tmpSheet._RowInfo.RowCount do
+                  tmpParse163.HeadNameIndex[tmp163head] := tmpColIdx;
+                  tmpParse163.IsReady := 1;
+                end;
+              end;
+            end;
+          end;
+        end else
+        begin
+          tmpText := GetCellText(tmpSheet, tmpRowIdx, tmpParse163.HeadNameIndex[headDealTime]); 
+          tmpTimeIndex := GetDetailTimeIndex(tmpText); 
+          if 0 < tmpTimeIndex then
+          begin
+            tmptext := GetCellText(tmpSheet, tmpRowIdx, tmpParse163.HeadNameIndex[headDealVolume]);
+            tmpDealVolume := StrToIntDef(tmptext, 0);
+            tmptext := GetCellText(tmpSheet, tmpRowIdx, tmpParse163.HeadNameIndex[headDealAmount]);
+            tmpDealAmount := StrToIntDef(tmptext, 0);    
+            if (0 < tmpDealVolume) and (0 < tmpDealAmount) then
+            begin
+              if 0 < ADetailData.FirstDealDate then
+              begin
+                if ADetailData.FirstDealDate = ADetailData.LastDealDate then
+                begin
+                  Result := true;
+                  tmpDetailData := ADetailData.NewRecord(ADetailData.FirstDealDate, tmpTimeIndex);
+                  if nil <> tmpDetailData then
+                  begin
+                    tmpText := GetCellText(tmpSheet, tmpRowIdx, tmpParse163.HeadNameIndex[headDealPrice]);
+                    //tmpText := '18.9';
+                    TryStrToFloat(tmptext, tmpPrice);
+                    //tmpText := formatFloat('0.00',tmpText);
+                    SetRTPricePack(@tmpDetailData.Price, tmpPrice);
+                    tmpDetailData.DealVolume := tmpDealVolume;   
+                    tmpDetailData.DealAmount := tmpDealAmount;
+                    tmpText := GetCellText(tmpSheet, tmpRowIdx, tmpParse163.HeadNameIndex[headDealType]);
+                    if Pos('Âô', tmpText) > 0 then
                     begin
-                      if 0 = tmpParse163.IsReady then
-                      begin       
-                        for tmpColIdx := 1 to 6{tmpSheet._ColumnInfo.ColCount - 1} do
-                        begin
-                          tmpCellText := GetCellText(tmpSheet, tmpRowIdx, tmpColIdx);
-                          if '' <> tmpCellText then
-                          begin
-                            for tmp163head := Low(TDealDetailDataHeadName_163) to High(TDealDetailDataHeadName_163) do
-                            begin
-                              if 0 < Pos(DealDetailDataHeadNames_163[tmp163head], tmpCellText) then
-                              begin
-                                tmpParse163.HeadNameIndex[tmp163head] := tmpColIdx;
-                                tmpParse163.IsReady := 1;
-                              end;
-                            end;
-                          end;
-                        end;
+                      tmpDetailData.DealType := DealType_Sale;
+                    end else
+                    begin
+                      if Pos('Âò', tmpText) > 0 then
+                      begin
+                        tmpDetailData.DealType := DealType_Buy;
                       end else
                       begin
-                        FillChar(tmpQuote, SizeOf(tmpQuote), 0);
-                        tmpCellText := GetCellText(tmpSheet, tmpRowIdx, tmpParse163.HeadNameIndex[headDealTime]); 
-                        tmpQuote.DealDateTime.TimeValue := tmpParse163.HeadNameIndex[headDealTime];
-                        tmpQuote.Price.Value := tmpParse163.HeadNameIndex[headDealPrice];
-                        //tmpParse163.HeadNameIndex[headDealPriceOffset]
-                        tmpQuote.DealVolume := tmpParse163.HeadNameIndex[headDealVolume];
-                        tmpQuote.DealAmount :=tmpParse163.HeadNameIndex[headDealAmount];
-                        tmpQuote.DealType := tmpParse163.HeadNameIndex[headDealType];
-                        if 0 < tmpQuote.DealDateTime.TimeValue then
-                        begin
-                          tmpDetailRecord := tmpDetailData.CheckOutRecord(tmpQuote.DealDateTime.DateValue, tmpQuote.DealDateTime.TimeValue);
-                          tmpDetailRecord^ := tmpQuote;
-                        end;
+                        tmpDetailData.DealType := DealType_Neutral;
                       end;
                     end;
-                    SaveStockDetailData2File(App, tmpDetailData, ChangeFileExt(AFileUrl, '.sdet'));
-                  finally
-                    tmpDetailData.Free;
                   end;
                 end;
               end;
             end;
           end;
-        except
         end;
       end;
+    except
     end;
   finally
     tmpXls.Free;
@@ -158,6 +181,8 @@ var
   tmpFileName: AnsiString;
   tmpFileExt: AnsiString; 
   tmpHttpHeadParse: THttpHeadParseSession;
+  tmpStream: TMemoryStream;    
+  tmpDetailData: TStockDetailDataAccess;
 begin
   Result := false;
   tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_163, ADealDay, AStockItem);
@@ -170,7 +195,7 @@ begin
   tmpFilePathRoot := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_163, 0, AStockItem);
   tmpFileExt := ExtractFileExt(tmpFileName);
 
-  ADealDay := Trunc(EncodeDate(2016, 6, 6));
+  //ADealDay := Trunc(EncodeDate(2016, 6, 6));
   // 2016/20160216/1002414.xls
   tmpUrl := Base163DetailUrl1 + FormatDateTime('yyyy', ADealDay) + '/' + FormatDateTime('yyyymmdd', ADealDay) + '/' + GetStockCode_163(AStockItem) + '.xls';
   tmpHttpData := GetHttpUrlData(tmpUrl, AHttpClientSession);
@@ -183,12 +208,31 @@ begin
       begin
         if 0 < tmpHttpHeadParse.HeadEndPos then
         begin
+          tmpStream := TMemoryStream.Create;  
+          tmpDetailData := TStockDetailDataAccess.Create(AStockItem, DataSrc_163);
+          try               
+            tmpDetailData.FirstDealDate := ADealDay;
+            tmpDetailData.LastDealDate := ADealDay;      
+            tmpStream.WriteBuffer(tmpHttpData.Data[tmpHttpHeadParse.HeadEndPos + 1], tmpHttpData.BufferHead.BufDataLength - tmpHttpHeadParse.HeadEndPos);
+            Result := DataParse_DetailData_163(App, tmpDetailData, tmpStream); 
+            if 0 < tmpDetailData.RecordCount then
+            begin
+              tmpDetailData.Sort;
+              //Log('', 'GetStockDayDetailData_Sina ok' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
+              SaveStockDetailData(App, tmpDetailData);
+            end;
+          finally
+            tmpStream.Free;
+            tmpDetailData.Free;
+          end;
+          {
           tmpUrl := 'e:\' + GetStockCode_163(AStockItem) + '.xls';
           SaveHttpResponseToFile(tmpHttpData, @tmpHttpHeadParse, tmpUrl);
           if FileExists(tmpUrl) then
           begin
             Parser_163Xls(App, AStockItem, tmpUrl);
           end;
+          }
         end;
       end;
     finally
