@@ -353,7 +353,7 @@ begin
       if 0 < tmpStockDataAccess.RecordCount then
       begin
         tmpQuoteDay := tmpStockDataAccess.RecordItem[0];
-        AStockItem.FirstDealDate := tmpQuoteDay.DealDateTime.Value;
+        AStockItem.FirstDealDate := tmpQuoteDay.DealDate.Value;
         AStockItem.IsDataChange := 1;
       end;
     end;

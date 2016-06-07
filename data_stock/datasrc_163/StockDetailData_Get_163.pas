@@ -119,15 +119,15 @@ begin
                       begin
                         FillChar(tmpQuote, SizeOf(tmpQuote), 0);
                         tmpCellText := GetCellText(tmpSheet, tmpRowIdx, tmpParse163.HeadNameIndex[headDealTime]); 
-                        tmpQuote.DealTime.Value := tmpParse163.HeadNameIndex[headDealTime];
+                        tmpQuote.DealDateTime.TimeValue := tmpParse163.HeadNameIndex[headDealTime];
                         tmpQuote.Price.Value := tmpParse163.HeadNameIndex[headDealPrice];
                         //tmpParse163.HeadNameIndex[headDealPriceOffset]
                         tmpQuote.DealVolume := tmpParse163.HeadNameIndex[headDealVolume];
                         tmpQuote.DealAmount :=tmpParse163.HeadNameIndex[headDealAmount];
                         tmpQuote.DealType := tmpParse163.HeadNameIndex[headDealType];
-                        if 0 < tmpQuote.DealTime.Value then
+                        if 0 < tmpQuote.DealDateTime.TimeValue then
                         begin
-                          tmpDetailRecord := tmpDetailData.CheckOutRecord(tmpQuote.DealTime.Value);
+                          tmpDetailRecord := tmpDetailData.CheckOutRecord(tmpQuote.DealDateTime.DateValue, tmpQuote.DealDateTime.TimeValue);
                           tmpDetailRecord^ := tmpQuote;
                         end;
                       end;
@@ -156,7 +156,6 @@ var
   tmpFilePathRoot: AnsiString;
   tmpFilePathYear: AnsiString;
   tmpFileName: AnsiString;
-  tmpFileName2: AnsiString;  
   tmpFileExt: AnsiString; 
   tmpHttpHeadParse: THttpHeadParseSession;
 begin
@@ -171,7 +170,7 @@ begin
   tmpFilePathRoot := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_163, 0, AStockItem);
   tmpFileExt := ExtractFileExt(tmpFileName);
 
-  ADealDay := Trunc(EncodeDate(2016, 5, 17));
+  ADealDay := Trunc(EncodeDate(2016, 6, 6));
   // 2016/20160216/1002414.xls
   tmpUrl := Base163DetailUrl1 + FormatDateTime('yyyy', ADealDay) + '/' + FormatDateTime('yyyymmdd', ADealDay) + '/' + GetStockCode_163(AStockItem) + '.xls';
   tmpHttpData := GetHttpUrlData(tmpUrl, AHttpClientSession);
@@ -199,13 +198,58 @@ begin
 end;
 
 function GetStockDataDetail_163(App: TBaseApp; AStockDayAccess: TStockDayDataAccess; AHttpClientSession: PHttpClientSession): Boolean;
+var
+  i: integer;               
+  tmpFilePathYear: string;
+  tmpFileName: string;
+  tmpFileUrl: string;
+  tmpYear, tmpMonth, tmpDay: Word;
+  tmpDealDay: PRT_Quote_M1_Day;
+  tmpCount: integer;
 begin             
   Result := false;
 //  Parser_163Xls('e:\0600000.xls');
 //  Exit;
   if 0 < AStockDayAccess.LastDealDate then
-  begin
-    GetStockDayDetailData_163(App, AStockDayAccess.StockItem, AHttpClientSession, AStockDayAccess.LastDealDate);
+  begin            
+    AStockDayAccess.Sort;
+    tmpCount :=0;                      
+    for i := AStockDayAccess.RecordCount - 1 downto 0 do
+    begin
+      tmpDealDay := AStockDayAccess.RecordItem[i];
+      if 1 > tmpDealDay.DealVolume then
+        Continue;
+      if 1 > tmpDealDay.DealAmount then
+        Continue;
+      if 2 < tmpCount then
+        Break;
+      DecodeDate(tmpDealDay.DealDate.Value, tmpYear, tmpMonth, tmpDay);
+      if 2016 > tmpYear then
+        Break;           
+      tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_163, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem);
+      tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_163, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem, '');   
+      if '' <> tmpFileName then
+      begin
+        if not FileExists(tmpFilePathYear + tmpFileName) then
+        begin          
+          tmpFileUrl := ChangeFileExt(tmpFilePathYear + tmpFileName, '.sdet');
+          if not FileExists(tmpFileUrl) then
+          begin
+            GetStockDayDetailData_163(App, AStockDayAccess.StockItem, AHttpClientSession, tmpDealDay.DealDate.Value);
+            Inc(tmpCount);
+          end else
+          begin
+            Break;
+          end;
+        end else
+        begin
+          Break;
+        end;
+      end else
+      begin
+        Break;
+      end;
+    end;
   end;
 end;
 

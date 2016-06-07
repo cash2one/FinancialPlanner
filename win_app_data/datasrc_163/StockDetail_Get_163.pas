@@ -9,13 +9,15 @@ uses
 
 implementation
 
-uses
+uses             
+  Windows,
   define_datasrc,
   DB_DealItem,
   DB_DealItem_Load,
   DB_DealItem_Save,    
   define_dealitem,  
-  UtilsHttp,
+  UtilsHttp,   
+  UtilsLog,
   StockDayDataAccess,
   StockDayData_Load,
   StockDetailData_Get_163;                 
@@ -25,12 +27,20 @@ var
   tmpDayData: TStockDayDataAccess;
 begin                   
   tmpDayData := TStockDayDataAccess.Create(AStockItem, DataSrc_163, false);
-  try                   
-    if LoadStockDayData(App, tmpDayData) then
-    begin
-      GetStockDataDetail_163(App, tmpDayData, AHttpClientSession);
+  try
+    try
+      if LoadStockDayData(App, tmpDayData) then
+      begin
+        Log('', 'Dowload Stock Detail:' + AStockItem.sCode);
+        if GetStockDataDetail_163(App, tmpDayData, AHttpClientSession) then
+        begin
+          Log('', 'Dowload Stock Detail ok:' + AStockItem.sCode);
+          Sleep(100);
+        end;
+      end;
+    except
     end;
-  except
+  finally
     tmpDayData.Free;
   end;
 end;
