@@ -220,6 +220,7 @@ begin
               tmpDetailData.Sort;
               //Log('', 'GetStockDayDetailData_Sina ok' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
               SaveStockDetailData(App, tmpDetailData);
+              Result := True;
             end;
           finally
             tmpStream.Free;
@@ -278,8 +279,12 @@ begin
         begin          
           tmpFileUrl := ChangeFileExt(tmpFilePathYear + tmpFileName, '.sdet');
           if not FileExists(tmpFileUrl) then
-          begin
-            GetStockDayDetailData_163(App, AStockDayAccess.StockItem, AHttpClientSession, tmpDealDay.DealDate.Value);
+          begin             
+            if GetStockDayDetailData_163(App, AStockDayAccess.StockItem, AHttpClientSession, tmpDealDay.DealDate.Value) then
+            begin
+              if not Result then
+                Result := True;
+            end;
             Inc(tmpCount);
           end else
           begin

@@ -9,7 +9,7 @@ uses
   db_dealItem,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, 
   StockDayDataAccess, UIDealItemNode,
-  StockDetailDataAccess;
+  StockDetailDataAccess, StdCtrls;
 
 type
   TDataViewerData = record
@@ -20,7 +20,8 @@ type
         
     Rule_BDZX_Price: TRule_BDZX_Price;  
     Rule_CYHT_Price: TRule_CYHT_Price;
-    DataSrcId: integer;
+    DayDataSrcId: integer;
+    DetailDataSrcId: integer;
   end;
 
   TfmeDataViewer = class(TfrmBase)
@@ -36,11 +37,13 @@ type
     pnlDayData: TPanel;
     vtDayDatas: TVirtualStringTree;
     pnlDayDataTop: TPanel;
+    edtDetailDataSrc: TComboBox;
     procedure vtDetailDatasGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
     procedure vtDayDatasGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
     procedure vtDayDatasChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure edtDetailDataSrcChange(Sender: TObject);
   protected
     fDataViewerData: TDataViewerData;
     procedure LoadDetailTreeView;
@@ -133,8 +136,14 @@ begin
   inherited;
   //fStockDetailDataAccess := nil;
   FillChar(fDataViewerData, SizeOf(fDataViewerData), 0);
-  fDataViewerData.DataSrcId := DataSrc_163;
-  
+  fDataViewerData.DayDataSrcId := DataSrc_163;
+  fDataViewerData.DetailDataSrcId := DataSrc_Sina;
+
+  edtDetailDataSrc.Items.Clear;  
+  edtDetailDataSrc.Items.AddObject('Sina', TObject(DataSrc_Sina));
+  edtDetailDataSrc.Items.AddObject('163', TObject(DataSrc_163));
+  edtDetailDataSrc.ItemIndex := 0;
+  edtDetailDataSrc.OnChange := edtDetailDataSrcChange;
   //fRule_Boll_Price := nil;
   //fRule_CYHT_Price := nil;
   //fRule_BDZX_Price := nil;
@@ -143,6 +152,12 @@ end;
 destructor TfmeDataViewer.Destroy;
 begin
   inherited;
+end;
+
+procedure TfmeDataViewer.edtDetailDataSrcChange(Sender: TObject);
+begin
+  inherited;
+  fDataViewerData.DetailDataSrcId := Integer(edtDetailDataSrc.Items.Objects[edtDetailDataSrc.ItemIndex]);
 end;
 
 procedure TfmeDataViewer.SetData(ADataType: integer; AData: Pointer);
@@ -192,7 +207,7 @@ begin
     exit;
   fDataViewerData.DayDataAccess := AStockItem.StockDayDataAccess;
   if nil = fDataViewerData.DayDataAccess then
-    fDataViewerData.DayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DataSrcId, fDataViewerData.IsWeight);
+    fDataViewerData.DayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DayDataSrcId, fDataViewerData.IsWeight);
   fDataViewerData.Rule_BDZX_Price := AStockItem.Rule_BDZX_Price;
   fDataViewerData.Rule_CYHT_Price := AStockItem.Rule_CYHT_Price;
 
@@ -297,7 +312,7 @@ begin
 
   vtDayDatas.OnGetText := vtDayDatasGetText;
   vtDayDatas.OnChange := vtDayDatasChange;
-  fDataViewerData.DataSrcId := DataSrc_163;
+  fDataViewerData.DayDataSrcId := DataSrc_163;
 end;
                    
 procedure TfmeDataViewer.vtDayDatasChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -314,7 +329,9 @@ begin
   if nil = tmpNodeData.QuoteData then
     exit;
   if nil = fDataViewerData.DetailDataAccess then
-    fDataViewerData.DetailDataAccess := TStockDetailDataAccess.Create(fDataViewerData.DayDataAccess.StockItem, DataSrc_Sina);
+  begin
+    fDataViewerData.DetailDataAccess := TStockDetailDataAccess.Create(fDataViewerData.DayDataAccess.StockItem, fDataViewerData.DetailDataSrcId);
+  end;
   fDataViewerData.DetailDataAccess.Clear;
   fDataViewerData.DetailDataAccess.StockItem := fDataViewerData.DayDataAccess.StockItem;
   fDataViewerData.DetailDataAccess.FirstDealDate := tmpNodeData.QuoteData.DealDate.Value;

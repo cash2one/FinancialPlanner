@@ -74,6 +74,15 @@ object fmeDataViewer: TfmeDataViewer
             Height = 28
             Align = alTop
             BevelOuter = bvNone
+            object edtDetailDataSrc: TComboBox
+              Left = 6
+              Top = 5
+              Width = 145
+              Height = 21
+              Style = csDropDownList
+              ItemHeight = 13
+              OnChange = edtDetailDataSrcChange
+            end
           end
           object vtDetailDatas: TVirtualStringTree
             Left = 0

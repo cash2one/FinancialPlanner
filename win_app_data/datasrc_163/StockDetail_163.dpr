@@ -24,6 +24,7 @@ uses
   UtilsHttp_Indy in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Indy.pas',
   UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
   UtilsHtmlParser in '..\..\..\devwintech\v0000\win_utils\UtilsHtmlParser.pas',
+  UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',
   UtilsDateTime in '..\..\..\devwintech\v0000\win_utils\UtilsDateTime.pas',
   BaseStockApp in '..\..\base\BaseStockApp.pas',
   StockAppPath in '..\..\base\StockAppPath.pas',

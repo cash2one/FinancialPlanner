@@ -224,6 +224,7 @@ begin
               tmpDetailData.Sort;
               //Log('', 'GetStockDayDetailData_Sina ok' + AStockItem.sCode + ':' + FormatDateTime('yyyymmdd', ADealDay));
               SaveStockDetailData(App, tmpDetailData);
+              Result := True;
             end;
             //Sysutils.DeleteFile(tmpDownloadFileUrl);
           finally
@@ -261,7 +262,7 @@ begin
       if 1 > tmpDealDay.DealAmount then
         Continue;
       DecodeDate(tmpDealDay.DealDate.Value, tmpYear, tmpMonth, tmpDay);
-      if 2014 > tmpYear then
+      if 2016 > tmpYear then
         Break;
       tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_Sina, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem);
       tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_Sina, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem, '');
@@ -272,21 +273,24 @@ begin
           tmpFileUrl := ChangeFileExt(tmpFilePathYear + tmpFileName, '.sdet');
           if not FileExists(tmpFileUrl) then
           begin           
-            Result := true;
-            GetStockDayDetailData_Sina(App, AStockDayAccess.StockItem, ANetSession, tmpDealDay.DealDate.Value);
+            if GetStockDayDetailData_Sina(App, AStockDayAccess.StockItem, ANetSession, tmpDealDay.DealDate.Value) then
+            begin
+              if not Result then
+                Result := true;
+            end;
             Sleep(100);
           end else
           begin
             //RenameFile(tmpFileUrl, tmpFilePathYear + tmpFileName);
-            //Break;
+            Break;
           end;
         end else
         begin
-          //Break;
+          Break;
         end;
       end else
       begin
-        //Break;
+        Break;
       end;
     end;
   end;
