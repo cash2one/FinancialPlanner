@@ -214,7 +214,11 @@ begin
             tmpDetailData.FirstDealDate := ADealDay;
             tmpDetailData.LastDealDate := ADealDay;      
             tmpStream.WriteBuffer(tmpHttpData.Data[tmpHttpHeadParse.HeadEndPos + 1], tmpHttpData.BufferHead.BufDataLength - tmpHttpHeadParse.HeadEndPos);
-            Result := DataParse_DetailData_163(App, tmpDetailData, tmpStream); 
+            try
+              Result := DataParse_DetailData_163(App, tmpDetailData, tmpStream);
+            except
+            end;                
+            tmpStream.Clear;
             if 0 < tmpDetailData.RecordCount then
             begin
               tmpDetailData.Sort;

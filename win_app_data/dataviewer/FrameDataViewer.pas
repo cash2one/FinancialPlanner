@@ -336,7 +336,7 @@ begin
   fDataViewerData.DetailDataAccess.StockItem := fDataViewerData.DayDataAccess.StockItem;
   fDataViewerData.DetailDataAccess.FirstDealDate := tmpNodeData.QuoteData.DealDate.Value;
   
-  tmpFileUrl := TBaseStockApp(App).StockAppPath.GetFileUrl(FilePath_DBType_DetailData, DataSrc_Sina,
+  tmpFileUrl := TBaseStockApp(App).StockAppPath.GetFileUrl(FilePath_DBType_DetailData, fDataViewerData.DetailDataSrcId,
     tmpNodeData.QuoteData.DealDate.Value,
     fDataViewerData.DayDataAccess.StockItem);
   if not FileExists(tmpFileUrl) then
