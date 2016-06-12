@@ -32,6 +32,17 @@ uses
   StockDayData_Load,
   StockDayData_Save;
 
+procedure RepairDayData_Sina_Mode2(ARepairSession: PRepairSession; APrev163Index, APrevSinaIndex, ANextSinaIndex: integer);
+var   
+  tmpIdx163: integer;
+  tmpIdxSina: integer;
+  tmpStockData_163: PRT_Quote_M1_Day;   
+  tmpStockData_Sina: PRT_Quote_M1_Day;
+begin
+  tmpStockData_163 := ARepairSession.StockData163.RecordItem[tmpIdx163];
+  tmpStockData_Sina := ARepairSession.StockDataSina.RecordItem[tmpIdxSina];
+end;
+
 function RepairStockDataDay_Sina_Mode2(App: TBaseApp; ARepairSession: PRepairSession): Boolean;
 var 
   tmpYear, tmpMonth, tmpDay: Word;   
@@ -45,11 +56,13 @@ var
 
   tmpLastSinaWeight: integer;  
   tmpLastSinaIndex: integer;   
-  tmpLastSinaDate: integer;
+  tmpLastSinaDate: integer;    
+  tmpLast163Index: integer;   
 
   tmpPrevSinaWeight: integer;
-  tmpPrevSinaIndex: integer;   
-  tmpPrevSinaDate: integer;
+  tmpPrevSinaIndex: integer;
+  tmpPrevSinaDate: integer;     
+  tmpPrev163Index: integer;   
    
   tmpSeason: string;
   i: integer;
@@ -78,13 +91,16 @@ begin
       exit;
     tmpIdx163 := 0;
     tmpIdxSina := 0;
+    
     tmpLastSinaWeight := -1;
     tmpLastSinaIndex := -1;
-    tmpLastSinaDate := 1;
+    tmpLastSinaDate := -1;
+    tmpLast163Index := -1;
     
     tmpPrevSinaWeight := -1;  
     tmpPrevSinaIndex := -1;
     tmpPrevSinaDate := -1;
+    tmpPrev163Index := 1;
     
     while (tmpIdx163 < ARepairSession.StockData163.RecordCount) and
           (tmpIdxSina < ARepairSession.StockDataSina.RecordCount) do
@@ -95,7 +111,8 @@ begin
       begin
         if (-1 <> tmpPrevSinaIndex) and
            (-1 <> tmpPrevSinaWeight) and
-           (-1 <> tmpPrevSinaDate) then
+           (-1 <> tmpPrevSinaDate) and
+           (-1 <> tmpPrev163Index) then
         begin                      
           DecodeDate(tmpPrevSinaDate, tmpYear, tmpMonth, tmpDay);
 
@@ -104,20 +121,28 @@ begin
             // 权重值没有改变
             // 修复失去数据的时间区间
             //RepairStockDayData();
+            RepairDayData_Sina_Mode2(ARepairSession, tmpPrev163Index, tmpPrevSinaIndex, tmpIdxSina);
           end;
           tmpPrevSinaWeight := -1;
           tmpPrevSinaIndex := -1;
-          tmpPrevSinaDate := -1;     
+          tmpPrevSinaDate := -1;
+          tmpPrev163Index := -1;   
         end;
         tmpLastSinaWeight := tmpStockData_Sina.Weight.Value;
         tmpLastSinaIndex := tmpIdxSina;
         tmpLastSinaDate := tmpStockData_Sina.DealDate.Value;
+        tmpLast163Index := tmpIdx163;
+
         Inc(tmpIdx163);
         Inc(tmpIdxSina);
       end else
       begin
         if tmpStockData_163.DealDate.Value > tmpStockData_Sina.DealDate.Value then
-        begin
+        begin                
+          DecodeDate(tmpStockData_Sina.DealDate.Value, tmpYear, tmpMonth, tmpDay);
+          if 0 <> tmpYear then
+          begin
+          end;
           Inc(tmpIdxSina);
         end else
         begin
@@ -129,6 +154,7 @@ begin
             tmpPrevSinaIndex := tmpLastSinaIndex;
             tmpPrevSinaWeight := tmpLastSinaWeight;
             tmpPrevSinaDate := tmpLastSinaDate;
+            tmpPrev163Index := tmpLast163Index;
           end;
           
           DecodeDate(tmpStockData_163.DealDate.Value, tmpYear, tmpMonth, tmpDay);
