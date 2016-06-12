@@ -48,7 +48,9 @@ begin
             FreeAndNil(tmpRepairSession.StockDataSina);
           if nil <> tmpRepairSession.StockData163 then
             FreeAndNil(tmpRepairSession.StockData163);
-          if RepairStockDataDay_Sina_Mode2(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
+          tmpRepairSession.StockItem := tmpDealItem;
+          tmpRepairSession.IsWeight := AIsWeight;
+          if RepairStockDataDay_Sina_Mode2(App, @tmpRepairSession) then
           begin
             Sleep(200);
           end;

@@ -11,11 +11,13 @@ uses
 type
   PRepairSession = ^TRepairSession;
   TRepairSession = record
+    StockItem: PRT_DealItem;
+    IsWeight: Boolean; 
     StockDataSina: TStockDayDataAccess;
     StockData163: TStockDayDataAccess;
   end;
   
-function RepairStockDataDay_Sina_Mode2(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ARepairSession: PRepairSession): Boolean;
+function RepairStockDataDay_Sina_Mode2(App: TBaseApp; ARepairSession: PRepairSession): Boolean;
 
 implementation
 
@@ -29,8 +31,8 @@ uses
   UtilsLog,  
   StockDayData_Load,
   StockDayData_Save;
-    
-function RepairStockDataDay_Sina_Mode2(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ARepairSession: PRepairSession): Boolean;
+
+function RepairStockDataDay_Sina_Mode2(App: TBaseApp; ARepairSession: PRepairSession): Boolean;
 var 
   tmpYear, tmpMonth, tmpDay: Word;   
   tmpJidu: integer;
@@ -38,15 +40,25 @@ var
   tmpUpdateTimes: TStringList;   
   tmpStockData_163: PRT_Quote_M1_Day;   
   tmpStockData_Sina: PRT_Quote_M1_Day;
-  tmpIdx163, tmpIdxSina: integer;
+  tmpIdx163: integer;
+  tmpIdxSina: integer;
+
+  tmpLastSinaWeight: integer;  
+  tmpLastSinaIndex: integer;   
+  tmpLastSinaDate: integer;
+
+  tmpPrevSinaWeight: integer;
+  tmpPrevSinaIndex: integer;   
+  tmpPrevSinaDate: integer;
+   
   tmpSeason: string;
   i: integer;
 begin
   Result := false;
   if nil = ARepairSession.StockDataSina then
-    ARepairSession.StockDataSina := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AIsWeight);
+    ARepairSession.StockDataSina := TStockDayDataAccess.Create(ARepairSession.StockItem, DataSrc_Sina, ARepairSession.IsWeight);
   if nil = ARepairSession.StockData163 then
-    ARepairSession.StockData163 := TStockDayDataAccess.Create(AStockItem, DataSrc_163, false);
+    ARepairSession.StockData163 := TStockDayDataAccess.Create(ARepairSession.StockItem, DataSrc_163, false);
   tmpUpdateTimes := TStringList.Create;
   try
     if 1 > ARepairSession.StockData163.RecordCount then
@@ -66,6 +78,14 @@ begin
       exit;
     tmpIdx163 := 0;
     tmpIdxSina := 0;
+    tmpLastSinaWeight := -1;
+    tmpLastSinaIndex := -1;
+    tmpLastSinaDate := 1;
+    
+    tmpPrevSinaWeight := -1;  
+    tmpPrevSinaIndex := -1;
+    tmpPrevSinaDate := -1;
+    
     while (tmpIdx163 < ARepairSession.StockData163.RecordCount) and
           (tmpIdxSina < ARepairSession.StockDataSina.RecordCount) do
     begin
@@ -73,6 +93,25 @@ begin
       tmpStockData_Sina := ARepairSession.StockDataSina.RecordItem[tmpIdxSina];
       if tmpStockData_163.DealDate.Value = tmpStockData_Sina.DealDate.Value then
       begin
+        if (-1 <> tmpPrevSinaIndex) and
+           (-1 <> tmpPrevSinaWeight) and
+           (-1 <> tmpPrevSinaDate) then
+        begin                      
+          DecodeDate(tmpPrevSinaDate, tmpYear, tmpMonth, tmpDay);
+
+          if tmpPrevSinaWeight = tmpStockData_Sina.Weight.Value then
+          begin
+            // 权重值没有改变
+            // 修复失去数据的时间区间
+            //RepairStockDayData();
+          end;
+          tmpPrevSinaWeight := -1;
+          tmpPrevSinaIndex := -1;
+          tmpPrevSinaDate := -1;     
+        end;
+        tmpLastSinaWeight := tmpStockData_Sina.Weight.Value;
+        tmpLastSinaIndex := tmpIdxSina;
+        tmpLastSinaDate := tmpStockData_Sina.DealDate.Value;
         Inc(tmpIdx163);
         Inc(tmpIdxSina);
       end else
@@ -82,7 +121,16 @@ begin
           Inc(tmpIdxSina);
         end else
         begin
-          // sina 漏了数据了
+          // sina 漏了数据了      
+          if (-1 = tmpPrevSinaIndex) and
+             (-1 = tmpPrevSinaWeight) and
+             (-1 = tmpPrevSinaDate)then
+          begin
+            tmpPrevSinaIndex := tmpLastSinaIndex;
+            tmpPrevSinaWeight := tmpLastSinaWeight;
+            tmpPrevSinaDate := tmpLastSinaDate;
+          end;
+          
           DecodeDate(tmpStockData_163.DealDate.Value, tmpYear, tmpMonth, tmpDay);
           tmpJidu := SeasonOfMonth(tmpMonth);
           if 1988 < tmpYear then
@@ -99,7 +147,7 @@ begin
     end;
     if 0 < tmpUpdateTimes.Count then
     begin
-      Log('Repair', AStockItem.sCode + ':' + IntToStr(tmpUpdateTimes.Count));
+      Log('Repair', ARepairSession.StockItem.sCode + ':' + IntToStr(tmpUpdateTimes.Count));
       for i := 0 to tmpUpdateTimes.Count - 1 do
       begin
         tmpSeason := tmpUpdateTimes[i];
@@ -111,13 +159,13 @@ begin
       SaveStockDayData(App, ARepairSession.StockDataSina);
       Result := True;
     end;
-    if 0 = AStockItem.FirstDealDate then
+    if 0 = ARepairSession.StockItem.FirstDealDate then
     begin
       if 0 < ARepairSession.StockDataSina.RecordCount then
       begin
         tmpStockData_Sina := ARepairSession.StockDataSina.RecordItem[0];
-        AStockItem.FirstDealDate := tmpStockData_Sina.DealDate.Value;
-        AStockItem.IsDataChange := 1;
+        ARepairSession.StockItem.FirstDealDate := tmpStockData_Sina.DealDate.Value;
+        ARepairSession.StockItem.IsDataChange := 1;
       end;
     end;   
   finally
