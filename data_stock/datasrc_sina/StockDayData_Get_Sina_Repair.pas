@@ -99,7 +99,7 @@ begin
     case AHeadCol of
       headDay: begin
         TryStrToDate(AStringData, tmpDate, DateFormat_Sina);
-        ADealDayData.DealDateTime.Value := Trunc(tmpDate);
+        ADealDayData.DealDate.Value := Trunc(tmpDate);
       end; // 1 日期,
       headPrice_Open: begin // 7开盘价,
         SetRTPricePack(@ADealDayData.PriceRange.PriceOpen, StrToFloatDef(AStringData, 0.00));
@@ -388,19 +388,19 @@ begin
     begin
       tmpStockData_163 := tmpStockData163.RecordItem[tmpIdx163];
       tmpStockData_Sina := tmpStockDataSina.RecordItem[tmpIdxSina];
-      if tmpStockData_163.DealDateTime.Value = tmpStockData_Sina.DealDateTime.Value then
+      if tmpStockData_163.DealDate.Value = tmpStockData_Sina.DealDate.Value then
       begin
         Inc(tmpIdx163);
         Inc(tmpIdxSina);
       end else
       begin
-        if tmpStockData_163.DealDateTime.Value > tmpStockData_Sina.DealDateTime.Value then
+        if tmpStockData_163.DealDate.Value > tmpStockData_Sina.DealDate.Value then
         begin
           Inc(tmpIdxSina);
         end else
         begin
           // sina 漏了数据了
-          DecodeDate(tmpStockData_163.DealDateTime.Value, tmpYear, tmpMonth, tmpDay);
+          DecodeDate(tmpStockData_163.DealDate.Value, tmpYear, tmpMonth, tmpDay);
           tmpJidu := SeasonOfMonth(tmpMonth);
           if 1988 < tmpYear then
           begin
@@ -427,13 +427,14 @@ begin
       end;
       tmpStockDataSina.Sort;
       SaveStockDayData(App, tmpStockDataSina);
+      Result := True;
     end;
     if 0 = AStockItem.FirstDealDate then
     begin
       if 0 < tmpStockDataSina.RecordCount then
       begin
         tmpStockData_Sina := tmpStockDataSina.RecordItem[0];
-        AStockItem.FirstDealDate := tmpStockData_Sina.DealDateTime.Value;
+        AStockItem.FirstDealDate := tmpStockData_Sina.DealDate.Value;
         AStockItem.IsDataChange := 1;
       end;
     end;   

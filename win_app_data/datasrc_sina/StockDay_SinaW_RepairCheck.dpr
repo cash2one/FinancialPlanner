@@ -1,4 +1,4 @@
-﻿program StockDay_SinaW_Repair;
+﻿program StockDay_SinaW_RepairCheck;
 
 uses
   Windows,
@@ -38,9 +38,9 @@ uses
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
-  StockDayData_Get_Sina_Repair in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina_Repair.pas',
+  StockDayData_Get_Sina_RepairCheck in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina_RepairCheck.pas',
   FuturesData_Get_Sina in '..\..\data_futures\datasrc_sina\FuturesData_Get_Sina.pas',
-  StockDay_Get_Sina_Repair in 'StockDay_Get_Sina_Repair.pas';
+  StockDay_Get_Sina_RepairCheck in 'StockDay_Get_Sina_RepairCheck.pas';
 
 {$R *.res}
 
@@ -61,7 +61,7 @@ end;
 
 procedure TStockDaySinaApp.Run;
 begin
-  GetStockDataDay_Sina_All_Repair(Self, true);
+  CheckStockDataDay_Sina_All_Repair(Self, true);
 end;
 
 var
