@@ -55,7 +55,7 @@ begin
         if GetStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpNetClientSession) then
         begin
           //Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Succ');
-          Sleep(2000);
+          Sleep(100);
         end else
         begin
           //Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Fail');

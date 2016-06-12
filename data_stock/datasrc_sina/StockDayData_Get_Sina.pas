@@ -201,7 +201,7 @@ var
 var
   tmpHeadColName: TDealDayDataHeadName_Sina;
 begin
-  Result := true;
+  Result := false;
   AParseRecord.IsTableHeadReady := false;    
   for tmpHeadColName := low(TDealDayDataHeadName_Sina) to high(TDealDayDataHeadName_Sina) do
   begin
@@ -229,6 +229,10 @@ begin
       end;
       continue;
     end;
+  end;
+  if AParseRecord.IsTableHeadReady then
+  begin
+    Result := true;
   end;
 end;
 
@@ -323,13 +327,15 @@ begin
     finally
       CheckInIOBuffer(tmpHttpData);
     end;
-  end;
+  end;    
+  Sleep(100);
 end;
 
 function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpUrl: string;
-  tmpHttpData: PIOBuffer;      
+  tmpHttpData: PIOBuffer;
+  tmpRepeat: Integer;    
 begin
   Result := false;
   if AIsWeight then
@@ -343,16 +349,23 @@ begin
     tmpUrl := tmpUrl + '&' + 'jidu=' + inttostr(ASeason);
   end;
   // parse html data
-  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_128k);
-  if nil <> tmpHttpData then
+  tmpRepeat := 3;
+  while tmpRepeat > 0 do
   begin
-    try
-      Result := DataParse_DayData_Sina(ADataAccess, tmpHttpData);
-    finally
-      CheckInIOBuffer(tmpHttpData);
+    tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_128k);
+    if nil <> tmpHttpData then
+    begin
+      try
+        Result := DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+      finally
+        CheckInIOBuffer(tmpHttpData);
+      end;
     end;
+    if Result then
+      Break;
+    Dec(tmpRepeat);
+    Sleep(100);
   end;
-  Sleep(1000);
 end;
 
 function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
@@ -420,7 +433,6 @@ begin
       begin
         DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, AIsWeight, ANetSession);
         Inc(tmpJidu);
-        Sleep(100);
       end;
       Inc(tmpFromYear);
       tmpJidu := 1;
@@ -429,7 +441,6 @@ begin
     begin
       DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, AIsWeight, ANetSession);
       Inc(tmpJidu);
-      Sleep(100);
     end;
     DataGet_DayData_SinaNow(tmpStockDataAccess, AIsWeight, ANetSession);
 
