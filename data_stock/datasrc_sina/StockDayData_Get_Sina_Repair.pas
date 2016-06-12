@@ -28,6 +28,13 @@ type
     HeadNameIndex     : array[TDealDayDataHeadName_Sina] of SmallInt;
   end;
 
+  PRepairSession = ^TRepairSession;
+  TRepairSession = record
+    NetSession: THttpClientSession;   
+    StockDataSina: TStockDayDataAccess;
+    StockData163: TStockDayDataAccess;
+  end;
+  
 const
   DealDayDataHeadNames_Sina: array[TDealDayDataHeadName_Sina] of string = (
     '',
@@ -63,7 +70,7 @@ var
     LongDateFormat : 'yyyy-mm-dd';
   );//*)
              
-function GetStockDataDay_Sina_Repair(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
+function GetStockDataDay_Sina_Repair(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ARepairSession: PRepairSession): Boolean;
 
 implementation
 
@@ -353,10 +360,8 @@ begin
   Sleep(1000);
 end;
 
-function GetStockDataDay_Sina_Repair(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
-var
-  tmpStockDataSina: TStockDayDataAccess;
-  tmpStockData163: TStockDayDataAccess;   
+function GetStockDataDay_Sina_Repair(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ARepairSession: PRepairSession): Boolean;
+var 
   tmpYear, tmpMonth, tmpDay: Word;   
   tmpJidu: integer;
   
@@ -368,26 +373,34 @@ var
   i: integer;
 begin
   Result := false;
-  tmpStockDataSina := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AIsWeight);
-  tmpStockData163 := TStockDayDataAccess.Create(AStockItem, DataSrc_163, false);
+  if nil = ARepairSession.StockDataSina then
+    ARepairSession.StockDataSina := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AIsWeight);
+  if nil = ARepairSession.StockData163 then
+    ARepairSession.StockData163 := TStockDayDataAccess.Create(AStockItem, DataSrc_163, false);
   tmpUpdateTimes := TStringList.Create;
-  try                
-    StockDayData_Load.LoadStockDayData(App, tmpStockData163);
-    StockDayData_Load.LoadStockDayData(App, tmpStockDataSina);
-    if 1 > tmpStockData163.RecordCount then
+  try
+    if 1 > ARepairSession.StockData163.RecordCount then
+    begin
+      StockDayData_Load.LoadStockDayData(App, ARepairSession.StockData163);     
+      ARepairSession.StockData163.Sort;
+    end;            
+    if 1 > ARepairSession.StockData163.RecordCount then
       exit;
 
-    if tmpStockData163.RecordCount <= tmpStockDataSina.RecordCount then
+    if 1 > ARepairSession.StockDataSina.RecordCount then
+    begin
+      StockDayData_Load.LoadStockDayData(App, ARepairSession.StockDataSina);   
+      ARepairSession.StockDataSina.Sort;
+    end;
+    if ARepairSession.StockData163.RecordCount <= ARepairSession.StockDataSina.RecordCount then
       exit;
-    tmpStockData163.Sort;
-    tmpStockDataSina.Sort;
     tmpIdx163 := 0;
     tmpIdxSina := 0;
-    while (tmpIdx163 < tmpStockData163.RecordCount) and
-          (tmpIdxSina < tmpStockDataSina.RecordCount) do
+    while (tmpIdx163 < ARepairSession.StockData163.RecordCount) and
+          (tmpIdxSina < ARepairSession.StockDataSina.RecordCount) do
     begin
-      tmpStockData_163 := tmpStockData163.RecordItem[tmpIdx163];
-      tmpStockData_Sina := tmpStockDataSina.RecordItem[tmpIdxSina];
+      tmpStockData_163 := ARepairSession.StockData163.RecordItem[tmpIdx163];
+      tmpStockData_Sina := ARepairSession.StockDataSina.RecordItem[tmpIdxSina];
       if tmpStockData_163.DealDate.Value = tmpStockData_Sina.DealDate.Value then
       begin
         Inc(tmpIdx163);
@@ -422,26 +435,24 @@ begin
         tmpSeason := tmpUpdateTimes[i];
         tmpYear := StrToIntDef(Copy(tmpSeason, 1, 4), 0);
         tmpJidu := StrToIntDef(Copy(tmpSeason, 6, maxint), 0);
-        DataGet_DayData_Sina(tmpStockDataSina, tmpYear, tmpJidu, AIsWeight, ANetSession);
+        DataGet_DayData_Sina(ARepairSession.StockDataSina, tmpYear, tmpJidu, AIsWeight, @ARepairSession.NetSession);
         Sleep(500);
       end;
-      tmpStockDataSina.Sort;
-      SaveStockDayData(App, tmpStockDataSina);
+      ARepairSession.StockDataSina.Sort;
+      SaveStockDayData(App, ARepairSession.StockDataSina);
       Result := True;
     end;
     if 0 = AStockItem.FirstDealDate then
     begin
-      if 0 < tmpStockDataSina.RecordCount then
+      if 0 < ARepairSession.StockDataSina.RecordCount then
       begin
-        tmpStockData_Sina := tmpStockDataSina.RecordItem[0];
+        tmpStockData_Sina := ARepairSession.StockDataSina.RecordItem[0];
         AStockItem.FirstDealDate := tmpStockData_Sina.DealDate.Value;
         AStockItem.IsDataChange := 1;
       end;
     end;   
   finally
     tmpUpdateTimes.Free;
-    tmpStockDataSina.Free;
-    tmpStockData163.Free;
   end;
 end;
 
