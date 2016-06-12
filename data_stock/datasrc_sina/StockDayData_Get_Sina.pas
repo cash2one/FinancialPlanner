@@ -319,7 +319,7 @@ begin
   else
     tmpUrl := BaseSinaDayUrl1;
   tmpurl := tmpurl + ADataAccess.StockItem.sCode + '.phtml';
-  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_128k);
+  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_512k);
   if nil <> tmpHttpData then
   begin
     try
@@ -352,7 +352,7 @@ begin
   tmpRepeat := 3;
   while tmpRepeat > 0 do
   begin
-    tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_128k);
+    tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_512k);
     if nil <> tmpHttpData then
     begin
       try
@@ -364,7 +364,7 @@ begin
     if Result then
       Break;
     Dec(tmpRepeat);
-    Sleep(100);
+    Sleep(500 * (3 - tmpRepeat));
   end;
 end;
 
