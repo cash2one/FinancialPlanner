@@ -58,14 +58,14 @@ begin
             FreeAndNil(tmpRepairSession.StockDataSina);
           if nil <> tmpRepairSession.StockData163 then
             FreeAndNil(tmpRepairSession.StockData163);
-          if GetStockDataDay_Sina_Repair(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
+          if RepairStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
           begin
             //Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Succ');
             Sleep(200);
-            if GetStockDataDay_Sina_Repair(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
+            if RepairStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
             begin
               Sleep(200);
-              if GetStockDataDay_Sina_Repair(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
+              if RepairStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
               begin
                 Sleep(200);
               end;
