@@ -2,6 +2,7 @@
 
 uses
   Windows,
+  HTMLParser in '..\..\..\devdcomps\htmlparser\htmlp\HTMLParser.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
@@ -17,6 +18,7 @@ uses
   xlNetwork in '..\..\..\devwintech\v0000\win_net\xlNetwork.pas',
   xlTcpClient in '..\..\..\devwintech\v0000\win_netclient\xlTcpClient.pas',
   xlClientSocket in '..\..\..\devwintech\v0000\win_netclient\xlClientSocket.pas',
+  UtilsFile in '..\..\..\devwintech\v0000\win_utils\UtilsFile.pas',
   UtilsHttp in '..\..\..\devwintech\v0000\win_utils\UtilsHttp.pas',
   UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
   UtilsDateTime in '..\..\..\devwintech\v0000\win_utils\UtilsDateTime.pas',
@@ -40,6 +42,7 @@ uses
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina.pas',
   StockDayData_Parse_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina.pas',
+  StockDayData_Parse_Sina_Html2 in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina_Html2.pas',
   StockDay_Get_Sina in 'StockDay_Get_Sina.pas',
   define_stockday_sina in 'define_stockday_sina.pas';
 
