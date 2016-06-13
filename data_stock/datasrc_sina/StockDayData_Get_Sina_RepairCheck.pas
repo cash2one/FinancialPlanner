@@ -5,12 +5,10 @@ interface
 uses
   BaseApp,
   Sysutils,
-  UtilsHttp,
-  win.iobuffer,
   define_dealitem,
   StockDayDataAccess;
   
-function CheckStockDataDay_Sina_Repair(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
+function CheckStockDataDay_Sina_Repair(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean): Boolean;
 
 implementation
 
@@ -24,7 +22,7 @@ uses
   UtilsLog,  
   StockDayData_Load;
 
-function CheckStockDataDay_Sina_Repair(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
+function CheckStockDataDay_Sina_Repair(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean): Boolean;
 var
   tmpStockDataSina: TStockDayDataAccess;
   tmpStockData163: TStockDayDataAccess;   
@@ -68,6 +66,8 @@ begin
         if tmpStockData_163.DealDate.Value > tmpStockData_Sina.DealDate.Value then
         begin
           Inc(tmpIdxSina);
+          Log('*************************************', '*************************************');          
+          Log('RepairSinaError:', AStockItem.sCode + ':' + FormatDateTime('yyyy/mm/dd', tmpStockData_Sina.DealDate.Value));
         end else
         begin
           // sina 漏了数据了

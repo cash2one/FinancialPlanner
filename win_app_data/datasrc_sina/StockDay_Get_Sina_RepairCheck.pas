@@ -13,7 +13,6 @@ uses
   Windows,
   Sysutils,
   Classes,
-  UtilsHttp,
   Define_Price,
   Define_DealItem,
   Define_DataSrc,    
@@ -30,17 +29,10 @@ uses
 procedure CheckStockDataDay_Sina_All_Repair(App: TBaseApp; AIsWeight: Boolean);
 var
   tmpDBStockItem: TDBDealItem;
-  tmpNetClientSession: THttpClientSession;
   i: integer;
   tmpDealItem: PRT_DealItem;
   tmpRepeat: Integer;
 begin
-  FillChar(tmpNetClientSession, SizeOf(tmpNetClientSession), 0);
-  tmpNetClientSession.IsKeepAlive := true;
-  tmpNetClientSession.ConnectionSession.ConnectTimeOut := 5000;
-  tmpNetClientSession.ConnectionSession.ReceiveTimeOut := 5000;
-  tmpNetClientSession.ConnectionSession.SendTimeOut := 1000;
-
   tmpDBStockItem := TDBDealItem.Create;
   try
     LoadDBStockItemDic(App, tmpDBStockItem);
@@ -49,7 +41,7 @@ begin
       tmpDealItem := tmpDBStockItem.Items[i];
       if 0 = tmpDealItem.EndDealDate then
       begin
-        if CheckStockDataDay_Sina_Repair(App, tmpDealItem, AIsWeight, @tmpNetClientSession) then
+        if CheckStockDataDay_Sina_Repair(App, tmpDealItem, AIsWeight) then
         begin
         end;
       end;

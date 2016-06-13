@@ -14,15 +14,8 @@ uses
   sysdef_string in '..\..\..\devwintech\v0001\sysdef\sysdef_string.pas',
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
-  xlNetwork in '..\..\..\devwintech\v0000\win_net\xlNetwork.pas',
-  xlTcpClient in '..\..\..\devwintech\v0000\win_netclient\xlTcpClient.pas',
-  xlClientSocket in '..\..\..\devwintech\v0000\win_netclient\xlClientSocket.pas',
-  UtilsHttp in '..\..\..\devwintech\v0000\win_utils\UtilsHttp.pas',
-  UtilsHtmlParser in '..\..\..\devwintech\v0000\win_utils\UtilsHtmlParser.pas',
-  UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
   UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',
   UtilsDateTime in '..\..\..\devwintech\v0000\win_utils\UtilsDateTime.pas',
-  win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
   BaseStockApp in '..\..\base\BaseStockApp.pas',
   StockAppPath in '..\..\base\StockAppPath.pas',
   define_dealmarket in '..\..\basedefine\define_dealmarket.pas',
@@ -37,9 +30,7 @@ uses
   db_dealitem_save in '..\..\dealitem\db_dealitem_save.pas',
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
-  StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Get_Sina_RepairCheck in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina_RepairCheck.pas',
-  FuturesData_Get_Sina in '..\..\data_futures\datasrc_sina\FuturesData_Get_Sina.pas',
   StockDay_Get_Sina_RepairCheck in 'StockDay_Get_Sina_RepairCheck.pas';
 
 {$R *.res}
