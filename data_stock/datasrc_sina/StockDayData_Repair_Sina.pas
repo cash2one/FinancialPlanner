@@ -338,7 +338,9 @@ begin
       begin
         if tmpStockData_163.DealDate.Value > tmpStockData_Sina.DealDate.Value then
         begin
-          // 这个是完完全全的错误啊 怎么出现的 ???      
+          // 这个是完完全全的错误啊 怎么出现的 ???
+          // 2014-06-16 解析成 2014-06-1 漏了个日期字符 ??? 搞什么
+          // html 解析器的问题 :(      
           DecodeDate(tmpStockData_Sina.DealDate.Value, tmpYear, tmpMonth, tmpDay);
           if 0 <> tmpMonth then
           begin

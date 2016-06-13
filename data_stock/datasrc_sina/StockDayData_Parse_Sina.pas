@@ -11,7 +11,7 @@ uses
   procedure ParseCellData(AHeadCol: TDealDayDataHeadName_Sina; ADealDayData: PRT_Quote_M1_Day; AStringData: string);
 
 implementation
-
+                             
 procedure ParseCellData(AHeadCol: TDealDayDataHeadName_Sina; ADealDayData: PRT_Quote_M1_Day; AStringData: string);
 var
   tmpPos: integer; 
@@ -21,7 +21,7 @@ begin
   begin
     case AHeadCol of
       headDay: begin
-        TryStrToDate(AStringData, tmpDate, DateFormat_Sina);
+        tmpDate := StrToDateDef(AStringData, 0, DateFormat_Sina);
         ADealDayData.DealDate.Value := Trunc(tmpDate);
       end; // 1 日期,
       headPrice_Open: begin // 7开盘价,

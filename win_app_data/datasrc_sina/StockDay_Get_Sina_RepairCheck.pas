@@ -19,7 +19,7 @@ uses
   define_stock_quotes,
   StockDayData_Get_Sina_RepairCheck,     
   UtilsDateTime,   
-  //UtilsLog,         
+  UtilsLog,         
   StockDayDataAccess,
   StockDayData_Load,
   DB_DealItem,
@@ -43,8 +43,10 @@ begin
       begin
         if CheckStockDataDay_Sina_Repair(App, tmpDealItem, AIsWeight) then
         begin
+          //Log('Stock Wait Repair:', tmpDealItem.sCode);
         end;
       end;
+      //Break;
     end;
   finally
     tmpDBStockItem.Free;

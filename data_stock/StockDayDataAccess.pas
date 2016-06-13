@@ -67,6 +67,7 @@ type
 implementation
 
 uses
+  QuickSortList,
   SysUtils;
   
 { TStockDayDataAccess }
@@ -104,7 +105,10 @@ begin
   //inherited;
   FillChar(fStockDayData, SizeOf(fStockDayData), 0);
   fStockDayData.DealItem := AStockItem;
-  fStockDayData.DayDealData := TALIntegerList.Create; 
+  fStockDayData.DayDealData := TALIntegerList.Create;
+  fStockDayData.DayDealData.Clear;
+  fStockDayData.DayDealData.Duplicates := QuickSortList.lstDupIgnore;
+   
   fStockDayData.FirstDealDate     := 0;   // 2
   fStockDayData.LastDealDate      := 0;   // 2 最后记录交易时间
   fStockDayData.DataSourceId := ADataSrcId;

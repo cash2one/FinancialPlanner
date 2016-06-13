@@ -32,7 +32,9 @@ var
   tmpUpdateTimes: TStringList;   
   tmpStockData_163: PRT_Quote_M1_Day;   
   tmpStockData_Sina: PRT_Quote_M1_Day;
-  tmpIdx163, tmpIdxSina: integer;
+  tmpIdx163: integer;
+  tmpIdxSina: integer;
+  tmpDayOfWeek: integer;
   tmpSeason: string;
   i: integer;
 begin
@@ -65,8 +67,25 @@ begin
       begin
         if tmpStockData_163.DealDate.Value > tmpStockData_Sina.DealDate.Value then
         begin
+          // 这个是完完全全的错误啊 怎么出现的 ???      
+          DecodeDate(tmpStockData_Sina.DealDate.Value, tmpYear, tmpMonth, tmpDay);
+          if 0 <> tmpMonth then
+          begin
+            tmpDayOfWeek := DayOfWeek(tmpStockData_Sina.DealDate.Value);
+            if 0 <> tmpDayOfWeek then
+            begin
+              if 1 = tmpDayOfWeek then
+              begin
+                // 周日
+              end;
+              if 7 = tmpDayOfWeek then
+              begin
+                // 周六
+              end;
+            end;
+          end;
           Inc(tmpIdxSina);
-          Log('*************************************', '*************************************');          
+          Log('*************************************', '*************************************');
           Log('RepairSinaError:', AStockItem.sCode + ':' + FormatDateTime('yyyy/mm/dd', tmpStockData_Sina.DealDate.Value));
         end else
         begin
@@ -78,7 +97,7 @@ begin
             tmpSeason := IntToStr(tmpYear) + '_' + IntToStr(tmpJidu);
             if tmpUpdateTimes.IndexOf(tmpSeason) < 0 then
             begin                      
-              Log('RepairDate:', AStockItem.sCode + ':' + FormatDateTime('yyyy/mm/dd', tmpStockData_163.DealDate.Value));
+              //Log('RepairDate:', AStockItem.sCode + ':' + FormatDateTime('yyyy/mm/dd', tmpStockData_163.DealDate.Value));
               tmpUpdateTimes.Add(tmpSeason);
             end;
           end;
