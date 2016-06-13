@@ -37,6 +37,7 @@ uses
   define_stock_quotes,
   UtilsDateTime,
   StockDayData_Parse_Sina_Html1,
+  StockDayData_Parse_Sina_Html2,  
   UtilsLog,
   StockDayData_Parse_Sina,
   StockDayData_Load,
@@ -58,6 +59,7 @@ begin
   begin
     try
       Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+      //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
     finally
       CheckInIOBuffer(tmpHttpData);
     end;
@@ -90,7 +92,8 @@ begin
     if nil <> tmpHttpData then
     begin
       try
-        Result := DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+        Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+        //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
       finally
         CheckInIOBuffer(tmpHttpData);
       end;

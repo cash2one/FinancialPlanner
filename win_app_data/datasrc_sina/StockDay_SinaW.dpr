@@ -42,6 +42,7 @@ uses
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina.pas',
   StockDayData_Parse_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina.pas',
+  StockDayData_Parse_Sina_Html1 in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina_Html1.pas',
   StockDayData_Parse_Sina_Html2 in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina_Html2.pas',
   StockDay_Get_Sina in 'StockDay_Get_Sina.pas',
   define_stockday_sina in 'define_stockday_sina.pas';

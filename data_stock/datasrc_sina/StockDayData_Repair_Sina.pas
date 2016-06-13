@@ -46,6 +46,7 @@ uses
   UtilsLog,        
   win.iobuffer,
   StockDayData_Parse_Sina_Html1,
+  StockDayData_Parse_Sina_Html2,
   StockDayData_Load,
   StockDayData_Save;
 
@@ -64,7 +65,8 @@ begin
   if nil <> tmpHttpData then
   begin
     try
-      Result := DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+      //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+      Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
     finally
       CheckInIOBuffer(tmpHttpData);
     end;
@@ -97,7 +99,8 @@ begin
     if nil <> tmpHttpData then
     begin
       try
-        Result := DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+        //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+        Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
       finally
         CheckInIOBuffer(tmpHttpData);
       end;
