@@ -8,26 +8,10 @@ uses
   UtilsHttp,
   win.iobuffer,
   define_dealitem,
+  define_stockday_sina,
   StockDayDataAccess;
          
 type
-  TDealDayDataHeadName_Sina = (
-    headNone, // 0
-    headDay, // 1 日期,
-    headPrice_Open, // 7开盘价,
-    headPrice_High, // 5最高价,
-    headPrice_Close, // 4收盘价,
-    headPrice_Low, // 6最低价,
-    headDeal_Volume, // 12成交量,
-    headDeal_Amount, // 13成交金额,
-    headDeal_WeightFactor
-    ); // 15流通市值);
-
-  PRT_DealDayData_HeaderSina = ^TRT_DealDayData_HeaderSina;
-  TRT_DealDayData_HeaderSina = record
-    HeadNameIndex     : array[TDealDayDataHeadName_Sina] of SmallInt;
-  end;
-
   PRepairSession = ^TRepairSession;
   TRepairSession = record
     NetSession: THttpClientSession;   
@@ -35,19 +19,6 @@ type
     StockData163: TStockDayDataAccess;
   end;
   
-const
-  DealDayDataHeadNames_Sina: array[TDealDayDataHeadName_Sina] of string = (
-    '',
-    '日期',
-    '开盘价',
-    '最高价',
-    '收盘价',
-    '最低价',
-    '交易量(股)',
-    '交易金额(元)',
-    '复权因子'
-  );
-    
 const
   BaseSinaDayUrl1 = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/';
   BaseSinaDayUrl2 = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_FuQuanMarketHistory/stockid/';
@@ -60,16 +31,6 @@ const
      http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/000300/type/S.phtml
   //*)
 
-var
-  DateFormat_Sina: Sysutils.TFormatSettings;(*// =(
-    CurrencyString: '';
-    DateSeparator: '-';
-    TimeSeparator: ':';
-    ListSeparator: ';';
-    ShortDateFormat : 'yyyy-mm-dd';
-    LongDateFormat : 'yyyy-mm-dd';
-  );//*)
-             
 function RepairStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ARepairSession: PRepairSession): Boolean;
 
 implementation
@@ -81,8 +42,10 @@ uses
   Define_DataSrc,    
   define_stock_quotes,
   UtilsHtmlParser,
+  DIHtmlParser,
   UtilsDateTime,
-  UtilsLog,  
+  UtilsLog,
+  StockDayData_Parse_Sina,
   StockDayData_Load,
   StockDayData_Save;
 
@@ -95,54 +58,7 @@ type
      TableHeader: TRT_DealDayData_HeaderSina;
      DealDayData: TRT_Quote_M1_Day;
   end;
-    
-procedure ParseCellData(AHeadCol: TDealDayDataHeadName_Sina; ADealDayData: PRT_Quote_M1_Day; AStringData: string);
-var
-  tmpPos: integer; 
-  tmpDate: TDateTime;
-begin
-  if AStringData <> '' then
-  begin
-    case AHeadCol of
-      headDay: begin
-        TryStrToDate(AStringData, tmpDate, DateFormat_Sina);
-        ADealDayData.DealDate.Value := Trunc(tmpDate);
-      end; // 1 日期,
-      headPrice_Open: begin // 7开盘价,
-        SetRTPricePack(@ADealDayData.PriceRange.PriceOpen, StrToFloatDef(AStringData, 0.00));
-      end;
-      headPrice_High: begin // 5最高价,
-        SetRTPricePack(@ADealDayData.PriceRange.PriceHigh, StrToFloatDef(AStringData, 0.00));
-      end;
-      headPrice_Close: begin // 4收盘价,
-        SetRTPricePack(@ADealDayData.PriceRange.PriceClose, StrToFloatDef(AStringData, 0.00));
-      end;
-      headPrice_Low: begin // 6最低价,
-        SetRTPricePack(@ADealDayData.PriceRange.PriceLow, StrToFloatDef(AStringData, 0.00));
-      end;
-      headDeal_Volume: begin // 12成交量,
-        tmpPos := Sysutils.LastDelimiter('.', AStringData);
-        if tmpPos > 0 then
-        begin
-          AStringData := Copy(AStringData, 1, tmpPos - 1);
-        end;
-        ADealDayData.DealVolume := StrToInt64Def(AStringData, 0);
-      end;
-      headDeal_Amount: begin // 13成交金额,
-        tmpPos := Sysutils.LastDelimiter('.', AStringData);
-        if tmpPos > 0 then
-        begin
-          AStringData := Copy(AStringData, 1, tmpPos - 1);
-        end;
-        ADealDayData.DealAmount := StrToInt64Def(AStringData, 0);
-      end;
-      headDeal_WeightFactor: begin
-        ADealDayData.Weight.Value := Trunc(StrToFloatDef(AStringData, 0.00) * 1000);
-      end;
-    end;
-  end;
-end;
-                 
+     
 procedure ParseStockDealDataTableRow(ADataAccess: TStockDayDataAccess; AParseRecord: PParseRecord; ANode: IHtmlElement);
 var
   i: integer;
@@ -468,13 +384,5 @@ begin
     tmpUpdateTimes.Free;
   end;
 end;
-
-initialization
-  FillChar(DateFormat_Sina, SizeOf(DateFormat_Sina), 0);
-  DateFormat_Sina.DateSeparator := '-';
-  DateFormat_Sina.TimeSeparator := ':';
-  DateFormat_Sina.ListSeparator := ';';
-  DateFormat_Sina.ShortDateFormat := 'yyyy-mm-dd';
-  DateFormat_Sina.LongDateFormat := 'yyyy-mm-dd';
-                          
+    
 end.
