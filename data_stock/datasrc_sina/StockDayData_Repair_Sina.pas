@@ -31,8 +31,10 @@ const
      http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/000300/type/S.phtml
   //*)
 
-function RepairStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ARepairSession: PRepairSession): Boolean;
-
+  function RepairStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ARepairSession: PRepairSession): Boolean;
+  function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
+  function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
+  
 implementation
 
 uses

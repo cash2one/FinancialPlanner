@@ -38,6 +38,8 @@ var
   i: integer;
   tmpDealItem: PRT_DealItem;
   tmpRepeat: Integer;
+  tmpIsTest: Boolean;
+  tmpTestStockDataAccess: TStockDayDataAccess;
 begin
   FillChar(tmpRepairSession, SizeOf(tmpRepairSession), 0);
   tmpRepairSession.NetSession.IsKeepAlive := true;
@@ -45,6 +47,8 @@ begin
   tmpRepairSession.NetSession.ConnectionSession.ReceiveTimeOut := 5000;
   tmpRepairSession.NetSession.ConnectionSession.SendTimeOut := 1000;
 
+  tmpIsTest := true; 
+  tmpIsTest := false;
   tmpDBStockItem := TDBDealItem.Create;
   try
     LoadDBStockItemDic(App, tmpDBStockItem);
@@ -58,6 +62,20 @@ begin
             FreeAndNil(tmpRepairSession.StockDataSina);
           if nil <> tmpRepairSession.StockData163 then
             FreeAndNil(tmpRepairSession.StockData163);
+          if tmpIsTest then
+          begin
+            if not SameText('600064', tmpDealItem.sCode) then
+            begin
+              Continue;
+            end;
+            tmpTestStockDataAccess := TStockDayDataAccess.Create(tmpDealItem, DataSrc_Sina, AIsWeight);
+            StockDayData_Load.LoadStockDayData(App, tmpTestStockDataAccess);
+            if 0 < tmpTestStockDataAccess.RecordCount then
+            begin
+              DataGet_DayData_Sina(tmpTestStockDataAccess, 2014, 2, AIsWeight, @tmpRepairSession);
+            end;
+            exit;
+          end;
           if RepairStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
           begin
             //Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Succ');
