@@ -20,8 +20,9 @@ uses
   define_stock_quotes,
   StockDayData_Repair_Sina,
      
-  UtilsDateTime,   
-  //UtilsLog,
+  UtilsDateTime,
+  HtmlParser,
+  UtilsLog,
   
   StockDayDataAccess,
   StockDayData_Load,
@@ -31,6 +32,34 @@ uses
   DB_DealItem_Save;                 
                     
 
+procedure TestParseHtmlDom;
+begin
+
+end;
+                  
+
+procedure TestParseDiHtml;
+begin
+
+end;
+            
+procedure TestParseHtml;
+begin
+
+end;
+                 
+procedure DoTest(App: TBaseApp; ADealItem: PRT_DealItem; AIsWeight: Boolean);
+var
+  tmpTestStockDataAccess: TStockDayDataAccess;
+begin
+  tmpTestStockDataAccess := TStockDayDataAccess.Create(ADealItem, DataSrc_Sina, AIsWeight);
+  StockDayData_Load.LoadStockDayData(App, tmpTestStockDataAccess);
+  if 0 < tmpTestStockDataAccess.RecordCount then
+  begin
+    //DataGet_DayData_Sina(tmpTestStockDataAccess, 2014, 2, AIsWeight, @tmpRepairSession);
+  end;
+end;
+
 procedure RepairStockDataDay_Sina_All(App: TBaseApp; AIsWeight: Boolean);
 var
   tmpDBStockItem: TDBDealItem;
@@ -39,7 +68,6 @@ var
   tmpDealItem: PRT_DealItem;
   tmpRepeat: Integer;
   tmpIsTest: Boolean;
-  tmpTestStockDataAccess: TStockDayDataAccess;
 begin
   FillChar(tmpRepairSession, SizeOf(tmpRepairSession), 0);
   tmpRepairSession.NetSession.IsKeepAlive := true;
@@ -68,12 +96,7 @@ begin
             begin
               Continue;
             end;
-            tmpTestStockDataAccess := TStockDayDataAccess.Create(tmpDealItem, DataSrc_Sina, AIsWeight);
-            StockDayData_Load.LoadStockDayData(App, tmpTestStockDataAccess);
-            if 0 < tmpTestStockDataAccess.RecordCount then
-            begin
-              DataGet_DayData_Sina(tmpTestStockDataAccess, 2014, 2, AIsWeight, @tmpRepairSession);
-            end;
+            DoTest(App, tmpDealItem, AIsWeight);
             exit;
           end;
           if RepairStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpRepairSession) then

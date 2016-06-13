@@ -2,7 +2,8 @@
 
 uses
   Windows,
-  DIHtmlParser in '..\..\..\devdcomps\htmlparser\Source\DIHtmlParser.pas',
+  DIHtmlParser in '..\..\..\devdcomps\htmlparser\dihtml\DIHtmlParser.pas',
+  HTMLParser in '..\..\..\devdcomps\htmlparser\htmlp\HTMLParser.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
@@ -41,6 +42,7 @@ uses
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Repair_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Repair_Sina.pas',
   StockDayData_Parse_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina.pas',
+  StockDayData_Parse_Sina_Html1 in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina_Html1.pas',
   StockDay_Repair_Sina in 'StockDay_Repair_Sina.pas',
   define_stockday_sina in 'define_stockday_sina.pas';
 
