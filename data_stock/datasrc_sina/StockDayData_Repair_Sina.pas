@@ -338,6 +338,11 @@ begin
       begin
         if tmpStockData_163.DealDate.Value > tmpStockData_Sina.DealDate.Value then
         begin
+          // 这个是完完全全的错误啊 怎么出现的 ???      
+          DecodeDate(tmpStockData_Sina.DealDate.Value, tmpYear, tmpMonth, tmpDay);
+          if 0 <> tmpMonth then
+          begin
+          end;
           Inc(tmpIdxSina);
         end else
         begin

@@ -2,6 +2,7 @@
 
 uses
   Windows,
+  DIHtmlParser in '..\..\..\devdcomps\htmlparser\Source\DIHtmlParser.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
@@ -38,15 +39,13 @@ uses
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
-  StockDayData_Get_Sina_Repair in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina_Repair.pas',
-  StockDetailData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDetailData_Get_Sina.pas',
-  FuturesData_Get_Sina in '..\..\data_futures\datasrc_sina\FuturesData_Get_Sina.pas',
-  StockDay_Get_Sina_Repair in 'StockDay_Get_Sina_Repair.pas';
+  StockDayData_Repair_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Repair_Sina.pas',
+  StockDay_Repair_Sina in 'StockDay_Repair_Sina.pas';
 
 {$R *.res}
 
 type
-  TStockDaySinaApp = class(TBaseStockApp)
+  TStockDaySinaRepairApp = class(TBaseStockApp)
   protected
   public     
     constructor Create(AppClassId: AnsiString); override;
@@ -55,20 +54,20 @@ type
 
 { TStockDay163App }
 
-constructor TStockDaySinaApp.Create(AppClassId: AnsiString);
+constructor TStockDaySinaRepairApp.Create(AppClassId: AnsiString);
 begin
   inherited;
 end;
 
-procedure TStockDaySinaApp.Run;
+procedure TStockDaySinaRepairApp.Run;
 begin
-  GetStockDataDay_Sina_All_Repair(Self, false);
+  RepairStockDataDay_Sina_All(Self, false);
 end;
 
 var
-  GlobalApp: TStockDaySinaApp;
+  GlobalApp: TStockDaySinaRepairApp;
 begin
-  GlobalApp := TStockDaySinaApp.Create('');
+  GlobalApp := TStockDaySinaRepairApp.Create('');
   try
     if GlobalApp.Initialize then
       GlobalApp.Run;

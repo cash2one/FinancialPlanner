@@ -39,7 +39,9 @@ uses
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina.pas',
-  StockDay_Get_Sina in 'StockDay_Get_Sina.pas';
+  StockDayData_Parse_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina.pas',
+  StockDay_Get_Sina in 'StockDay_Get_Sina.pas',
+  define_stockday_sina in 'define_stockday_sina.pas';
 
 {$R *.res}
 
