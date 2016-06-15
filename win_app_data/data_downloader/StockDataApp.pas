@@ -3,9 +3,11 @@ unit StockDataApp;
 interface
 
 uses
-  define_stockapp,
+  define_stockapp,  
+  define_dealItem,
   windef_msg, 
   UtilsHttp,
+  win.process,
   BaseApp,
   BaseStockApp;
 
@@ -15,10 +17,22 @@ type
     runMode_Console,
     runMode_DataDownloader);
 
+  PConsoleAppData = ^TConsoleAppData;
+  TConsoleAppData = record
+    Downloader_Process: TOwnedProcess;
+    Download_DealItemIndex: Integer;
+  end;
+
+  PDownloaderAppData = ^TDownloaderAppData;
+  TDownloaderAppData = record
+    HttpClientSession: THttpClientSession;
+  end;
+  
   TStockDataAppData = record
     RunMode: TStockDataAppRunMode;
 
-    Downloader_HttpClientSession: THttpClientSession;
+    ConsoleAppData: TConsoleAppData;
+    DownloaderAppData: TDownloaderAppData;
   end;
   
   TStockDataApp = class(TBaseStockApp)
@@ -27,7 +41,10 @@ type
     function CreateAppCommandWindow: Boolean;
     
     procedure RunStart;
-    procedure RunStart_Console;
+    procedure RunStart_Console(AConsoleApp: PConsoleAppData);
+    procedure RunStart_Downloader;
+    procedure Console_NotifyDownloadData(ADealItem: PRT_DealItem); overload;
+    procedure Console_NotifyDownloadData; overload;
   public     
     constructor Create(AppClassId: AnsiString); override;
     procedure Run; override;   
@@ -43,7 +60,6 @@ uses
   Classes,
   Define_Price,
   db_dealitem,
-  define_dealItem,
   Define_DataSrc,
   StockDayData_Get_163,
   win.iobuffer,
@@ -77,7 +93,10 @@ begin
       InitializeDBStockItem;
       Result := 0 < Self.StockItemDB.RecordCount;
     end else
-    begin
+    begin              
+      Result := CheckSingleInstance(AppMutexName_StockDataDownloader);
+      fStockDataAppData.RunMode := runMode_DataDownloader;  
+      Result := CreateAppCommandWindow;
     end;
   end;
 end;
@@ -118,6 +137,10 @@ begin
   begin
     tmpRegWinClass.lpszClassName := AppCmdWndClassName_StockDataDownloader_Console;
   end;
+  if runMode_DataDownloader = fStockDataAppData.RunMode then
+  begin
+    tmpRegWinClass.lpszClassName := AppCmdWndClassName_StockDataDownloader;
+  end;
   tmpIsReged := GetClassInfoA(HInstance, tmpRegWinClass.lpszClassName, tmpGetWinClass);
   if tmpIsReged then
   begin
@@ -143,22 +166,55 @@ begin
     HWND_MESSAGE, 0, HInstance, nil);
   Result := Windows.IsWindow(fBaseWinAppData.AppCmdWnd);
 end;
-
-procedure TStockDataApp.RunStart_Console;        
+                                          
+procedure TStockDataApp.Console_NotifyDownloadData(ADealItem: PRT_DealItem);
+begin               
+end;
+                                   
+procedure TStockDataApp.Console_NotifyDownloadData;    
 var
-  i: integer;
   tmpDealItem: PRT_DealItem;  
-begin        
-  for i := 0 to Self.StockItemDB.RecordCount - 1 do
+begin
+  if 0 > fStockDataAppData.ConsoleAppData.Download_DealItemIndex then
+    exit;
+  if Self.StockItemDB.RecordCount <= fStockDataAppData.ConsoleAppData.Download_DealItemIndex then
+    exit;
+  tmpDealItem := Self.StockItemDB.Items[fStockDataAppData.ConsoleAppData.Download_DealItemIndex];
+  if 0 = tmpDealItem.EndDealDate then
   begin
-    tmpDealItem := Self.StockItemDB.Items[i];
-    if 0 = tmpDealItem.EndDealDate then
-    begin
-
-    end;
+    Console_NotifyDownloadData(tmpDealItem);
   end;
 end;
 
+procedure TStockDataApp.RunStart_Console(AConsoleApp: PConsoleAppData);
+var
+  i: integer;      
+begin
+  // run downloader process
+  RunProcessA(@AConsoleApp.Downloader_Process, ParamStr(0));
+  if (0 = AConsoleApp.Downloader_Process.Core.ProcessHandle) or
+     (INVALID_HANDLE_VALUE = AConsoleApp.Downloader_Process.Core.ProcessHandle) then
+    exit;                     
+
+  for i := 0 to 100 do
+  begin
+    if IsWindow(AConsoleApp.Downloader_Process.AppCmdWnd) then
+      Break;
+    AConsoleApp.Downloader_Process.AppCmdWnd := Windows.FindWindowA(AppCmdWndClassName_StockDataDownloader, nil);
+    Sleep(10);
+  end;
+                    
+  if IsWindow(AConsoleApp.Downloader_Process.AppCmdWnd) then
+  begin
+    AConsoleApp.Download_DealItemIndex := 0;
+    Console_NotifyDownloadData;
+  end;
+end;
+
+procedure TStockDataApp.RunStart_Downloader;
+begin
+
+end;
 (*//
         if 0 = tmpDealItem.FirstDealDate then
         begin
@@ -184,8 +240,8 @@ end;
 procedure TStockDataApp.RunStart;
 begin
   case fStockDataAppData.RunMode of
-    runMode_Console: RunStart_Console;
-    runMode_DataDownloader: ;
+    runMode_Console: RunStart_Console(@fStockDataAppData.ConsoleAppData);
+    runMode_DataDownloader: RunStart_Downloader;
   end;
 end;
 
