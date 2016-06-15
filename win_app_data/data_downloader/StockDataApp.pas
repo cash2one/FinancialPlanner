@@ -20,11 +20,13 @@ type
   PConsoleAppData = ^TConsoleAppData;
   TConsoleAppData = record
     Downloader_Process: TOwnedProcess;
-    Download_DealItemIndex: Integer;
+    Download_DealItemIndex: Integer;     
+    Download_DealItemCode: Integer;
   end;
 
   PDownloaderAppData = ^TDownloaderAppData;
   TDownloaderAppData = record
+    Console_Process: TExProcess;
     HttpClientSession: THttpClientSession;
   end;
   
@@ -42,10 +44,17 @@ type
     
     procedure RunStart;
     procedure RunStart_Console(AConsoleApp: PConsoleAppData);
-    procedure RunStart_Downloader;
-    procedure Console_NotifyDownloadData(ADealItem: PRT_DealItem); overload;
-    procedure Console_NotifyDownloadData; overload;
-  public     
+    procedure RunStart_Downloader;      
+    function Console_GetNextDownloadDealItem(AConsoleApp: PConsoleAppData): PRT_DealItem;
+    procedure Console_NotifyDownloadData(AConsoleApp: PConsoleAppData; ADealItem: PRT_DealItem); overload;
+    procedure Console_NotifyDownloadData(AConsoleApp: PConsoleAppData); overload;
+    procedure Console_Notify_DownloadOK(AStockCode: integer); 
+    function Console_CheckDownloaderProcess(AConsoleApp: PConsoleAppData): Boolean;
+
+    procedure Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode: integer); overload;
+    procedure Downloader_Download(AStockCode: integer); overload;
+    function Downloader_CheckConsoleProcess(ADownloaderApp: PDownloaderAppData): Boolean;
+  public
     constructor Create(AppClassId: AnsiString); override;
     procedure Run; override;   
     function Initialize: Boolean; override;
@@ -63,13 +72,21 @@ uses
   Define_DataSrc,
   StockDayData_Get_163,
   win.iobuffer,
+  UtilsLog,
   StockDayDataAccess,
   StockDayData_Load,
   StockDayData_Save,
   define_stock_quotes,
   DB_dealItem_Load,
   DB_dealItem_Save;
-               
+
+const
+  WM_Console2Downloader_Base = WM_CustomAppBase + 100;
+  WM_Console2Downloader_Command_Download = WM_Console2Downloader_Base + 1;
+
+                                             
+  WM_Downloader2Console_Base = WM_CustomAppBase + 200;
+  WM_Downloader2Console_Command_DownloadOK = WM_Downloader2Console_Base + 1;
 { TStockDataApp }
 
 constructor TStockDataApp.Create(AppClassId: AnsiString);
@@ -95,8 +112,14 @@ begin
     end else
     begin              
       Result := CheckSingleInstance(AppMutexName_StockDataDownloader);
-      fStockDataAppData.RunMode := runMode_DataDownloader;  
-      Result := CreateAppCommandWindow;
+      if Result then
+      begin
+        UtilsLog.CloseLogFiles;
+        UtilsLog.G_LogFile.FileName := ChangeFileExt(ParamStr(0), '.down.log');
+        UtilsLog.SDLog('StockDataApp.pas', 'init mode downloader');
+        fStockDataAppData.RunMode := runMode_DataDownloader;
+        Result := CreateAppCommandWindow;
+      end;
     end;
   end;
 end;
@@ -116,6 +139,15 @@ begin
         TStockDataApp(GlobalBaseStockApp).RunStart;
       end;
       exit;
+    end;
+    WM_AppRequestEnd: begin    
+      TStockDataApp(GlobalBaseStockApp).Terminate;
+    end;
+    WM_Downloader2Console_Command_DownloadOK: begin    
+      TStockDataApp(GlobalBaseStockApp).Console_Notify_DownloadOK(wParam);
+    end;
+    WM_Console2Downloader_Command_Download: begin 
+      TStockDataApp(GlobalBaseStockApp).Downloader_Download(wParam);
     end;
   end;
   Result := DefWindowProcA(AWnd, AMsg, wParam, lParam);
@@ -167,48 +199,144 @@ begin
   Result := Windows.IsWindow(fBaseWinAppData.AppCmdWnd);
 end;
                                           
-procedure TStockDataApp.Console_NotifyDownloadData(ADealItem: PRT_DealItem);
-begin               
+procedure TStockDataApp.Console_NotifyDownloadData(AConsoleApp: PConsoleAppData; ADealItem: PRT_DealItem);
+begin
+  if nil = ADealItem then
+  begin   
+    PostMessage(AConsoleApp.Downloader_Process.Core.AppCmdWnd, WM_AppRequestEnd, 0, 0);
+    exit;
+  end;
+  if Console_CheckDownloaderProcess(AConsoleApp) then
+  begin
+    PostMessage(AConsoleApp.Downloader_Process.Core.AppCmdWnd, WM_Console2Downloader_Command_Download, ADealItem.iCode, 0);
+  end;
 end;
                                    
-procedure TStockDataApp.Console_NotifyDownloadData;    
+function TStockDataApp.Console_GetNextDownloadDealItem(AConsoleApp: PConsoleAppData): PRT_DealItem;
 var
-  tmpDealItem: PRT_DealItem;  
+  tmpDealItem: PRT_DealItem;
 begin
-  if 0 > fStockDataAppData.ConsoleAppData.Download_DealItemIndex then
+  Result := nil;
+  if 1 > Self.StockItemDB.RecordCount then
     exit;
+  if 0 > fStockDataAppData.ConsoleAppData.Download_DealItemIndex then
+    fStockDataAppData.ConsoleAppData.Download_DealItemIndex := 0;
   if Self.StockItemDB.RecordCount <= fStockDataAppData.ConsoleAppData.Download_DealItemIndex then
     exit;
-  tmpDealItem := Self.StockItemDB.Items[fStockDataAppData.ConsoleAppData.Download_DealItemIndex];
-  if 0 = tmpDealItem.EndDealDate then
+  if 0 = fStockDataAppData.ConsoleAppData.Download_DealItemCode then
   begin
-    Console_NotifyDownloadData(tmpDealItem);
+    Result := Self.StockItemDB.Items[fStockDataAppData.ConsoleAppData.Download_DealItemIndex];
+  end else
+  begin
+    tmpDealItem := Self.StockItemDB.Items[fStockDataAppData.ConsoleAppData.Download_DealItemIndex];
+    if fStockDataAppData.ConsoleAppData.Download_DealItemCode = tmpDealItem.iCode then
+    begin
+      while nil = Result do
+      begin
+        Inc(fStockDataAppData.ConsoleAppData.Download_DealItemIndex);
+        if Self.StockItemDB.RecordCount > fStockDataAppData.ConsoleAppData.Download_DealItemIndex then
+        begin
+          tmpDealItem := Self.StockItemDB.Items[fStockDataAppData.ConsoleAppData.Download_DealItemIndex];
+          if 0 = tmpDealItem.EndDealDate then
+          begin
+            Result := tmpDealItem;
+          end;
+        end else
+        begin
+          tmpDealItem := nil;
+          Break;
+        end;
+      end;
+    end;
   end;
+  if nil <> Result then
+  begin
+    fStockDataAppData.ConsoleAppData.Download_DealItemCode := Result.iCode;
+  end;
+end;
+
+procedure TStockDataApp.Console_NotifyDownloadData(AConsoleApp: PConsoleAppData);
+begin
+  Console_NotifyDownloadData(AConsoleApp, Console_GetNextDownloadDealItem(AConsoleApp));
+end;
+
+procedure TStockDataApp.Console_Notify_DownloadOK(AStockCode: integer);
+var
+  tmpConsoleApp: PConsoleAppData;
+begin
+  tmpConsoleApp := @fStockDataAppData.ConsoleAppData;                
+  Console_NotifyDownloadData(tmpConsoleApp, Console_GetNextDownloadDealItem(tmpConsoleApp));
+end;
+
+function TStockDataApp.Console_CheckDownloaderProcess(AConsoleApp: PConsoleAppData): Boolean;
+var
+  i: integer;
+  tmpRetCode: DWORD;
+begin
+  Result := IsWindow(AConsoleApp.Downloader_Process.Core.AppCmdWnd);
+  if not Result then
+  begin
+    if 0 <> AConsoleApp.Downloader_Process.Core.ProcessHandle then
+    begin
+      if Windows.GetExitCodeProcess(AConsoleApp.Downloader_Process.Core.ProcessHandle, tmpRetCode) then
+      begin
+        if Windows.STILL_ACTIVE <> tmpRetCode then
+          AConsoleApp.Downloader_Process.Core.ProcessId := 0;
+      end;
+    end else
+    begin
+      AConsoleApp.Downloader_Process.Core.ProcessId := 0;
+    end;
+    if 0 = AConsoleApp.Downloader_Process.Core.ProcessId then
+      RunProcessA(@AConsoleApp.Downloader_Process, ParamStr(0));
+    if (0 = AConsoleApp.Downloader_Process.Core.ProcessHandle) or
+       (INVALID_HANDLE_VALUE = AConsoleApp.Downloader_Process.Core.ProcessHandle) then
+      exit;
+
+    for i := 0 to 100 do
+    begin
+      if IsWindow(AConsoleApp.Downloader_Process.Core.AppCmdWnd) then
+        Break;
+      AConsoleApp.Downloader_Process.Core.AppCmdWnd := Windows.FindWindowA(AppCmdWndClassName_StockDataDownloader, nil);
+      Sleep(10);
+    end;
+  end;            
+  Result := IsWindow(AConsoleApp.Downloader_Process.Core.AppCmdWnd);
 end;
 
 procedure TStockDataApp.RunStart_Console(AConsoleApp: PConsoleAppData);
-var
-  i: integer;      
 begin
   // run downloader process
-  RunProcessA(@AConsoleApp.Downloader_Process, ParamStr(0));
-  if (0 = AConsoleApp.Downloader_Process.Core.ProcessHandle) or
-     (INVALID_HANDLE_VALUE = AConsoleApp.Downloader_Process.Core.ProcessHandle) then
-    exit;                     
-
-  for i := 0 to 100 do
-  begin
-    if IsWindow(AConsoleApp.Downloader_Process.AppCmdWnd) then
-      Break;
-    AConsoleApp.Downloader_Process.AppCmdWnd := Windows.FindWindowA(AppCmdWndClassName_StockDataDownloader, nil);
-    Sleep(10);
-  end;
-                    
-  if IsWindow(AConsoleApp.Downloader_Process.AppCmdWnd) then
+  if Console_CheckDownloaderProcess(AConsoleApp) then
   begin
     AConsoleApp.Download_DealItemIndex := 0;
-    Console_NotifyDownloadData;
+    Console_NotifyDownloadData(AConsoleApp);
+  end;      
+end;
+
+procedure TStockDataApp.Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode: integer);
+begin
+  SDLog('', 'Downloader_Download:' + IntToStr(AStockCode));
+  if Downloader_CheckConsoleProcess(ADownloaderApp) then
+  begin                                                                     
+    SDLog('', 'Downloader_Downloaded:' + IntToStr(AStockCode));
+    PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadOK, AStockCode, 0);
   end;
+end;
+                       
+function TStockDataApp.Downloader_CheckConsoleProcess(ADownloaderApp: PDownloaderAppData): Boolean;
+begin
+  Result := IsWindow(ADownloaderApp.Console_Process.Core.AppCmdWnd);
+  if not Result then
+  begin      
+    ADownloaderApp.Console_Process.Core.AppCmdWnd := Windows.FindWindowA(AppCmdWndClassName_StockDataDownloader_Console, nil);    
+    Result := IsWindow(ADownloaderApp.Console_Process.Core.AppCmdWnd);
+  end;
+end;
+
+procedure TStockDataApp.Downloader_Download(AStockCode: integer);
+begin
+  Downloader_Download(@fStockDataAppData.DownloaderAppData, AStockCode);
 end;
 
 procedure TStockDataApp.RunStart_Downloader;

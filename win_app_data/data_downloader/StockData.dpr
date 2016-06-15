@@ -7,6 +7,7 @@ uses
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   windef_msg in '..\..\..\devwintech\v0001\windef\windef_msg.pas',
   base.thread in '..\..\..\devwintech\v0001\rec\app_base\base.thread.pas',
+  win.process in '..\..\..\devwintech\v0001\rec\win_sys\win.process.pas',
   base.run in '..\..\..\devwintech\v0001\rec\app_base\base.run.pas',
   win.thread in '..\..\..\devwintech\v0001\rec\win_sys\win.thread.pas',
   BasePath in '..\..\..\devwintech\v0001\obj\app_base\BasePath.pas',
@@ -23,6 +24,7 @@ uses
   xlClientSocket in '..\..\..\devwintech\v0000\win_netclient\xlClientSocket.pas',
   UtilsHttp in '..\..\..\devwintech\v0000\win_utils\UtilsHttp.pas',
   UtilsHttp_Socket in '..\..\..\devwintech\v0000\win_utils\UtilsHttp_Socket.pas',
+  UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
@@ -35,13 +37,13 @@ uses
   define_stock_quotes in '..\..\basedefine\define_stock_quotes.pas',
   define_dealstore_file in '..\..\basedefine\define_dealstore_file.pas',
   define_dealstore_header in '..\..\basedefine\define_dealstore_header.pas',
+  define_stockapp in '..\..\basedefine\define_stockapp.pas',
   define_dealmarket in '..\..\basedefine\define_dealmarket.pas',
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDayData_Get_163 in '..\..\data_stock\datasrc_163\StockDayData_Get_163.pas',
-  StockDataApp in 'StockDataApp.pas',
-  define_stockapp in '..\..\basedefine\define_stockapp.pas';
+  StockDataApp in 'StockDataApp.pas';
 
 {$R *.res}
 
