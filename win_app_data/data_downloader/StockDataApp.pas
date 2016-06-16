@@ -83,10 +83,15 @@ uses
 const
   WM_Console2Downloader_Base = WM_CustomAppBase + 100;
   WM_Console2Downloader_Command_Download = WM_Console2Downloader_Base + 1;
-
+                                                
+  WM_Console_Base = WM_CustomAppBase + 200;   
                                              
-  WM_Downloader2Console_Base = WM_CustomAppBase + 200;
+  WM_Downloader2Console_Base = WM_CustomAppBase + 300;
   WM_Downloader2Console_Command_DownloadOK = WM_Downloader2Console_Base + 1;
+
+  WM_Downloader_Base = WM_CustomAppBase + 400;   
+  WM_Downloader_Command_Download = WM_Downloader_Base + 1;
+
 { TStockDataApp }
 
 constructor TStockDataApp.Create(AppClassId: AnsiString);
@@ -118,7 +123,11 @@ begin
         UtilsLog.G_LogFile.FileName := ChangeFileExt(ParamStr(0), '.down.log');
         UtilsLog.SDLog('StockDataApp.pas', 'init mode downloader');
         fStockDataAppData.RunMode := runMode_DataDownloader;
-        Result := CreateAppCommandWindow;
+        Result := CreateAppCommandWindow;   
+        if not Result then
+          exit;
+        InitializeDBStockItem;   
+        Result := 0 < Self.StockItemDB.RecordCount;
       end;
     end;
   end;
@@ -146,7 +155,10 @@ begin
     WM_Downloader2Console_Command_DownloadOK: begin    
       TStockDataApp(GlobalBaseStockApp).Console_Notify_DownloadOK(wParam);
     end;
-    WM_Console2Downloader_Command_Download: begin 
+    WM_Console2Downloader_Command_Download: begin
+      PostMessage(AWnd, WM_Downloader_Command_Download, wParam, 0)
+    end;
+    WM_Downloader_Command_Download: begin
       TStockDataApp(GlobalBaseStockApp).Downloader_Download(wParam);
     end;
   end;
@@ -315,12 +327,22 @@ begin
 end;
 
 procedure TStockDataApp.Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode: integer);
+var
+  tmpStockItem: PRT_DealItem;
 begin
-  SDLog('', 'Downloader_Download:' + IntToStr(AStockCode));
-  if Downloader_CheckConsoleProcess(ADownloaderApp) then
-  begin                                                                     
-    SDLog('', 'Downloader_Downloaded:' + IntToStr(AStockCode));
-    PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadOK, AStockCode, 0);
+  tmpStockItem := Self.StockItemDB.FindItem(IntToStr(AStockCode));
+  if nil <> tmpStockItem then
+  begin
+    GetStockDataDay_163(Self, tmpStockItem, False, @ADownloaderApp.HttpClientSession);
+    SDLog('', 'Downloader_Download:' + IntToStr(AStockCode));
+    if Downloader_CheckConsoleProcess(ADownloaderApp) then
+    begin
+      SDLog('', 'Downloader_Downloaded:' + IntToStr(AStockCode));
+      PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadOK, AStockCode, 0);
+    end;
+  end else
+  begin
+    SDLog('', 'Downloader_Download can not find stock:' + IntToStr(AStockCode));
   end;
 end;
                        
