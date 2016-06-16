@@ -31,6 +31,33 @@ type
      DealDayData: TRT_Quote_M1_Day;
   end;
 
+function GetNodeText(ANode: TNode): WideString;
+var
+  i: integer;
+  tmpNode: TNode;
+begin
+  Result := '';
+  if nil = ANode then
+    exit;
+  if nil = ANode.childNodes then
+    Exit;
+  for i := 0 to ANode.childNodes.length - 1 do
+  begin
+    tmpNode := ANode.childNodes.item(i);
+    if ELEMENT_NODE = tmpNode.nodetype then
+    begin
+      if 1 = ANode.childNodes.length then
+      begin
+        Result := GetNodeText(ANode.childNodes.item(0));
+      end;
+    end;
+    if TEXT_NODE = tmpNode.nodetype then
+    begin
+      Result := tmpNode.nodeValue;   
+    end;
+  end;
+end;
+
 procedure ParseStockDealDataTableRow(ADataAccess: TStockDayDataAccess; AParseRecord: PParseRecord; ANode: TNode);
 var
   i: integer;
@@ -49,21 +76,34 @@ begin
     if SameText(tmpChild.nodeName, 'td') then
     begin
       inc (tmpTDIndex);
-      // 处理 行数据
-      tmpStr := '';//trim(tmpChild.InnerText);
       if (not AParseRecord.IsTableHeadReady) then
-      begin   
-        for tmpHeadColName := Low(TDealDayDataHeadName_Sina) to High(TDealDayDataHeadName_Sina) do
+      begin          
+        // 处理 行数据
+        tmpStr := trim(tmpChild.nodeValue);
+        if '' = tmpStr then
         begin
-          if SameText(tmpStr, DealDayDataHeadNames_Sina[tmpHeadColName]) or
-                       (Pos(DealDayDataHeadNames_Sina[tmpHeadColName], tmpStr) > 0) then
+          tmpStr := GetNodeText(tmpChild);
+        end;
+        if '' <> tmpStr then
+        begin
+          for tmpHeadColName := Low(TDealDayDataHeadName_Sina) to High(TDealDayDataHeadName_Sina) do
           begin
-            AParseRecord.TableHeader.HeadNameIndex[tmpHeadColName] := tmpTDIndex;
-            tmpIsHead := true;
+            if SameText(tmpStr, DealDayDataHeadNames_Sina[tmpHeadColName]) or
+                         (Pos(DealDayDataHeadNames_Sina[tmpHeadColName], tmpStr) > 0) then
+            begin
+              AParseRecord.TableHeader.HeadNameIndex[tmpHeadColName] := tmpTDIndex;
+              tmpIsHead := true;
+            end;
           end;
         end;
       end else
-      begin            
+      begin    
+        // 处理 行数据
+        tmpStr := trim(tmpChild.nodeValue);
+        if '' = tmpStr then
+        begin
+          tmpStr := Trim(GetNodeText(tmpChild));
+        end;        
         for tmpHeadColName := Low(TDealDayDataHeadName_Sina) to High(TDealDayDataHeadName_Sina) do
         begin           
           if AParseRecord.TableHeader.HeadNameIndex[tmpHeadColName] = tmpTDIndex then
@@ -131,66 +171,74 @@ end;
 
 function HtmlParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AParseRecord: PParseRecord; ANode: TNode): Boolean;
 var
-  i: integer;
+  i, j: integer;
   tmpcnt: integer;
   tmpTableId: WideString;
-  tmpNode: TNode;
+  tmpNode: TNode;      
+  tmpIsHandledNode: Boolean;
 begin
   result := false;
-  if ANode <> nil then
-  begin
-    if SameText(string(lowercase(ANode.nodeName)), 'table') then
-    begin           
-      Inc(AParseRecord.IsInTable);
-      tmpcnt := 0;
-      if nil <> ANode.childNodes then
-        tmpcnt := ANode.childNodes.length;
-      tmpTableId := '';
-      tmpNode := nil;
-      if nil <> ANode.attributes then
+  if nil = ANode then
+    exit;
+  tmpIsHandledNode := false;
+  if SameText(string(lowercase(ANode.nodeName)), 'table') then
+  begin           
+    Inc(AParseRecord.IsInTable);
+    tmpcnt := 0;
+    if nil <> ANode.childNodes then
+      tmpcnt := ANode.childNodes.length;
+    tmpTableId := '';
+    tmpNode := nil;
+    if nil <> ANode.attributes then
+    begin                            
+      for i := 0 to ANode.attributes.length - 1 do
       begin
-        for i := 0 to ANode.attributes.length - 1 do
+        tmpNode := ANode.attributes.item(i);
+        if SameText('id', tmpNode.nodeName) then
         begin
-          tmpNode := ANode.attributes.item(i);
-          if SameText('id', tmpNode.nodeName) then
-          begin       
-            tmpTableId := tmpNode.nodeValue;
-            Break;
-          end;
-        end;
-      end;
-      if tmpTableId <> '' then
-      begin
-        if SameText('FundHoldSharesTable', tmpTableId) then
-        begin
-          result := HtmlParse_DayData_Sina_Table(ADataAccess, AParseRecord, ANode);
-        end else
-        begin
-          if Pos('fundholdsharestable', lowercase(tmpTableId)) = 1 then
-          begin
-            result := HtmlParse_DayData_Sina_Table(ADataAccess, AParseRecord, ANode);
-          end;
-        end;
-      end;
-      Dec(AParseRecord.IsInTable);
-    end else
-    begin
-      if nil <> ANode.childNodes then
-      begin
-        tmpcnt := ANode.childNodes.length;
-        for i := 0 to tmpcnt - 1 do
-        begin
-          tmpNode := ANode.childNodes.item(i);
-          if not result then
-          begin
-            result := HtmlParse_DayData_Sina(ADataAccess, AParseRecord, tmpNode);
-          end else
-          begin
-            HtmlParse_DayData_Sina(ADataAccess, AParseRecord, tmpNode);
-          end;
+          tmpTableId := GetNodeText(tmpNode);
+          Break;
         end;
       end;
     end;
+    if tmpTableId <> '' then
+    begin
+      if SameText('FundHoldSharesTable', tmpTableId) then
+      begin
+        tmpIsHandledNode := true;
+      end else
+      begin
+        if Pos('fundholdsharestable', lowercase(tmpTableId)) = 1 then
+        begin                    
+          tmpIsHandledNode := true;
+        end;
+      end;
+    end;
+  end;
+  if tmpIsHandledNode then
+  begin
+    result := HtmlParse_DayData_Sina_Table(ADataAccess, AParseRecord, ANode);      
+  end else
+  begin
+    if nil <> ANode.childNodes then
+    begin
+      tmpcnt := ANode.childNodes.length;
+      for i := 0 to tmpcnt - 1 do
+      begin
+        tmpNode := ANode.childNodes.item(i);
+        if not result then
+        begin
+          result := HtmlParse_DayData_Sina(ADataAccess, AParseRecord, tmpNode);
+        end else
+        begin
+          HtmlParse_DayData_Sina(ADataAccess, AParseRecord, tmpNode);
+        end;
+      end;
+    end;
+  end;        
+  if SameText(string(lowercase(ANode.nodeName)), 'table') then
+  begin
+    Dec(AParseRecord.IsInTable);
   end;
 end;
      

@@ -131,44 +131,52 @@ function HtmlParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AParseRecord: 
 var
   i: integer;
   tmpcnt: integer;
-  tmpData: WideString;
+  tmpTableId: WideString;
+  tmpIsHandledNode: Boolean;
 begin
   result := false;
-  if ANode <> nil then
-  begin
-    if SameText(string(lowercase(ANode.TagName)), 'table') then
-    begin           
-      Inc(AParseRecord.IsInTable);
-      tmpcnt := ANode.ChildrenCount;
-      tmpData := ANode.Attributes['id'];
-      if tmpData <> '' then
-      begin
-        if SameText('FundHoldSharesTable', tmpData) then
-        begin
-          result := HtmlParse_DayData_Sina_Table(ADataAccess, AParseRecord, ANode);
-        end else
-        begin
-          if Pos('fundholdsharestable', lowercase(tmpData)) = 1 then
-          begin
-            result := HtmlParse_DayData_Sina_Table(ADataAccess, AParseRecord, ANode);
-          end;
-        end;
-      end;
-      Dec(AParseRecord.IsInTable);
-    end else
+  if nil = ANode then
+    exit;          
+  tmpIsHandledNode := false;
+  if SameText(string(lowercase(ANode.TagName)), 'table') then
+  begin           
+    Inc(AParseRecord.IsInTable);
+    tmpcnt := ANode.ChildrenCount;
+    tmpTableId := ANode.Attributes['id'];
+    if '' <> tmpTableId then
     begin
-      tmpcnt := ANode.ChildrenCount;
-      for i := 0 to tmpcnt - 1 do
+      if SameText('FundHoldSharesTable', tmpTableId) then
       begin
-        if not result then
+        tmpIsHandledNode := true;
+      end else
+      begin
+        if Pos('fundholdsharestable', lowercase(tmpTableId)) = 1 then
         begin
-          result := HtmlParse_DayData_Sina(ADataAccess, AParseRecord, ANode[i]);
-        end else
-        begin
-          HtmlParse_DayData_Sina(ADataAccess, AParseRecord, ANode[i]);
+          tmpIsHandledNode := true;
         end;
       end;
     end;
+  end;      
+  if tmpIsHandledNode then
+  begin
+    result := HtmlParse_DayData_Sina_Table(ADataAccess, AParseRecord, ANode);
+  end else
+  begin
+    tmpcnt := ANode.ChildrenCount;
+    for i := 0 to tmpcnt - 1 do
+    begin
+      if not result then
+      begin
+        result := HtmlParse_DayData_Sina(ADataAccess, AParseRecord, ANode[i]);
+      end else
+      begin
+        HtmlParse_DayData_Sina(ADataAccess, AParseRecord, ANode[i]);
+      end;
+    end;
+  end;  
+  if SameText(string(lowercase(ANode.TagName)), 'table') then
+  begin
+    Dec(AParseRecord.IsInTable);
   end;
 end;
      
