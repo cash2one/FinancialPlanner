@@ -5,34 +5,21 @@ interface
 uses
   define_stockapp,  
   define_dealItem,
+  define_StockDataApp,
   windef_msg, 
   UtilsHttp,
   win.process,
   BaseApp,
-  BaseStockApp;
+  Forms,
+  BaseForm,
+  BaseStockApp,
+  StockDataDownloaderApp,
+  StockDataConsoleApp;
 
 type
-  TStockDataAppRunMode = (
-    runMode_Undefine,
-    runMode_Console,
-    runMode_DataDownloader);
-
-  PConsoleAppData = ^TConsoleAppData;
-  TConsoleAppData = record
-    Downloader_Process: TOwnedProcess;
-    Download_DealItemIndex: Integer;     
-    Download_DealItemCode: Integer;
-  end;
-
-  PDownloaderAppData = ^TDownloaderAppData;
-  TDownloaderAppData = record
-    Console_Process: TExProcess;
-    HttpClientSession: THttpClientSession;
-  end;
-  
   TStockDataAppData = record
     RunMode: TStockDataAppRunMode;
-
+    AppAgent: TBaseAppAgent;
     ConsoleAppData: TConsoleAppData;
     DownloaderAppData: TDownloaderAppData;
   end;
@@ -67,6 +54,7 @@ uses
   Windows,
   Sysutils,
   Classes,
+  SDConsoleForm,
   Define_Price,
   db_dealitem,
   Define_DataSrc,
@@ -79,18 +67,6 @@ uses
   define_stock_quotes,
   DB_dealItem_Load,
   DB_dealItem_Save;
-
-const
-  WM_Console2Downloader_Base = WM_CustomAppBase + 100;
-  WM_Console2Downloader_Command_Download = WM_Console2Downloader_Base + 1;
-                                                
-  WM_Console_Base = WM_CustomAppBase + 200;   
-                                             
-  WM_Downloader2Console_Base = WM_CustomAppBase + 300;
-  WM_Downloader2Console_Command_DownloadOK = WM_Downloader2Console_Base + 1;
-
-  WM_Downloader_Base = WM_CustomAppBase + 400;   
-  WM_Downloader_Command_Download = WM_Downloader_Base + 1;
 
 { TStockDataApp }
 
@@ -114,6 +90,11 @@ begin
         exit;
       InitializeDBStockItem;
       Result := 0 < Self.StockItemDB.RecordCount;
+      if Result then
+      begin                        
+        fStockDataAppData.AppAgent := TStockDataConsoleApp.Create(Self);
+        fStockDataAppData.AppAgent.Initialize;
+      end;
     end else
     begin              
       Result := CheckSingleInstance(AppMutexName_StockDataDownloader);
@@ -123,7 +104,7 @@ begin
         UtilsLog.G_LogFile.FileName := ChangeFileExt(ParamStr(0), '.down.log');
         UtilsLog.SDLog('StockDataApp.pas', 'init mode downloader');
         fStockDataAppData.RunMode := runMode_DataDownloader;
-        Result := CreateAppCommandWindow;   
+        Result := CreateAppCommandWindow;
         if not Result then
           exit;
         InitializeDBStockItem;   
@@ -135,7 +116,6 @@ end;
 
 procedure TStockDataApp.Finalize;
 begin
-
 end;
 
 function AppCommandWndProcA(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
@@ -396,9 +376,17 @@ begin
 end;
 
 procedure TStockDataApp.Run;
-begin
-  PostMessage(fBaseWinAppData.AppCmdWnd, WM_AppStart, 0, 0);
-  RunAppMsgLoop;
+begin                  
+  if runMode_Console = fStockDataAppData.RunMode then
+  begin
+    Application.CreateForm(TfrmSDConsole, fStockDataAppData.ConsoleAppData.ConsoleForm);
+    Application.Run;
+  end;
+  if runMode_DataDownloader = fStockDataAppData.RunMode then
+  begin
+    PostMessage(fBaseWinAppData.AppCmdWnd, WM_AppStart, 0, 0);
+    RunAppMsgLoop;
+  end;
 end;
 
 end.

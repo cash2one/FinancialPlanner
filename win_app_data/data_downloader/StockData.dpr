@@ -6,6 +6,7 @@ uses
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   windef_msg in '..\..\..\devwintech\v0001\windef\windef_msg.pas',
+  sysdef_string in '..\..\..\devwintech\v0001\sysdef\sysdef_string.pas',
   base.thread in '..\..\..\devwintech\v0001\rec\app_base\base.thread.pas',
   win.process in '..\..\..\devwintech\v0001\rec\win_sys\win.process.pas',
   base.run in '..\..\..\devwintech\v0001\rec\app_base\base.run.pas',
@@ -14,8 +15,8 @@ uses
   BaseApp in '..\..\..\devwintech\v0001\obj\app_base\BaseApp.pas',
   BaseThread in '..\..\..\devwintech\v0001\obj\app_base\BaseThread.pas',
   BaseFile in '..\..\..\devwintech\v0001\obj\app_base\BaseFile.pas',
-  sysdef_string in '..\..\..\devwintech\v0001\sysdef\sysdef_string.pas',
   BaseWinApp in '..\..\..\devwintech\v0001\obj\win_app\BaseWinApp.pas',
+  BaseForm in '..\..\..\devwintech\v0001\obj\win_uiform\BaseForm.pas' {frmBase},
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
   win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
@@ -43,7 +44,11 @@ uses
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDayData_Get_163 in '..\..\data_stock\datasrc_163\StockDayData_Get_163.pas',
-  StockDataApp in 'StockDataApp.pas';
+  StockDataApp in 'StockDataApp.pas',
+  SDConsoleForm in 'SDConsoleForm.pas' {frmSDConsole},
+  StockDataConsoleApp in 'StockDataConsoleApp.pas',
+  define_StockDataApp in 'define_StockDataApp.pas',
+  StockDataDownloaderApp in 'StockDataDownloaderApp.pas';
 
 {$R *.res}
 

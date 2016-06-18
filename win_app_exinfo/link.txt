@@ -39,6 +39,19 @@ http://biz.finance.sina.com.cn/stock/flash_hq/kline_data.php?symbol=sh000001&end
 http://biz.finance.sina.com.cn/stock/flash_hq/kline_data.php?&rand=random(10000)&symbol=sz002222&end_date=20160406&begin_date=20160401&type=plain
 
 http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodes
+
+http://biz.finance.sina.com.cn/stock/market_hq.php?type=61
+http://biz.finance.sina.com.cn/zjzt/queryList.php?zjztType=forexask&answerType=1 外汇
+http://biz.finance.sina.com.cn/company/compare/img_syl_compare.php
+http://biz.finance.sina.com.cn/stock/history_min.php
+http://biz.finance.sina.com.cn/smart/hq.php
+http://biz.finance.sina.com.cn/hq/index.php?page=openfund.php
+
+基金
+http://biz.finance.sina.com.cn/fund/openfund/openfund.php?symbol_list=&by=asc&order=name&from=270&from=300
+
+
+
 ----------------------------------------
 网易财经 股票
 http://money.163.com/stock/
