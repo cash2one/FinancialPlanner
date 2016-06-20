@@ -1,4 +1,4 @@
-program StockDataRepair;
+program StockDataPackerByTime;
 
 uses
   Windows,
@@ -20,7 +20,6 @@ uses
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
   win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
-  UtilsLog in '..\..\..\devwintech\v0000\win_utils\UtilsLog.pas',
   db_dealitem in '..\..\dealitem\db_dealitem.pas',
   db_dealitem_load in '..\..\dealitem\db_dealitem_load.pas',
   db_dealitem_save in '..\..\dealitem\db_dealitem_save.pas',
@@ -37,15 +36,15 @@ uses
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
-  StockDataRepairApp in 'StockDataRepairApp.pas',
-  SDRepairForm in 'SDRepairForm.pas' {frmSDRepair};
+  StockDataPackerApp in 'StockDataPackerApp.pas',
+  SDPackerForm in 'SDPackerForm.pas' {frmSDPacker};
 
 {$R *.res}
 
 var
-  GlobalApp: TStockDataRepairApp = nil;
+  GlobalApp: TStockDataPackerApp = nil;
 begin
-  GlobalApp := TStockDataRepairApp.Create('');
+  GlobalApp := TStockDataPackerApp.Create('');
   try
     if GlobalApp.Initialize then
       GlobalApp.Run;

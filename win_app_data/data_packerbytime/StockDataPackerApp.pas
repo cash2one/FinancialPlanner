@@ -1,4 +1,4 @@
-unit StockDataRepairApp;
+unit StockDataPackerApp;
 
 interface
 
@@ -13,14 +13,14 @@ uses
   BaseStockApp;
 
 type
-  TStockDataRepairAppData = record
+  TStockDataPackerAppData = record
     //AppAgent: TBaseAppAgent;
-    RepairConsoleForm: TfrmBase;
+    PackerConsoleForm: TfrmBase;
   end;
   
-  TStockDataRepairApp = class(TBaseStockApp)
+  TStockDataPackerApp = class(TBaseStockApp)
   protected
-    fStockDataRepairAppData: TStockDataRepairAppData;
+    fStockDataPackerAppData: TStockDataPackerAppData;
     procedure RunStart;    
   public
     constructor Create(AppClassId: AnsiString); override;
@@ -35,12 +35,12 @@ uses
   Windows,
   Sysutils,
   Classes,
-  SDRepairForm,
+  SDPackerForm,
   Define_Price,
   db_dealitem,
   Define_DataSrc,
   win.iobuffer,
-  UtilsLog,
+  //UtilsLog,
   StockDayDataAccess,
   StockDayData_Load,
   StockDayData_Save,
@@ -50,18 +50,18 @@ uses
 
 { TStockDataApp }
 
-constructor TStockDataRepairApp.Create(AppClassId: AnsiString);
+constructor TStockDataPackerApp.Create(AppClassId: AnsiString);
 begin
   inherited;
-  FillChar(fStockDataRepairAppData, SizeOf(fStockDataRepairAppData), 0);
+  FillChar(fStockDataPackerAppData, SizeOf(fStockDataPackerAppData), 0);
 end;
 
-function TStockDataRepairApp.Initialize: Boolean;
+function TStockDataPackerApp.Initialize: Boolean;
 begin
   Result := inherited Initialize;
   if Result then
   begin
-    Result := CheckSingleInstance(AppMutexName_StockDataRepairer);
+    Result := CheckSingleInstance(AppMutexName_StockDataPacker);
     if Result then
     begin
       InitializeDBStockItem;
@@ -73,17 +73,17 @@ begin
   end;
 end;
 
-procedure TStockDataRepairApp.Finalize;
+procedure TStockDataPackerApp.Finalize;
 begin
 end;
 
-procedure TStockDataRepairApp.RunStart;
+procedure TStockDataPackerApp.RunStart;
 begin
 end;
 
-procedure TStockDataRepairApp.Run;
+procedure TStockDataPackerApp.Run;
 begin
-  Application.CreateForm(SDRepairForm.TfrmSDRepair, fStockDataRepairAppData.RepairConsoleForm);
+  Application.CreateForm(SDPackerForm.TfrmSDPacker, fStockDataPackerAppData.PackerConsoleForm);
   Application.Run;
 end;
 
