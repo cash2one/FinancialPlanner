@@ -13,13 +13,13 @@ object frmSDTdx: TfrmSDTdx
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
-  object btnExport: TButton
+  object btnImport: TButton
     Left = 224
     Top = 8
     Width = 75
     Height = 25
-    Caption = 'Export'
+    Caption = 'Import'
     TabOrder = 0
-    OnClick = btnExportClick
+    OnClick = btnImportClick
   end
 end

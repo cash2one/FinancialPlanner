@@ -39,7 +39,8 @@ uses
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
   StockDataTDXApp in 'StockDataTDXApp.pas',
-  SDTdxForm in 'SDTdxForm.pas' {frmSDTdx};
+  SDTdxForm in 'SDTdxForm.pas' {frmSDTdx},
+  StockData_Import_tdx in '..\..\data_stock\datasrc_tdx\StockData_Import_tdx.pas';
 
 {$R *.res}
 
