@@ -87,7 +87,7 @@ begin
     Result := fStockAppPathData.DetailDBPath;
   end;
   if FilePath_DBType_ValueData = ADBType then
-    Result := fStockAppPathData.DBPathRoot + '\' + FileExt_StockValue + tmpDataSrcCode + '\';
+    Result := fStockAppPathData.DBPathRoot + '\' + FileExt_StockSummaryValue + tmpDataSrcCode + '\';
       
   if FilePath_DBType_ItemDB = ADBType then
     Result := fStockAppPathData.DBPathRoot + '\' + 's_dic' + '\';
@@ -132,7 +132,7 @@ begin
     Result := fStockAppPathData.DetailDBPath;
   end;
   if FilePath_DBType_ValueData = ADBType then
-    Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + FileExt_StockValue + tmpDataSrcCode + '\';
+    Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + FileExt_StockSummaryValue + tmpDataSrcCode + '\';
       
   if FilePath_DBType_ItemDB = ADBType then
     Result := GetInstallPath + fStockAppPathData.DBPathRoot + '\' + 's_dic' + '\';
@@ -254,12 +254,12 @@ begin
   end;
   if FilePath_DBType_DayData = ADBType then
   begin
-    Result := FileExt_StockDay + IntToStr(ADataSrc);
+    Result := FileExt_StockDay + '_' + IntToStr(ADataSrc);
     exit;
   end;
   if FilePath_DBType_DayDataWeight = ADBType then
   begin                                             
-    Result := FileExt_StockDayWeight + IntToStr(ADataSrc);
+    Result := FileExt_StockDayWeight + '_' + IntToStr(ADataSrc);
     exit;
   end;
   if FilePath_DBType_InstantData = ADBType then

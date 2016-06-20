@@ -48,6 +48,7 @@ type
     http://blog.csdn.net/coollzt/article/details/7245312
     http://blog.csdn.net/coollzt/article/details/7245304
 
+    http://www.tdx.com.cn/list_66_68.html
     原来 招商证券 通达信 可以直接导出 那就直接导出好了
 //*)
 
@@ -58,7 +59,11 @@ var
   tmpFileData: PTdxData;
 begin
   inherited;
-  tmpFileUrl := 'E:\StockApp\sdata\sh999999.lc5';  
+  tmpFileUrl := 'E:\StockApp\sdata\sh999999.lc5';
+  tmpFileUrl := 'E:\StockApp\sdata\20160617\sh160617.mhq';
+  tmpFileUrl := 'E:\StockApp\sdata\20160617\sh160617.ref';
+  tmpFileUrl := 'E:\StockApp\sdata\20160617\20160617.tic';
+
   tmpWinFile := CheckOutWinFile;
   try
     if WinFileOpen(tmpWinFile, tmpFileUrl, false) then
