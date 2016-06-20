@@ -1,0 +1,9 @@
+沪深 300 成交明细
+zs 指数
+http://q.stock.sohu.com/zs/399300/cjmx.shtml
+
+上证指数
+http://q.stock.sohu.com/zs/000001/cjmx.shtml
+
+万科
+http://q.stock.sohu.com/cn/000002/cjmx.shtml
