@@ -9,7 +9,8 @@ const
   WM_Console2Downloader_Base = WM_CustomAppBase + 100;
   WM_Console2Downloader_Command_Download = WM_Console2Downloader_Base + 1;
                                                 
-  WM_Console_Base = WM_CustomAppBase + 200;   
+  WM_Console_Base = WM_CustomAppBase + 200;    
+  WM_Console_Command_Download = WM_Console_Base + 1;
                                              
   WM_Downloader2Console_Base = WM_CustomAppBase + 300;
   WM_Downloader2Console_Command_DownloadOK = WM_Downloader2Console_Base + 1;

@@ -33,7 +33,6 @@ type
     function Console_GetNextDownloadDealItem(AConsoleApp: PConsoleAppData): PRT_DealItem;
     procedure Console_NotifyDownloadData(AConsoleApp: PConsoleAppData; ADealItem: PRT_DealItem); overload;
     procedure Console_NotifyDownloadData(AConsoleApp: PConsoleAppData); overload;
-    procedure Console_Notify_DownloadOK(AStockCode: integer); 
     function Console_CheckDownloaderProcess(AConsoleApp: PConsoleAppData): Boolean;
   end;
   
@@ -53,22 +52,36 @@ begin
   Result := 0;
   case AMsg of
     WM_AppStart: begin
-      if nil <> GlobalBaseStockApp then
-      begin
-        //GlobalBaseStockApp.RunStart;
-      end;
-      exit;
     end;
     WM_AppRequestEnd: begin
       if nil <> GlobalBaseStockApp then
       begin
         GlobalBaseStockApp.Terminate;
       end;
+    end;          
+    WM_Console_Command_Download: begin
+      if nil <> GlobalBaseStockApp then
+      begin
+        //GlobalBaseStockApp.RunStart;
+        if nil <> G_StockDataConsoleApp then
+        begin
+          if G_StockDataConsoleApp.Console_CheckDownloaderProcess(@G_StockDataConsoleApp.fConsoleAppData) then
+          begin
+            if 0 = G_StockDataConsoleApp.fConsoleAppData.Download_DealItemCode then
+            begin
+              G_StockDataConsoleApp.fConsoleAppData.Download_DealItemIndex := 0;
+            end;
+            G_StockDataConsoleApp.Console_NotifyDownloadData(@G_StockDataConsoleApp.fConsoleAppData);
+          end;
+        end;
+      end;
+      exit;
     end;
-    WM_Downloader2Console_Command_DownloadOK: begin
+    WM_Downloader2Console_Command_DownloadOK: begin   
+      PostMessage(AWnd, WM_Console_Command_Download, 0, 0);
       if nil <> G_StockDataConsoleApp then
       begin
-        G_StockDataConsoleApp.Console_Notify_DownloadOK(wParam);
+        //Console_NotifyDownloadData(@fConsoleAppData, Console_GetNextDownloadDealItem(@fConsoleAppData));
       end;
     end;
   end;
@@ -205,11 +218,6 @@ end;
 procedure TStockDataConsoleApp.Console_NotifyDownloadData(AConsoleApp: PConsoleAppData);
 begin
   Console_NotifyDownloadData(AConsoleApp, Console_GetNextDownloadDealItem(AConsoleApp));
-end;
-
-procedure TStockDataConsoleApp.Console_Notify_DownloadOK(AStockCode: integer);
-begin
-  Console_NotifyDownloadData(@fConsoleAppData, Console_GetNextDownloadDealItem(@fConsoleAppData));
 end;
 
 function TStockDataConsoleApp.Console_CheckDownloaderProcess(AConsoleApp: PConsoleAppData): Boolean;
