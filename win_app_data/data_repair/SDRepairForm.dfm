@@ -20,10 +20,6 @@ object frmSDRepair: TfrmSDRepair
     Height = 41
     Align = alTop
     BevelOuter = bvNone
-    TabOrder = 0
-    ExplicitLeft = 488
-    ExplicitTop = 176
-    ExplicitWidth = 185
   end
   object pnlBottom: TPanel
     Left = 0
@@ -32,7 +28,6 @@ object frmSDRepair: TfrmSDRepair
     Height = 5
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 1
   end
   object pnlMain: TPanel
     Left = 0
@@ -41,11 +36,6 @@ object frmSDRepair: TfrmSDRepair
     Height = 415
     Align = alClient
     BevelOuter = bvNone
-    TabOrder = 2
-    ExplicitLeft = 302
-    ExplicitTop = 168
-    ExplicitWidth = 513
-    ExplicitHeight = 153
     object pnlStocks: TPanel
       Left = 0
       Top = 0
@@ -64,10 +54,6 @@ object frmSDRepair: TfrmSDRepair
       Padding.Right = 1
       Padding.Bottom = 1
       ParentCtl3D = False
-      TabOrder = 0
-      ExplicitLeft = 72
-      ExplicitTop = 24
-      ExplicitHeight = 41
       object vtStocks: TVirtualStringTree
         Left = 1
         Top = 1
@@ -84,12 +70,6 @@ object frmSDRepair: TfrmSDRepair
         Header.Font.Name = 'Tahoma'
         Header.Font.Style = []
         Header.MainColumn = -1
-        TabOrder = 0
-        OnGetText = vtStocksGetText
-        ExplicitLeft = 0
-        ExplicitTop = -141
-        ExplicitWidth = 183
-        ExplicitHeight = 292
         Columns = <>
       end
     end
@@ -114,9 +94,6 @@ object frmSDRepair: TfrmSDRepair
       Header.Font.Style = []
       Header.MainColumn = -1
       ParentCtl3D = False
-      TabOrder = 1
-      ExplicitLeft = 187
-      ExplicitTop = 4
       Columns = <>
     end
   end

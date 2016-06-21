@@ -119,6 +119,7 @@ begin
       end;
       Inc(tmpQuoteData);
     end;
+    ADataAccess.Sort;
   end;
 end;
 
