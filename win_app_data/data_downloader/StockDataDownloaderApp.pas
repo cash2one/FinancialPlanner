@@ -49,11 +49,6 @@ begin
   Result := 0;
   case AMsg of
     WM_AppStart: begin
-      if nil <> GlobalBaseStockApp then
-      begin
-        //GlobalBaseStockApp.RunStart;
-      end;
-      exit;
     end;
     WM_AppRequestEnd: begin    
       GlobalBaseStockApp.Terminate;
@@ -153,7 +148,11 @@ begin
     if Downloader_CheckConsoleProcess(ADownloaderApp) then
     begin
       SDLog('', 'Downloader_Downloaded:' + IntToStr(AStockCode));
-      PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadOK, AStockCode, 0);
+      PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadResult, AStockCode, 0);
+    end else
+    begin
+      // 
+      PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadResult, AStockCode, 1001);
     end;
   end else
   begin

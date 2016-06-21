@@ -77,12 +77,18 @@ begin
       end;
       exit;
     end;
-    WM_Downloader2Console_Command_DownloadOK: begin   
-      PostMessage(AWnd, WM_Console_Command_Download, 0, 0);
-      if nil <> G_StockDataConsoleApp then
+    WM_Downloader2Console_Command_DownloadResult: begin
+      if 0 = lParam then
       begin
-        //Console_NotifyDownloadData(@fConsoleAppData, Console_GetNextDownloadDealItem(@fConsoleAppData));
+        // 下载成功
+        PostMessage(AWnd, WM_Console_Command_Download, 0, 0);
+      end else
+      begin
+        // 下载失败
+        PostMessage(AWnd, WM_Console_Command_Download, 0, 0);        
       end;
+      if nil <> G_StockDataConsoleApp then
+        //Console_NotifyDownloadData(@fConsoleAppData, Console_GetNextDownloadDealItem(@fConsoleAppData));
     end;
   end;
   Result := DefWindowProcA(AWnd, AMsg, wParam, lParam);
@@ -203,7 +209,6 @@ begin
           end;
         end else
         begin
-          tmpDealItem := nil;
           Break;
         end;
       end;

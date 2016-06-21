@@ -13,4 +13,13 @@ object frmSDConsole: TfrmSDConsole
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
+  object btn1: TButton
+    Left = 680
+    Top = 80
+    Width = 75
+    Height = 25
+    Caption = 'btn1'
+    TabOrder = 0
+    OnClick = btn1Click
+  end
 end
