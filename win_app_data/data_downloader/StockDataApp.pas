@@ -6,12 +6,8 @@ uses
   define_stockapp,  
   define_dealItem,
   define_StockDataApp,
-  windef_msg, 
-  UtilsHttp,
-  win.process,
+
   BaseApp,
-  Forms,
-  BaseForm,
   BaseStockApp,
   StockDataDownloaderApp,
   StockDataConsoleApp;
@@ -54,17 +50,8 @@ uses
   Windows,
   Sysutils,
   Classes,
-  SDConsoleForm,
-  Define_Price,
   db_dealitem,
-  Define_DataSrc,
-  //StockDayData_Get_163,
-  win.iobuffer,
   UtilsLog,
-  StockDayDataAccess,
-  StockDayData_Load,
-  StockDayData_Save,
-  define_stock_quotes,
   DB_dealItem_Load,
   DB_dealItem_Save;
 
@@ -399,12 +386,14 @@ begin
   if runMode_Console = fStockDataAppData.RunMode then
   begin
     //Application.CreateForm(TfrmSDConsole, fStockDataAppData.ConsoleAppData.ConsoleForm);
-    Application.Run;
+    //Application.Run;
+    fStockDataAppData.AppAgent.Run;
   end;
   if runMode_DataDownloader = fStockDataAppData.RunMode then
-  begin
-    PostMessage(fBaseWinAppData.AppCmdWnd, WM_AppStart, 0, 0);
-    RunAppMsgLoop;
+  begin                           
+    //PostMessage(fBaseWinAppData.AppCmdWnd, WM_AppStart, 0, 0);
+    //RunAppMsgLoop;
+    fStockDataAppData.AppAgent.Run;
   end;
 end;
 

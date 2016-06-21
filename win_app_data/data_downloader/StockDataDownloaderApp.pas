@@ -24,7 +24,8 @@ type
   public               
     constructor Create(AHostApp: TBaseApp); override;
     destructor Destroy; override;    
-    function Initialize: Boolean; override;  
+    function Initialize: Boolean; override;
+    procedure Run; override;  
     function CreateAppCommandWindow: Boolean;
     procedure Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode: integer); overload;
     procedure Downloader_Download(AStockCode: integer); overload;
@@ -35,6 +36,7 @@ implementation
             
 uses
   windef_msg,
+  BaseWinApp,
   BaseStockApp, 
   StockDayData_Get_163,
   UtilsLog;
@@ -94,6 +96,12 @@ begin
     UtilsLog.SDLog('StockDataDownloaderApp.pas', 'init mode downloader');
     Result := CreateAppCommandWindow;
   end;
+end;
+
+procedure TStockDataDownloaderApp.Run;
+begin
+  PostMessage(TBaseWinApp(fBaseAppAgentData.HostApp).AppWindow, WM_AppStart, 0, 0);
+  TBaseWinApp(fBaseAppAgentData.HostApp).RunAppMsgLoop;
 end;
 
 function TStockDataDownloaderApp.CreateAppCommandWindow: Boolean;

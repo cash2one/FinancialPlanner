@@ -41,7 +41,7 @@ begin
   FillChar(tmpNetClientSession, SizeOf(tmpNetClientSession), 0);
   tmpNetClientSession.IsKeepAlive := true;
   tmpNetClientSession.ConnectionSession.ConnectTimeOut := 5000;
-  tmpNetClientSession.ConnectionSession.ReceiveTimeOut := 5000;
+  tmpNetClientSession.ConnectionSession.ReceiveTimeOut := 10000;
   tmpNetClientSession.ConnectionSession.SendTimeOut := 1000;
 
   tmpDBStockItem := TDBDealItem.Create;

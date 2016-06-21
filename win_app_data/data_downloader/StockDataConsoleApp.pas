@@ -26,7 +26,9 @@ type
   public                  
     constructor Create(AHostApp: TBaseApp); override;
     destructor Destroy; override;     
-    function Initialize: Boolean; override;  
+    function Initialize: Boolean; override;
+    procedure Run; override;
+      
     function CreateAppCommandWindow: Boolean;
     function Console_GetNextDownloadDealItem(AConsoleApp: PConsoleAppData): PRT_DealItem;
     procedure Console_NotifyDownloadData(AConsoleApp: PConsoleAppData; ADealItem: PRT_DealItem); overload;
@@ -40,6 +42,7 @@ implementation
 uses
   windef_msg,
   BaseStockApp,
+  SDConsoleForm,
   UtilsLog;
                  
 var
@@ -97,6 +100,13 @@ begin
     Application.Initialize;  
     Result := CreateAppCommandWindow;
   end;
+end;
+
+procedure TStockDataConsoleApp.Run;
+begin
+  Application.CreateForm(TfrmSDConsole, fConsoleAppData.ConsoleForm);
+  fConsoleAppData.ConsoleForm.Initialize(fBaseAppAgentData.HostApp);
+  Application.Run;
 end;
 
 function TStockDataConsoleApp.CreateAppCommandWindow: Boolean;
