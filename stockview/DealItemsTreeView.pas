@@ -135,8 +135,13 @@ begin
     if fDealItemTreeData.TreeView is TVirtualStringTree then
     begin
       fDealItemTreeData.Columns_BaseInfo.Col_Index := TVirtualStringTree(fDealItemTreeData.TreeView).Header.Columns.Add;
-      fDealItemTreeData.Columns_BaseInfo.Col_Index.Width := 50;
-      fDealItemTreeData.Columns_BaseInfo.Col_Index.Text := 'ID';
+      //fDealItemTreeData.Columns_BaseInfo.Col_Index.Width := 50;
+      fDealItemTreeData.Columns_BaseInfo.Col_Index.Text := 'ID';  
+      fDealItemTreeData.Columns_BaseInfo.Col_Index.Width := TVirtualStringTree(fDealItemTreeData.TreeView).Canvas.TextWidth('2000');
+      fDealItemTreeData.Columns_BaseInfo.Col_Index.Width :=
+        fDealItemTreeData.Columns_BaseInfo.Col_Index.Width +   
+        TVirtualStringTree(fDealItemTreeData.TreeView).TextMargin +
+        TVirtualStringTree(fDealItemTreeData.TreeView).Indent;
     end;
   end;
   Result := fDealItemTreeData.Columns_BaseInfo.Col_Index;
@@ -149,7 +154,12 @@ begin
     if fDealItemTreeData.TreeView is TVirtualStringTree then
     begin
       fDealItemTreeData.Columns_BaseInfo.Col_Code := TVirtualStringTree(fDealItemTreeData.TreeView).Header.Columns.Add;
-      fDealItemTreeData.Columns_BaseInfo.Col_Code.Width := 70;
+      fDealItemTreeData.Columns_BaseInfo.Col_Code.Width := TVirtualStringTree(fDealItemTreeData.TreeView).Canvas.TextWidth('600000');
+      fDealItemTreeData.Columns_BaseInfo.Col_Code.Width :=
+          fDealItemTreeData.Columns_BaseInfo.Col_Code.Width +
+          TVirtualStringTree(fDealItemTreeData.TreeView).TextMargin * 2 +
+          fDealItemTreeData.Columns_BaseInfo.Col_Code.Margin +
+          fDealItemTreeData.Columns_BaseInfo.Col_Code.Spacing;
       fDealItemTreeData.Columns_BaseInfo.Col_Code.Text := 'Code';
     end;
   end;

@@ -35,6 +35,7 @@ implementation
 {$R *.dfm}
 
 uses
+  BaseStockApp,
   define_dealitem;
   
 type
@@ -65,12 +66,27 @@ begin
   InitializeStockListTree;
 end;
 
-procedure TfrmSDRepair.InitializeStockListTree;
+procedure TfrmSDRepair.InitializeStockListTree;     
+var
+  i: integer;
+  tmpStockItem: PRT_DealItem;
+  tmpNode: PVirtualNode;
+  tmpNodeData: PStockItemNode;
 begin
   if nil = fRepairFormData.TreeCtrl then
   begin
     fRepairFormData.TreeCtrl := TDealItemTreeCtrl.Create(nil);
     fRepairFormData.TreeCtrl.InitializeDealItemsTree(vtStocks);
+  end;
+  for i := 0 to TBaseStockApp(App).StockItemDB.RecordCount - 1 do
+  begin
+    tmpStockItem := TBaseStockApp(App).StockItemDB.RecordItem[i];   
+    if 0 = tmpStockItem.EndDealDate then
+    begin
+      tmpNode := vtStocks.AddChild(nil);
+      tmpNodeData := vtStocks.GetNodeData(tmpNode);
+      tmpNodeData.StockItem := tmpStockItem;
+    end;
   end;
 end;
 
