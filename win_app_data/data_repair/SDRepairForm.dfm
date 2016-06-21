@@ -13,4 +13,111 @@ object frmSDRepair: TfrmSDRepair
   OldCreateOrder = False
   PixelsPerInch = 96
   TextHeight = 13
+  object pnlTop: TPanel
+    Left = 0
+    Top = 0
+    Width = 854
+    Height = 41
+    Align = alTop
+    BevelOuter = bvNone
+    TabOrder = 0
+    ExplicitLeft = 488
+    ExplicitTop = 176
+    ExplicitWidth = 185
+  end
+  object pnlBottom: TPanel
+    Left = 0
+    Top = 456
+    Width = 854
+    Height = 5
+    Align = alBottom
+    BevelOuter = bvNone
+    TabOrder = 1
+  end
+  object pnlMain: TPanel
+    Left = 0
+    Top = 41
+    Width = 854
+    Height = 415
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 2
+    ExplicitLeft = 302
+    ExplicitTop = 168
+    ExplicitWidth = 513
+    ExplicitHeight = 153
+    object pnlStocks: TPanel
+      Left = 0
+      Top = 0
+      Width = 185
+      Height = 415
+      Margins.Left = 1
+      Margins.Top = 1
+      Margins.Right = 1
+      Margins.Bottom = 1
+      Align = alLeft
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      Ctl3D = False
+      Padding.Left = 1
+      Padding.Top = 1
+      Padding.Right = 1
+      Padding.Bottom = 1
+      ParentCtl3D = False
+      TabOrder = 0
+      ExplicitLeft = 72
+      ExplicitTop = 24
+      ExplicitHeight = 41
+      object vtStocks: TVirtualStringTree
+        Left = 1
+        Top = 1
+        Width = 181
+        Height = 411
+        Align = alClient
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        BorderStyle = bsNone
+        Header.AutoSizeIndex = 0
+        Header.Font.Charset = DEFAULT_CHARSET
+        Header.Font.Color = clWindowText
+        Header.Font.Height = -11
+        Header.Font.Name = 'Tahoma'
+        Header.Font.Style = []
+        Header.MainColumn = -1
+        TabOrder = 0
+        OnGetText = vtStocksGetText
+        ExplicitLeft = 0
+        ExplicitTop = -141
+        ExplicitWidth = 183
+        ExplicitHeight = 292
+        Columns = <>
+      end
+    end
+    object vtDayData: TVirtualStringTree
+      Left = 185
+      Top = 0
+      Width = 669
+      Height = 415
+      Margins.Left = 1
+      Margins.Top = 1
+      Margins.Right = 1
+      Margins.Bottom = 1
+      Align = alClient
+      BevelInner = bvNone
+      BevelOuter = bvNone
+      Ctl3D = False
+      Header.AutoSizeIndex = 0
+      Header.Font.Charset = DEFAULT_CHARSET
+      Header.Font.Color = clWindowText
+      Header.Font.Height = -11
+      Header.Font.Name = 'Tahoma'
+      Header.Font.Style = []
+      Header.MainColumn = -1
+      ParentCtl3D = False
+      TabOrder = 1
+      ExplicitLeft = 187
+      ExplicitTop = 4
+      Columns = <>
+    end
+  end
 end

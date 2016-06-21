@@ -84,6 +84,11 @@ end;
 procedure TStockDataRepairApp.Run;
 begin
   Application.CreateForm(SDRepairForm.TfrmSDRepair, fStockDataRepairAppData.RepairConsoleForm);
+
+  if nil <> fStockDataRepairAppData.RepairConsoleForm then
+  begin
+    fStockDataRepairAppData.RepairConsoleForm.Initialize(Self);
+  end;
   Application.Run;
 end;
 
