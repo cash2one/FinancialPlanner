@@ -91,8 +91,26 @@ type
     PriceRange          : TStore_PriceRange;  // 16
     Reserve             : array[0..64 - 1 - SizeOf(TStore_PriceRange)] of Byte;
   end;
+            
+  PStore_Quote32_M1     = ^TStore_Quote32_M1;
+  TStore_Quote32_M1     = packed record // 128
+  // 一个时间段内的 价格表示
+    PriceRange          : TStore_PriceRange;  // 16
+    Reserve             : array[0..32 - 1 - SizeOf(TStore_PriceRange)] of Byte;
+  end;
 
-  { 日线数据 }
+  { 日线数据 } 
+  PStore_Quote64_M1_Day  = ^TStore_Quote64_M1_Day_V1;
+  TStore_Quote64_M1_Day  = packed record  // 56
+    PriceRange          : TStore_PriceRange;  // 16
+    DealVolume          : Int64;         // 8 - 24 成交量
+    DealAmount          : Int64;         // 8 - 32 成交金额
+    DealDate            : Integer;       // 4 - 36 交易日期
+    Weight              : TStore_Weight; // 4 - 40 复权权重 * 100
+    TotalValue          : Int64;         // 8 - 48 总市值
+    DealValue           : Int64;         // 8 - 56 流通市值 
+  end;
+        
   PStore_Quote64_M1_Day_V1  = ^TStore_Quote64_M1_Day_V1;
   TStore_Quote64_M1_Day_V1  = packed record  // 56      
     PriceRange          : TStore_PriceRange;  // 16
@@ -103,8 +121,28 @@ type
     TotalValue          : Int64;         // 8 - 48 总市值
     DealValue           : Int64;         // 8 - 56 流通市值 
   end;
-         
+                 
+  PStore_Quote64_M1_Day_V2  = ^TStore_Quote64_M1_Day_V2; //--> PStore_Quote64_M1
+  TStore_Quote64_M1_Day_V2  = packed record  // 56    
+    QuoteDay            : TStore_Quote64_M1_Day;   
+    Reserve             : array [0..64 - SizeOf(TStore_Quote64_M1_Day) - 1] of Byte;
+  end;
+           
   { 分时数据 detail }
+  PStore_Quote32_M1_Time  = ^TStore_Quote32_M1_Time;  //
+  TStore_Quote32_M1_Time  = packed record  // 28
+    PriceRange          : TStore_PriceRange;  // 16
+    DealVolume          : Integer;       // 4 - 20 成交量
+    DealAmount          : Integer;       // 4 - 24 成交金额
+    DealDate            : Word;        // 2 - 26 交易日期
+    DealStartTime       : Word;        // 2 - 28 时间
+  end;
+
+  TStore_Quote32_M1_Time_V1 = record
+    QuoteTime            : TStore_Quote32_M1_Time;
+    Reserve             : array [0..32 - SizeOf(TStore_Quote32_M1_Time) - 1] of Byte;
+  end;
+  
   PStore_Quote64_M1_Time_V1  = ^TStore_Quote64_M1_Time_V1;  //
   TStore_Quote64_M1_Time_V1  = packed record  // 56
     PriceRange          : TStore_PriceRange;  // 16
