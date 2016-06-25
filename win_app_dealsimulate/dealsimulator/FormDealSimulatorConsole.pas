@@ -21,15 +21,17 @@ type
   end;
 
   TfrmDataViewer = class(TfrmBase)
-    pnMain: TPanel;
-    pnStocks: TPanel;
-    split1: TSplitter;
-    vtStocks: TVirtualStringTree;
     pnTop: TPanel;
-    pnData: TPanel;
-    ts1: TTabSet;
-    cbbDataSrc: TComboBox;
-    procedure cbbDataSrcChange(Sender: TObject);
+    pnlMain: TPanel;
+    edStartMoney: TEdit;
+    Label1: TLabel;
+    Label2: TLabel;
+    edStartDate: TEdit;
+    Memo1: TMemo;
+    Label3: TLabel;
+    Button1: TButton;
+    Label4: TLabel;
+    Label5: TLabel;
   protected
     fDataViewerData: TDataViewerData;        
   public                        
@@ -59,40 +61,10 @@ end;
 
 { TfrmDataViewer }
                        
-procedure TfrmDataViewer.cbbDataSrcChange(Sender: TObject);
-var
-  tmpOldDataSrc: integer;
-  tmpOldIsWeight: Boolean;
-begin
-  inherited;
-  tmpOldDataSrc := fDataViewerData.DataSrc;
-  tmpOldIsWeight := fDataViewerData.IsWeight;
-  if 0 = cbbDataSrc.ItemIndex then
-  begin
-    fDataViewerData.DataSrc := DataSrc_163;
-    fDataViewerData.IsWeight := false;
-  end;
-  if 1 = cbbDataSrc.ItemIndex then
-  begin
-    fDataViewerData.DataSrc := DataSrc_Sina;
-    fDataViewerData.IsWeight := false;
-  end;
-  if 2 = cbbDataSrc.ItemIndex then
-  begin
-    fDataViewerData.DataSrc := DataSrc_Sina;
-    fDataViewerData.IsWeight := true;
-  end;              
-  if (tmpOldDataSrc <> fDataViewerData.DataSrc) or
-     (tmpOldIsWeight <> fDataViewerData.IsWeight) then
-  begin
-  end;
-end;
-
 constructor TfrmDataViewer.Create(AOwner: TComponent);
 begin
   inherited;
   FillChar(fDataViewerData, SizeOf(fDataViewerData), 0);
-  ts1.Tabs.Clear;
 end;
 
 destructor TfrmDataViewer.Destroy;
@@ -103,7 +75,6 @@ end;
 procedure TfrmDataViewer.Initialize(App: TBaseApp);
 begin
   inherited;
-  ts1.TabIndex := 0;
 end;
 
 end.
