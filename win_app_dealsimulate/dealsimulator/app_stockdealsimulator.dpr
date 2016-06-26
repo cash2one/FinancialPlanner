@@ -42,8 +42,10 @@ uses
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDetailDataAccess in '..\..\data_stock\StockDetailDataAccess.pas',
   StockDetailData_Load in '..\..\data_stock\StockDetailData_Load.pas',
-  FormDealSimulatorConsole in 'FormDealSimulatorConsole.pas' {frmDataViewer},
-  StockDealSimulatorApp in 'StockDealSimulatorApp.pas';
+  FormDealSimulatorConsole in 'FormDealSimulatorConsole.pas' {frmDealSimulation},
+  StockDealSimulatorApp in 'StockDealSimulatorApp.pas',
+  define_dealsimulation in 'define_dealsimulation.pas',
+  utils_dealsimulation in 'utils_dealsimulation.pas';
 
 {$R *.res}
 

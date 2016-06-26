@@ -5,8 +5,9 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   BaseApp, BaseForm, VirtualTrees, ExtCtrls, Tabs,
-  db_dealItem, StockDayDataAccess,
-  BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, StdCtrls;
+  db_dealItem, StockDayDataAccess, define_dealsimulation,
+  BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, StdCtrls,
+  ComCtrls;
 
 type
   TDataViewerData = record
@@ -20,18 +21,34 @@ type
     IsWeight: Boolean;
   end;
 
-  TfrmDataViewer = class(TfrmBase)
+  TfrmDealSimulation = class(TfrmBase)
     pnTop: TPanel;
     pnlMain: TPanel;
-    edStartMoney: TEdit;
+    edLogs: TMemo;
+    pnlConsole: TPanel;
     Label1: TLabel;
     Label2: TLabel;
-    edStartDate: TEdit;
-    Memo1: TMemo;
-    Label3: TLabel;
-    Button1: TButton;
+    edStartMoney: TEdit;
+    btnStart: TButton;
     Label4: TLabel;
     Label5: TLabel;
+    pnlDealCmd: TPanel;
+    pnlDealHistory: TPanel;
+    Label3: TLabel;
+    vtDealHistory: TVirtualStringTree;
+    edStock: TEdit;
+    Label6: TLabel;
+    Label7: TLabel;
+    edPrice: TEdit;
+    Label8: TLabel;
+    edNum: TEdit;
+    pnlHolds: TPanel;
+    Label9: TLabel;
+    vtHoldsNow: TVirtualStringTree;
+    btnBuy: TButton;
+    btnSale: TButton;
+    dateDeal: TDateTimePicker;
+    dateStart: TDateTimePicker;
   protected
     fDataViewerData: TDataViewerData;        
   public                        
@@ -51,28 +68,29 @@ uses
   Define_DataSrc,
   define_DealItem,
   define_stock_quotes,
+  utils_dealsimulation,
   StockDayData_Load,
   db_dealItem_Load;
       
 procedure CreateMainForm(var AForm: TfrmBase);
 begin
-  Application.CreateForm(TfrmDataViewer, AForm);
+  Application.CreateForm(TfrmDealSimulation, AForm);
 end;
 
 { TfrmDataViewer }
                        
-constructor TfrmDataViewer.Create(AOwner: TComponent);
+constructor TfrmDealSimulation.Create(AOwner: TComponent);
 begin
   inherited;
   FillChar(fDataViewerData, SizeOf(fDataViewerData), 0);
 end;
 
-destructor TfrmDataViewer.Destroy;
+destructor TfrmDealSimulation.Destroy;
 begin
   inherited;
 end;
                                   
-procedure TfrmDataViewer.Initialize(App: TBaseApp);
+procedure TfrmDealSimulation.Initialize(App: TBaseApp);
 begin
   inherited;
 end;

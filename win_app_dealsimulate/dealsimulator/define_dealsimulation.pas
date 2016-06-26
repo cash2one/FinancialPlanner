@@ -7,75 +7,110 @@ uses
   define_price;
   
 type
-  TDealDirection = (dealBuy, dealSale);
+  TDealDirection = (
+    dealBuy,
+    dealSale,
+    dealMoneyIn,  // 存款进入
+    dealMoneyOut  // 取款
+    );
 
-  TDealAction           = packed record
+  TRT_DealAction        = packed record
     DealDirection       : TDealDirection;
     StockCode           : TDealCodePack;
     Price               : TRT_PricePack;
     Num                 : Integer;
+    DealTime            : Word;
   end;
 
   PDealActionNode       = ^TDealActionNode;
   TDealActionNode       = packed record
     PrevSibling         : PDealActionNode;
     NextSibling         : PDealActionNode;
-    DealAction          : TDealAction;
+    DealAction          : TRT_DealAction;
   end;
 
-  TDealActions          = packed record
+  TRT_DealActions       = packed record
     FirstActionNode     : PDealActionNode;
     LastActionNode      : PDealActionNode;
   end;
 
-  TDealItemHoldItem     = packed record
+  TRT_DealItemHoldItem  = packed record
     StockCode           : TDealCodePack;
-    Num                 : Integer;
+    Num                 : Integer;     
+    DealDate            : Word;      
+    DealTime            : Word;
+    Cost                : TRT_PricePack// 成本价 
   end;
 
   PDealItemHoldItemNode = ^TDealItemHoldItemNode;
   TDealItemHoldItemNode = packed record
     PrevSibling         : PDealItemHoldItemNode;
     NextSibling         : PDealItemHoldItemNode;
-    HoldItem            : TDealItemHoldItem;
+    HoldItem            : TRT_DealItemHoldItem;
   end;
   
-  TDealItemHoldItems    = packed record
+  TRT_DealItemHoldItems = packed record
     FirstHoldItemNode   : PDealItemHoldItemNode;
     LastHoldItemNode    : PDealItemHoldItemNode;
   end;
 
   // 交易结算
-  TDealSettlement       = packed record
+  PRT_DealSettlement    = ^TRT_DealSettlement;
+  TRT_DealSettlement    = packed record
     Date                : Word;  
-    Money               : integer; // 现金
-    HoldItems           : TDealItemHoldItems; // 持仓
+    MoneyAvailable      : integer; // 现金   
+    MoneyLocked         : integer; // 现金
+    HoldItems           : TRT_DealItemHoldItems; // 持仓
   end;
           
-  TDealSimulationDay    = packed record
-    Date                : Word;
-    DealSettlement      : TDealSettlement;
-    DealActions         : TDealActions;
+  TRT_DealDaySettlement   = packed record
+    Date                  : Word;
+    DealSettlement        : TRT_DealSettlement;
+    DealRequests          : TRT_DealActions; // 交易请求   
+    DealActions           : TRT_DealActions; // 交易成交   
   end;
 
-  PDealSimulationDayNode = ^TDealSimulationDayNode;
-  TDealSimulationDayNode = record     
-    PrevSibling         : PDealSimulationDayNode;
-    NextSibling         : PDealSimulationDayNode;
-    DealSimulationDay   : TDealSimulationDay;
+  PDealHistoryDayNode     = ^TDealHistoryDayNode;
+  TDealHistoryDayNode     = record
+    PrevSibling           : PDealHistoryDayNode;
+    NextSibling           : PDealHistoryDayNode;
+    DealSimulationDay     : TRT_DealDaySettlement;
   end;
 
-  TDealSimulationDays   = packed record
-    FirstSimulationDay  : PDealSimulationDayNode;
-    LastSimulationDay   : PDealSimulationDayNode;
+  PRT_DealHistorys        = ^TRT_DealHistorys;
+  TRT_DealHistorys        = packed record
+    FirstDealHistoryDay   : PDealHistoryDayNode;
+    LastDealHistoryDay    : PDealHistoryDayNode;
   end;
   
   // 交易模拟 Session
-  PDealSimulationSession = ^TDealSimulationSession;
-  TDealSimulationSession = packed record
-    StartDate            : Word;
-    StartMoney           : Integer;
-    DealSimulationDays   : TDealSimulationDays;
+  PRT_DealAccount         = ^TRT_DealAccount;
+  TRT_DealAccount         = record
+    StartMoney            : Integer;
+    EndAsset              : Integer;
+    // 当日结算
+    CurrentSettlement     : TRT_DealDaySettlement;
+    // 交易历史
+    DealHistorys          : TRT_DealHistorys;
+  end;
+
+  PDealAccountNode        = ^TDealAccountNode;
+  TDealAccountNode        = record        
+    PrevSibling           : PDealAccountNode;
+    NextSibling           : PDealAccountNode;
+    DealAccount           : TRT_DealAccount;
+  end;
+
+  TRT_DealAccounts        = record
+    FirstDealAccount      : PDealAccountNode;
+    LastDealAccount       : PDealAccountNode;
+  end;
+  
+  PRT_DealHistorySession  = ^TRT_DealHistorySession;
+  TRT_DealHistorySession  = packed record
+    StartDate             : Word;
+    EndDate               : Word;
+    DealAccounts          : TRT_DealAccounts;
   end;
 
 implementation

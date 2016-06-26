@@ -9,7 +9,7 @@ uses
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, StdCtrls;
 
 type
-  TDataViewerData = record
+  TDealStrategyFormData = record
     ActiveFrame: TfrmBase;
     Rule_CYHT_Price: TRule_CYHT_Price;
     Rule_BDZX_Price: TRule_BDZX_Price;
@@ -20,18 +20,9 @@ type
     IsWeight: Boolean;
   end;
 
-  TfrmDataViewer = class(TfrmBase)
-    pnMain: TPanel;
-    pnStocks: TPanel;
-    split1: TSplitter;
-    vtStocks: TVirtualStringTree;
-    pnTop: TPanel;
-    pnData: TPanel;
-    ts1: TTabSet;
-    cbbDataSrc: TComboBox;
-    procedure cbbDataSrcChange(Sender: TObject);
+  TfrmDealStrategy = class(TfrmBase)
   protected
-    fDataViewerData: TDataViewerData;        
+    fDealStrategyFormData: TDealStrategyFormData;        
   public                        
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -54,56 +45,25 @@ uses
       
 procedure CreateMainForm(var AForm: TfrmBase);
 begin
-  Application.CreateForm(TfrmDataViewer, AForm);
+  Application.CreateForm(TfrmDealStrategy, AForm);
 end;
 
 { TfrmDataViewer }
                        
-procedure TfrmDataViewer.cbbDataSrcChange(Sender: TObject);
-var
-  tmpOldDataSrc: integer;
-  tmpOldIsWeight: Boolean;
+constructor TfrmDealStrategy.Create(AOwner: TComponent);
 begin
   inherited;
-  tmpOldDataSrc := fDataViewerData.DataSrc;
-  tmpOldIsWeight := fDataViewerData.IsWeight;
-  if 0 = cbbDataSrc.ItemIndex then
-  begin
-    fDataViewerData.DataSrc := DataSrc_163;
-    fDataViewerData.IsWeight := false;
-  end;
-  if 1 = cbbDataSrc.ItemIndex then
-  begin
-    fDataViewerData.DataSrc := DataSrc_Sina;
-    fDataViewerData.IsWeight := false;
-  end;
-  if 2 = cbbDataSrc.ItemIndex then
-  begin
-    fDataViewerData.DataSrc := DataSrc_Sina;
-    fDataViewerData.IsWeight := true;
-  end;              
-  if (tmpOldDataSrc <> fDataViewerData.DataSrc) or
-     (tmpOldIsWeight <> fDataViewerData.IsWeight) then
-  begin
-  end;
+  FillChar(fDealStrategyFormData, SizeOf(fDealStrategyFormData), 0);
 end;
 
-constructor TfrmDataViewer.Create(AOwner: TComponent);
-begin
-  inherited;
-  FillChar(fDataViewerData, SizeOf(fDataViewerData), 0);
-  ts1.Tabs.Clear;
-end;
-
-destructor TfrmDataViewer.Destroy;
+destructor TfrmDealStrategy.Destroy;
 begin
   inherited;
 end;
                                   
-procedure TfrmDataViewer.Initialize(App: TBaseApp);
+procedure TfrmDealStrategy.Initialize(App: TBaseApp);
 begin
   inherited;
-  ts1.TabIndex := 0;
 end;
 
 end.
