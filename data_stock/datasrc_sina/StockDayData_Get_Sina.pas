@@ -76,9 +76,13 @@ var
 begin
   Result := false;
   if weightNone <> AWeightMode then
-    tmpUrl := BaseSinaDayUrl_weight
-  else
+  begin
+    tmpUrl := BaseSinaDayUrl_weight;
+    AWeightMode := weightBackward;
+  end else
+  begin
     tmpUrl := BaseSinaDayUrl1;
+  end;
   tmpurl := tmpurl + ADataAccess.StockItem.sCode + '.phtml';
   if (0 <> AYear) and (0 < ASeason) then 
   begin
@@ -117,6 +121,10 @@ var
   tmpJidu: integer;
 begin
   Result := false;
+  if weightNone <> AWeightMode then
+  begin
+    AWeightMode := weightBackward;
+  end;
   tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AWeightMode);
   try                      
     tmpLastDealDate := Trunc(now());
