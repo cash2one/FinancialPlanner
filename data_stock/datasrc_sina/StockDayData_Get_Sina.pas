@@ -36,8 +36,9 @@ uses
   Define_DataSrc,    
   define_stock_quotes,
   UtilsDateTime,
-  StockDayData_Parse_Sina_Html1,
-  StockDayData_Parse_Sina_Html2,  
+  //StockDayData_Parse_Sina_Html1,
+  //StockDayData_Parse_Sina_Html2,  
+  StockDayData_Parse_Sina_Html3,  
   UtilsLog,
   StockDayData_Parse_Sina,
   StockDayData_Load,
@@ -58,8 +59,8 @@ begin
   if nil <> tmpHttpData then
   begin
     try
-      Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
-      //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
+      //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+      Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
     finally
       CheckInIOBuffer(tmpHttpData);
     end;
@@ -92,8 +93,8 @@ begin
     if nil <> tmpHttpData then
     begin
       try
-        Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
-        //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
+        //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+        Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
       finally
         CheckInIOBuffer(tmpHttpData);
       end;
