@@ -7,13 +7,14 @@ uses
   Sysutils,
   UtilsHttp,
   win.iobuffer,
+  define_price,
   define_dealitem,
   define_stockday_sina,
   StockDayDataAccess;
          
 const
   BaseSinaDayUrl1 = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/';
-  BaseSinaDayUrl2 = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_FuQuanMarketHistory/stockid/';
+  BaseSinaDayUrl_weight = 'http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_FuQuanMarketHistory/stockid/';
   (*//           
   // http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_FuQuanMarketHistory/stockid/600000.phtml
   // http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/600000.phtml
@@ -25,14 +26,13 @@ const
      http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/000300/type/S.phtml
   //*)
   
-function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
+function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean;
 
 implementation
 
 uses
   Classes,
   Windows,
-  define_price,         
   Define_DataSrc,    
   define_stock_quotes,
   UtilsDateTime,
@@ -44,14 +44,14 @@ uses
   StockDayData_Load,
   StockDayData_Save;
 
-function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
+function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpurl: string;  
   tmpHttpData: PIOBuffer;        
 begin          
   Result := false;
-  if AIsWeight then
-    tmpUrl := BaseSinaDayUrl2
+  if weightNone <> AWeightMode then
+    tmpUrl := BaseSinaDayUrl_weight
   else
     tmpUrl := BaseSinaDayUrl1;
   tmpurl := tmpurl + ADataAccess.StockItem.sCode + '.phtml';
@@ -68,15 +68,15 @@ begin
   Sleep(100);
 end;
 
-function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
+function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;
   tmpRepeat: Integer;    
 begin
   Result := false;
-  if AIsWeight then
-    tmpUrl := BaseSinaDayUrl2
+  if weightNone <> AWeightMode then
+    tmpUrl := BaseSinaDayUrl_weight
   else
     tmpUrl := BaseSinaDayUrl1;
   tmpurl := tmpurl + ADataAccess.StockItem.sCode + '.phtml';
@@ -106,7 +106,7 @@ begin
   end;
 end;
 
-function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean;
+function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean;
 var
   tmpStockDataAccess: TStockDayDataAccess; 
   tmpLastDealDate: Word;
@@ -117,7 +117,7 @@ var
   tmpJidu: integer;
 begin
   Result := false;
-  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AIsWeight);
+  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AWeightMode);
   try                      
     tmpLastDealDate := Trunc(now());
     tmpInt := DayOfWeek(tmpLastDealDate);
@@ -169,7 +169,7 @@ begin
     begin
       while tmpJidu < 5 do
       begin
-        DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, AIsWeight, ANetSession);
+        DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, AWeightMode, ANetSession);
         Inc(tmpJidu);
       end;
       Inc(tmpFromYear);
@@ -177,10 +177,10 @@ begin
     end; 
     while tmpJidu < SeasonOfMonth(tmpCurrentMonth) do
     begin
-      DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, AIsWeight, ANetSession);
+      DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, AWeightMode, ANetSession);
       Inc(tmpJidu);
     end;
-    DataGet_DayData_SinaNow(tmpStockDataAccess, AIsWeight, ANetSession);
+    DataGet_DayData_SinaNow(tmpStockDataAccess, AWeightMode, ANetSession);
 
     tmpStockDataAccess.Sort;
     SaveStockDayData(App, tmpStockDataAccess); 

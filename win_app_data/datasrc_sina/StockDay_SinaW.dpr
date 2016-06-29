@@ -2,7 +2,8 @@
 
 uses
   Windows,
-  HTMLParser in '..\..\..\devdcomps\htmlparser\htmlp\HTMLParser.pas',
+  HTMLParserAll in '..\..\Utils\HTMLParserAll.pas',
+  WStrings in '..\..\Utils\WStrings.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   QuickList_Int in '..\..\..\devwintech\comps\list\QuickList_Int.pas',
   WinSock2 in '..\..\..\devwintech\common\WinSock2.pas',
@@ -43,7 +44,7 @@ uses
   StockDayData_Get_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Get_Sina.pas',
   StockDayData_Parse_Sina in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina.pas',
   StockDayData_Parse_Sina_Html1 in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina_Html1.pas',
-  StockDayData_Parse_Sina_Html2 in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina_Html2.pas',
+  StockDayData_Parse_Sina_Html3 in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina_Html3.pas',
   StockDay_Get_Sina in 'StockDay_Get_Sina.pas',
   define_stockday_sina in 'define_stockday_sina.pas';
 
@@ -66,7 +67,7 @@ end;
 
 procedure TStockDaySinaWApp.Run;
 begin
-  GetStockDataDay_Sina_All(Self, true);
+  GetStockDataDay_Sina_All(Self, weightBackward);
 end;
 
 var

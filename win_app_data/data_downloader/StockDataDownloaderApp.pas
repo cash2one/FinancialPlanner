@@ -37,7 +37,8 @@ implementation
 uses
   windef_msg,
   BaseWinApp,
-  BaseStockApp, 
+  BaseStockApp,
+  define_price,
   StockDayData_Get_163,
   UtilsLog;
 
@@ -143,7 +144,7 @@ begin
   tmpStockItem := TBaseStockApp(Self.fBaseAppAgentData.HostApp).StockItemDB.FindItem(IntToStr(AStockCode));
   if nil <> tmpStockItem then
   begin
-    GetStockDataDay_163(fBaseAppAgentData.HostApp, tmpStockItem, False, @ADownloaderApp.HttpClientSession);
+    GetStockDataDay_163(fBaseAppAgentData.HostApp, tmpStockItem, weightNone, @ADownloaderApp.HttpClientSession);
     SDLog('', 'Downloader_Download:' + IntToStr(AStockCode));
     if Downloader_CheckConsoleProcess(ADownloaderApp) then
     begin

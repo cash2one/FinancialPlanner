@@ -2,10 +2,11 @@ unit StockDay_Get_Sina;
 
 interface
 
-uses
+uses          
+  Define_Price,
   BaseApp;
 
-  procedure GetStockDataDay_Sina_All(App: TBaseApp; AIsWeight: Boolean);
+  procedure GetStockDataDay_Sina_All(App: TBaseApp; AWeightMode: TWeightMode);
 
 implementation
 
@@ -14,7 +15,6 @@ uses
   Sysutils,
   Classes,
   UtilsHttp,
-  Define_Price,
   Define_DealItem,
   Define_DataSrc,    
   define_stock_quotes,
@@ -31,7 +31,7 @@ uses
   DB_DealItem_Save;                 
                     
 
-procedure GetStockDataDay_Sina_All(App: TBaseApp; AIsWeight: Boolean);
+procedure GetStockDataDay_Sina_All(App: TBaseApp; AWeightMode: TWeightMode);
 var
   tmpDBStockItem: TDBDealItem;
   tmpNetClientSession: THttpClientSession;
@@ -52,7 +52,7 @@ begin
       tmpDealItem := tmpDBStockItem.Items[i];
       if 0 = tmpDealItem.EndDealDate then
       begin                                        
-        if GetStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpNetClientSession) then
+        if GetStockDataDay_Sina(App, tmpDealItem, AWeightMode, @tmpNetClientSession) then
         begin
           //Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Succ');
           Sleep(1000);

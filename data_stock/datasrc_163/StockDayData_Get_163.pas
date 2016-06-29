@@ -4,7 +4,8 @@ interface
 
 uses
   BaseApp,
-  Sysutils,
+  Sysutils,    
+  define_price,     
   UtilsHttp,
   win.iobuffer,
   define_dealitem,
@@ -73,14 +74,13 @@ const
     '涨跌额', '涨跌幅', '换手率', '成交量',
     '成交金额', '总市值', '流通市值');
                   
-function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; AHttpSession: PHttpClientSession): Boolean;
+function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; AHttpSession: PHttpClientSession): Boolean;
 
 implementation
 
 uses
   Classes,
-  Windows,
-  define_price,         
+  Windows,    
   Define_DataSrc,    
   define_stock_quotes,
   StockDayData_Load,
@@ -296,7 +296,7 @@ begin
   end;
 end;
                                                                                                                
-function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; AHttpSession: PHttpClientSession): Boolean;
+function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; AHttpSession: PHttpClientSession): Boolean;
 var
   tmpStockDataAccess: TStockDayDataAccess;
   tmpUrl: string;
@@ -306,7 +306,7 @@ var
   tmpHttpData: PIOBuffer;
 begin
   Result := false;
-  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_163, AIsWeight);
+  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_163, AWeightMode);
   try
     tmpLastDealDate := Trunc(now());
     tmpInt := DayOfWeek(tmpLastDealDate);

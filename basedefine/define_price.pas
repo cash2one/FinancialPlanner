@@ -10,6 +10,12 @@ type
     udDown      // 下跌
   );
 
+  TWeightMode = (
+    weightNone,  // 不复权
+    weightForward,  // 前复权
+    weightBackward  // 后复权    
+  );
+
   TStore_UpDownStatus   = Integer;
   
   PRT_PricePack         = ^TRT_PricePack;

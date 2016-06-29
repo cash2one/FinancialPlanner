@@ -6,6 +6,7 @@ uses
   define_dealItem,
   BaseDataSet,
   QuickList_int,
+  define_price,
   define_stock_quotes;
   
 type
@@ -39,7 +40,7 @@ type
     function GetRecordItem(AIndex: integer): Pointer; override;
     function GetRecordCount: Integer; override;
   public
-    constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer; AIsWeight: Boolean);
+    constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer; AWeightMode: TWeightMode);
     destructor Destroy; override;
     
     function FindRecord(ADate: Integer): PRT_Quote_M1_Day;
@@ -100,7 +101,7 @@ begin
   end;
 end;
         
-constructor TStockDayDataAccess.Create(AStockItem: PRT_DealItem; ADataSrcId: integer; AIsWeight: Boolean);
+constructor TStockDayDataAccess.Create(AStockItem: PRT_DealItem; ADataSrcId: integer; AWeightMode: TWeightMode);
 begin
   //inherited;
   FillChar(fStockDayData, SizeOf(fStockDayData), 0);
@@ -112,7 +113,7 @@ begin
   fStockDayData.FirstDealDate     := 0;   // 2
   fStockDayData.LastDealDate      := 0;   // 2 最后记录交易时间
   fStockDayData.DataSourceId := ADataSrcId;
-  fStockDayData.IsWeight := Byte(AIsWeight);
+  fStockDayData.IsWeight := Byte(AWeightMode);
 end;
 
 destructor TStockDayDataAccess.Destroy;

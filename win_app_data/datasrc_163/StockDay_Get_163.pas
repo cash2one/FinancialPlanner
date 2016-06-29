@@ -55,7 +55,7 @@ begin
           tmpIsNeedSaveStockItemDB := true;
         end;
         tmpDealItem.IsDataChange := 0;
-        if GetStockDataDay_163(App, tmpDealItem, false, @tmpHttpClientSession) then
+        if GetStockDataDay_163(App, tmpDealItem, weightNone, @tmpHttpClientSession) then
         begin
           Sleep(2000);
         end;                                      
