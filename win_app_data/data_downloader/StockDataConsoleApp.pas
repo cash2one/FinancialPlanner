@@ -48,6 +48,9 @@ var
   G_StockDataConsoleApp: TStockDataConsoleApp = nil;
                        
 function AppCommandWndProcA(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
+var
+  tmpStockCode: integer;
+  tmpDataSrc: integer;
 begin
   Result := 0;
   case AMsg of
@@ -66,7 +69,10 @@ begin
         if nil <> G_StockDataConsoleApp then
         begin
           if G_StockDataConsoleApp.Console_CheckDownloaderProcess(@G_StockDataConsoleApp.fConsoleAppData) then
-          begin
+          begin                         
+            tmpStockCode := wParam;
+            tmpDataSrc := lParam;
+            
             if 0 = G_StockDataConsoleApp.fConsoleAppData.Download_DealItemCode then
             begin
               G_StockDataConsoleApp.fConsoleAppData.Download_DealItemIndex := 0;
