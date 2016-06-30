@@ -5,7 +5,8 @@ interface
 uses           
   Sysutils, Windows,   
   UtilsHttp,
-  BaseApp,
+  BaseApp,          
+  define_price,
   define_dealItem,
   define_stockapp,
   define_StockDataApp,
@@ -27,8 +28,8 @@ type
     function Initialize: Boolean; override;
     procedure Run; override;  
     function CreateAppCommandWindow: Boolean;
-    procedure Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode: integer); overload;
-    procedure Downloader_Download(AStockCode: integer); overload;
+    procedure Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode, ADataSrc: integer); overload;
+    procedure Downloader_Download(AStockCode, ADataSrc: integer); overload;
     function Downloader_CheckConsoleProcess(ADownloaderApp: PDownloaderAppData): Boolean;
   end;
   
@@ -38,7 +39,7 @@ uses
   windef_msg,
   BaseWinApp,
   BaseStockApp,
-  define_price,
+  define_datasrc,
   StockDayData_Get_163,
   UtilsLog;
 
@@ -50,17 +51,18 @@ begin
   Result := 0;
   case AMsg of
     WM_AppStart: begin
+      exit;
     end;
     WM_AppRequestEnd: begin    
       GlobalBaseStockApp.Terminate;
     end;
     WM_Console2Downloader_Command_Download: begin
-      PostMessage(AWnd, WM_Downloader_Command_Download, wParam, 0)
+      PostMessage(AWnd, WM_Downloader_Command_Download, wParam, lParam)
     end;
     WM_Downloader_Command_Download: begin
       if nil <> G_StockDataDownloaderApp then
       begin
-        G_StockDataDownloaderApp.Downloader_Download(wParam);
+        G_StockDataDownloaderApp.Downloader_Download(wParam, lParam);
       end;
     end;
   end;
@@ -137,23 +139,26 @@ begin
   Result := Windows.IsWindow(TBaseStockApp(fBaseAppAgentData.HostApp).AppWindow);
 end;
         
-procedure TStockDataDownloaderApp.Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode: integer);
+procedure TStockDataDownloaderApp.Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode, ADataSrc: integer);
 var
   tmpStockItem: PRT_DealItem;
 begin
   tmpStockItem := TBaseStockApp(Self.fBaseAppAgentData.HostApp).StockItemDB.FindItem(IntToStr(AStockCode));
   if nil <> tmpStockItem then
   begin
-    GetStockDataDay_163(fBaseAppAgentData.HostApp, tmpStockItem, weightNone, @ADownloaderApp.HttpClientSession);
-    SDLog('', 'Downloader_Download:' + IntToStr(AStockCode));
+    if DataSrc_163 = ADataSrc then
+    begin
+      GetStockDataDay_163(fBaseAppAgentData.HostApp, tmpStockItem, @ADownloaderApp.HttpClientSession);
+      SDLog('', 'Downloader_Download 163:' + IntToStr(AStockCode));
+    end;
     if Downloader_CheckConsoleProcess(ADownloaderApp) then
     begin
       SDLog('', 'Downloader_Downloaded:' + IntToStr(AStockCode));
-      PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadResult, AStockCode, 0);
+      PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadResult, Windows.GetCurrentProcessId, 0);
     end else
     begin
       // 
-      PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadResult, AStockCode, 1001);
+      PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadResult, Windows.GetCurrentProcessId, 1001);
     end;
   end else
   begin
@@ -171,9 +176,9 @@ begin
   end;
 end;
 
-procedure TStockDataDownloaderApp.Downloader_Download(AStockCode: integer);
+procedure TStockDataDownloaderApp.Downloader_Download(AStockCode, ADataSrc: integer);
 begin
-  Downloader_Download(@fDownloaderAppData, AStockCode);
+  Downloader_Download(@fDownloaderAppData, AStockCode, ADataSrc);
 end;
 
 end.
