@@ -68,17 +68,17 @@ begin
   Sleep(100);
 end;
 
-function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean; overload;
+function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;
   tmpRepeat: Integer;    
 begin
   Result := false;
-  if weightNone <> AWeightMode then
+  if weightNone <> ADataAccess.WeightMode then
   begin
     tmpUrl := BaseSinaDayUrl_weight;
-    AWeightMode := weightBackward;
+    ADataAccess.WeightMode := weightBackward;
   end else
   begin
     tmpUrl := BaseSinaDayUrl1;
@@ -177,7 +177,7 @@ begin
     begin
       while tmpJidu < 5 do
       begin
-        DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, AWeightMode, ANetSession);
+        DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, ANetSession);
         Inc(tmpJidu);
       end;
       Inc(tmpFromYear);
@@ -185,7 +185,7 @@ begin
     end; 
     while tmpJidu < SeasonOfMonth(tmpCurrentMonth) do
     begin
-      DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, AWeightMode, ANetSession);
+      DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, ANetSession);
       Inc(tmpJidu);
     end;
     DataGet_DayData_SinaNow(tmpStockDataAccess, AWeightMode, ANetSession);

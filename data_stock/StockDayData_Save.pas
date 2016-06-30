@@ -79,7 +79,7 @@ procedure SaveStockDayData(App: TBaseApp; ADataAccess: TStockDayDataAccess);
 var
   tmpFileUrl: string;
 begin
-  if ADataAccess.IsWeight then
+  if weightNone <> ADataAccess.WeightMode then
   begin
     tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
   end else

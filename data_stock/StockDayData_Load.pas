@@ -29,7 +29,7 @@ var
   tmpFileMapView: Pointer;   
 begin
   Result := false;
-  if ADataAccess.IsWeight then
+  if weightNone <> ADataAccess.WeightMode then
   begin
     tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
   end else
@@ -131,7 +131,7 @@ var
   tmpHead: PStore_Quote_M1_Day_Header_V1Rec;
 begin
   Result := true;
-  if ADataAccess.IsWeight then
+  if weightNone <> ADataAccess.WeightMode then
   begin
     tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
   end else

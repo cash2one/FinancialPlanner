@@ -14,7 +14,7 @@ type
   TStockDayData = record
     DealItem          : PRT_DealItem;
     IsDataChangedStatus: Byte;
-    IsWeight          : Byte;
+    WeightMode        : Byte;
     DayDealData       : TALIntegerList;
     FirstDealDate     : Word;   // 2
     LastDealDate      : Word;   // 2 最后记录交易时间
@@ -35,8 +35,9 @@ type
 
     procedure SetStockItem(AStockItem: PRT_DealItem);
 
-    function GetIsWeight: Boolean;
-    
+    function GetWeightMode: TWeightMode;
+    procedure SetWeightMode(value: TWeightMode);
+        
     function GetRecordItem(AIndex: integer): Pointer; override;
     function GetRecordCount: Integer; override;
   public
@@ -60,7 +61,7 @@ type
     property EndDealDate: Word read GetEndDealDate write SetEndDealDate;
     property StockItem: PRT_DealItem read fStockDayData.DealItem write SetStockItem;
     property DataSourceId: integer read fStockDayData.DataSourceId write fStockDayData.DataSourceId;
-    property IsWeight: Boolean read GetIsWeight;
+    property WeightMode: TWeightMode read GetWeightMode write SetWeightMode;
   end;
                             
   procedure AddDealDayData(ADataAccess: TStockDayDataAccess; ATempDealDayData: PRT_Quote_M1_Day);
@@ -113,7 +114,7 @@ begin
   fStockDayData.FirstDealDate     := 0;   // 2
   fStockDayData.LastDealDate      := 0;   // 2 最后记录交易时间
   fStockDayData.DataSourceId := ADataSrcId;
-  fStockDayData.IsWeight := Byte(AWeightMode);
+  fStockDayData.WeightMode := Byte(AWeightMode);
 end;
 
 destructor TStockDayDataAccess.Destroy;
@@ -160,9 +161,14 @@ begin
   Result := fStockDayData.FirstDealDate;
 end;
                   
-function TStockDayDataAccess.GetIsWeight: Boolean;
+function TStockDayDataAccess.GetWeightMode: TWeightMode;
 begin
-  Result := fStockDayData.IsWeight <> 0;
+  Result := TWeightMode(fStockDayData.WeightMode);
+end;
+
+procedure TStockDayDataAccess.SetWeightMode(value: TWeightMode);
+begin
+  fStockDayData.WeightMode := Byte(value);
 end;
 
 procedure TStockDayDataAccess.SetFirstDealDate(const Value: Word);
