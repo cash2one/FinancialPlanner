@@ -8,7 +8,9 @@ uses
 const
   WM_Console2Downloader_Base = WM_CustomAppBase + 100;
   WM_Console2Downloader_Command_Download = WM_Console2Downloader_Base + 1;
-                                                
+  WM_Console2Downloader_Command_Download_Day = WM_Console2Downloader_Base + 2;
+  WM_Console2Downloader_Command_Download_Detail = WM_Console2Downloader_Base + 3;
+
   WM_Console_Base = WM_CustomAppBase + 200;    
   WM_Console_Command_Download = WM_Console_Base + 1;
                                              

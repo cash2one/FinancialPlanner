@@ -53,8 +53,6 @@ end;
                                      
 procedure TfrmSDConsole.RequestDownloadStockData(AStockCode, ADataSrc: integer);
 begin
-  if 0 = AStockCode then
-    exit;              
   if IsWindow(TBaseWinApp(App).AppWindow) then
   begin
     PostMessage(TBaseWinApp(App).AppWindow, WM_Console_Command_Download, AStockCode, ADataSrc);

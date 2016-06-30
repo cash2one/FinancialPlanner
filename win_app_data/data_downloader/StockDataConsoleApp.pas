@@ -3,7 +3,7 @@ unit StockDataConsoleApp;
 interface
 
 uses      
-  Forms, Sysutils, Windows,  
+  Forms, Sysutils, Windows, Classes,  
   BaseApp,
   BaseForm,
   define_dealItem,
@@ -12,20 +12,22 @@ uses
   win.process;
   
 type
-  PDownloadTask = ^TDownloadTask;
-  TDownloadTask = record     
-    DownloadProcess: POwnedProcess;
-    TaskDataSrc: integer;
-    TaskDealItemCode: integer;
+  PDownloadTask       = ^TDownloadTask;
+  TDownloadTask       = record
+    DownloadProcess   : TOwnedProcess;
+    TaskID            : Integer;
+    TaskDataSrc       : Integer;
+    TaskDealItemCode  : Integer;
+    TaskDataType      : Integer;
 
-    DealItemIndex: Integer;     
-    DealItemCode: Integer;
+    DealItemIndex: Integer;
     DealItem: PRT_DealItem;
   end;
   
   PConsoleAppData = ^TConsoleAppData;
   TConsoleAppData = record
     ConsoleForm: BaseForm.TfrmBase;
+    TaskList: TList;
     //RequestDownloadTask: TDownloadTask;
   end;
 
@@ -38,9 +40,11 @@ type
     function Initialize: Boolean; override;
     procedure Run; override;
 
+    procedure ClearTask;    
     function GetDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;
     function NewDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;    
     function CheckOutDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;
+    function GetDownloadTaskByProcessID(AProcessId: integer): PDownloadTask;
     
     function CreateAppCommandWindow: Boolean;
     function Console_GetNextDownloadDealItem(ADownloadTask: PDownloadTask): PRT_DealItem;
@@ -64,6 +68,7 @@ var
   tmpStockCode: integer;
   tmpDataSrc: integer;
   tmpDownloadTask: PDownloadTask;
+  tmpDealItem: PRT_DealItem;
 begin
   Result := 0;
   case AMsg of
@@ -87,32 +92,37 @@ begin
           if nil = tmpDownloadTask then
           begin
             tmpDownloadTask := G_StockDataConsoleApp.NewDownloadTask(tmpDataSrc, tmpStockCode);
-            
-            if G_StockDataConsoleApp.Console_CheckDownloaderProcess(tmpDownloadTask) then
-            begin
-              if 0 = tmpDownloadTask.DealItemCode then
-              begin
-                tmpDownloadTask.DealItemIndex := 0;
-              end;
-              G_StockDataConsoleApp.Console_NotifyDownloadData(tmpDownloadTask);
-            end;
+          end;
+          if G_StockDataConsoleApp.Console_CheckDownloaderProcess(tmpDownloadTask) then
+          begin
+            G_StockDataConsoleApp.Console_NotifyDownloadData(tmpDownloadTask);
           end;
         end;
       end;
       exit;
     end;
     WM_Downloader2Console_Command_DownloadResult: begin
-      if 0 = lParam then
+      tmpDownloadTask := G_StockDataConsoleApp.GetDownloadTaskByProcessID(wParam);
+      if nil <> tmpDownloadTask then
       begin
-        // 下载成功
-        PostMessage(AWnd, WM_Console_Command_Download, 0, 0);
-      end else
-      begin
-        // 下载失败
-        PostMessage(AWnd, WM_Console_Command_Download, 0, 0);        
+        if 0 = lParam then
+        begin
+            // 下载成功
+          tmpDealItem := G_StockDataConsoleApp.Console_GetNextDownloadDealItem(tmpDownloadTask);
+          if nil <> tmpDealItem then
+          begin
+            tmpDownloadTask.DealItem := tmpDealItem;
+            PostMessage(AWnd, WM_Console_Command_Download, tmpDownloadTask.TaskDealItemCode, tmpDownloadTask.TaskDataSrc);
+          end else
+          begin
+            // 都下载完了 ???
+          end;
+        end else
+        begin
+            // 下载失败
+          PostMessage(AWnd, WM_Console_Command_Download, 0, 0);
+        end;
       end;
-      if nil <> G_StockDataConsoleApp then
-        //Console_NotifyDownloadData(@fConsoleAppData, Console_GetNextDownloadDealItem(@fConsoleAppData));
     end;
   end;
   Result := DefWindowProcA(AWnd, AMsg, wParam, lParam);
@@ -124,6 +134,8 @@ constructor TStockDataConsoleApp.Create(AHostApp: TBaseApp);
 begin
   inherited;
   G_StockDataConsoleApp := Self;
+  FillChar(fConsoleAppData, SizeOf(fConsoleAppData), 0);
+  fConsoleAppData.TaskList := TList.Create;
 end;
            
 destructor TStockDataConsoleApp.Destroy;
@@ -132,6 +144,8 @@ begin
   begin
     G_StockDataConsoleApp := nil;
   end;
+  ClearTask;
+  FreeAndNil(fConsoleAppData.TaskList);  
   inherited;
 end;
 
@@ -152,19 +166,70 @@ begin
   Application.Run;
 end;
 
-function TStockDataConsoleApp.GetDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;
+procedure TStockDataConsoleApp.ClearTask;
+var
+  i: Integer;
+  tmpTask: PDownloadTask;
+begin
+  if nil <> fConsoleAppData.TaskList then
+  begin
+    for i := fConsoleAppData.TaskList.Count - 1 downto 0 do
+    begin
+      tmpTask := fConsoleAppData.TaskList.Items[i];
+      FreeMem(tmpTask);
+    end;
+    fConsoleAppData.TaskList.Clear;
+  end;
+end;
+
+function TStockDataConsoleApp.GetDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;   
+var
+  i: Integer;   
+  tmpTask: PDownloadTask;
+begin
+  Result := nil; 
+  if nil <> fConsoleAppData.TaskList then
+  begin
+    for i := fConsoleAppData.TaskList.Count - 1 downto 0 do
+    begin
+      tmpTask := fConsoleAppData.TaskList.Items[i];   
+      if (tmpTask.TaskDataSrc = ATaskDataSrc) and ((tmpTask.TaskDealItemCode = ATaskDealItemCode)) then
+      begin
+        Result := tmpTask;
+        Break;
+      end;
+    end;
+  end;
+end;
+
+function TStockDataConsoleApp.GetDownloadTaskByProcessID(AProcessId: integer): PDownloadTask;
+var
+  i: Integer;   
+  tmpTask: PDownloadTask;
 begin
   Result := nil;
+  if nil <> fConsoleAppData.TaskList then
+  begin
+    for i := fConsoleAppData.TaskList.Count - 1 downto 0 do
+    begin
+      tmpTask := fConsoleAppData.TaskList.Items[i];
+      if tmpTask.DownloadProcess.Core.ProcessId = AProcessId then
+      begin
+        Result := tmpTask;
+        Break;
+      end;
+    end;
+  end;
 end;
 
 function TStockDataConsoleApp.NewDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;
 begin
-  Result := nil;
-  if nil <> Result then
-  begin
-    Result.TaskDataSrc := ATaskDataSrc;
-    Result.TaskDealItemCode := ATaskDealItemCode;
-  end;
+  Result := System.New(PDownloadTask);
+  FillChar(Result^, SizeOf(TDownloadTask), 0);
+
+  Result.TaskDataSrc := ATaskDataSrc;
+  Result.TaskDealItemCode := ATaskDealItemCode;
+  fConsoleAppData.TaskList.Add(Result);
 end;
 
 function TStockDataConsoleApp.CheckOutDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;
@@ -224,7 +289,7 @@ begin
   end;
   if Console_CheckDownloaderProcess(ADownloadTask) then
   begin
-    PostMessage(ADownloadTask.DownloadProcess.Core.AppCmdWnd, WM_Console2Downloader_Command_Download, ADownloadTask.DealItem.iCode, 0);
+    PostMessage(ADownloadTask.DownloadProcess.Core.AppCmdWnd, WM_Console2Downloader_Command_Download, ADownloadTask.DealItem.iCode, ADownloadTask.TaskDataSrc);
   end;
 end;
                
@@ -239,13 +304,34 @@ begin
     ADownloadTask.DealItemIndex := 0;
   if TBaseStockApp(fBaseAppAgentData.HostApp).StockItemDB.RecordCount <= ADownloadTask.DealItemIndex then
     exit;
-  if 0 = ADownloadTask.DealItemCode then
+  if 0 <> ADownloadTask.TaskDealItemCode then
+  begin                                       
+    if nil = ADownloadTask.DealItem then
+    begin
+      ADownloadTask.DealItem := TBaseStockApp(fBaseAppAgentData.HostApp).StockItemDB.FindItem(IntToStr(ADownloadTask.TaskDealItemCode));
+      Result := ADownloadTask.DealItem;
+    end;
+    if nil <> ADownloadTask.DealItem then
+    begin
+      if ADownloadTask.DealItem.iCode = ADownloadTask.TaskDealItemCode then
+      begin
+      end;
+    end;   
+    exit;
+  end;
+  
+  if nil = ADownloadTask.DealItem then
+  begin
+    ADownloadTask.DealItemIndex := 0;
+  end;
+  if nil = ADownloadTask.DealItem  then
   begin
     Result := TBaseStockApp(fBaseAppAgentData.HostApp).StockItemDB.Items[ADownloadTask.DealItemIndex];
+    ADownloadTask.DealItem := Result;
   end else
   begin
     tmpDealItem := TBaseStockApp(fBaseAppAgentData.HostApp).StockItemDB.Items[ADownloadTask.DealItemIndex];
-    if ADownloadTask.DealItemCode = tmpDealItem.iCode then
+    if ADownloadTask.DealItem.iCode = tmpDealItem.iCode then
     begin
       while nil = Result do
       begin
@@ -255,7 +341,8 @@ begin
           tmpDealItem := TBaseStockApp(fBaseAppAgentData.HostApp).StockItemDB.Items[ADownloadTask.DealItemIndex];
           if 0 = tmpDealItem.EndDealDate then
           begin
-            Result := tmpDealItem;
+            Result := tmpDealItem; 
+            ADownloadTask.DealItem := Result;
           end;
         end else
         begin
@@ -264,10 +351,6 @@ begin
       end;
     end;
   end;
-  if nil <> Result then
-  begin
-    ADownloadTask.DealItemCode := Result.iCode;
-  end;
 end;
 
 function TStockDataConsoleApp.Console_CheckDownloaderProcess(ADownloadTask: PDownloadTask): Boolean;
@@ -275,6 +358,9 @@ var
   i: integer;
   tmpRetCode: DWORD;
 begin
+  Result := false;
+  if nil = ADownloadTask then
+    exit;
   Result := IsWindow(ADownloadTask.DownloadProcess.Core.AppCmdWnd);
   if not Result then
   begin
