@@ -3,8 +3,8 @@ unit SDRepairForm;
 interface
 
 uses
-  Windows, Forms, Classes, Controls, ExtCtrls, SysUtils,
-  VirtualTrees, 
+  Windows, Forms, Classes, Controls, ExtCtrls, SysUtils, Graphics,
+  VirtualTrees, define_price,
   BaseForm, BaseApp, DealItemsTreeView, StockDayDataAccess;
 
 type
@@ -20,7 +20,8 @@ type
   TStockDataTreeCtrlData = record       
     Col_Date: TVirtualTreeColumn;
     Cols_DataSrc1: TStockDayDataColumns;
-    Cols_DataSrc2: TStockDayDataColumns;
+    Cols_DataSrc2: TStockDayDataColumns;   
+    Col_WeightPriceOffset: TVirtualTreeColumn;     // ШЈжи
     
     DataSrcId_1 : Integer;
     DayDataAccess1: TStockDayDataAccess;
@@ -43,6 +44,9 @@ type
     procedure vtDayDataGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
     procedure vtStocksChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure vtDayDataPaintText(Sender: TBaseVirtualTree;
+      const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType);
   private
     { Private declarations }    
     fRepairFormData: TRepairFormData;
@@ -152,58 +156,63 @@ begin
     begin
       if nil <> tmpNodeData.DealItem then
       begin
-        fRepairFormData.StockDataTreeCtrlData.DayDataAccess1 := TStockDayDataAccess.Create(tmpNodeData.DealItem, DataSrc_163, false);
+        fRepairFormData.StockDataTreeCtrlData.DayDataAccess1 := TStockDayDataAccess.Create(tmpNodeData.DealItem, DataSrc_163, weightNone);
         LoadStockDayData(App, fRepairFormData.StockDataTreeCtrlData.DayDataAccess1);
-        fRepairFormData.StockDataTreeCtrlData.DayDataAccess2 := TStockDayDataAccess.Create(tmpNodeData.DealItem, DataSrc_Sina, true);
+        fRepairFormData.StockDataTreeCtrlData.DayDataAccess2 := TStockDayDataAccess.Create(tmpNodeData.DealItem, DataSrc_Sina, weightForward);
         LoadStockDayData(App, fRepairFormData.StockDataTreeCtrlData.DayDataAccess2);
 
-        tmpIndex1 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess1.RecordCount - 1;
-        tmpIndex2 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess2.RecordCount - 1;
-        while (tmpIndex1 > 0) and (tmpIndex2 > 0) do
-        begin
-          tmpDayData1 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess1.RecordItem[tmpIndex1];
-          tmpDayData2 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess2.RecordItem[tmpIndex2];
-          tmpVNode := vtDayData.AddChild(nil);
-          tmpVNodeData := vtDayData.GetNodeData(tmpVNode);
-          if tmpDayData1.DealDate.Value = tmpDayData2.DealDate.Value then
+        vtDayData.BeginUpdate;
+        try
+          tmpIndex1 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess1.RecordCount - 1;
+          tmpIndex2 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess2.RecordCount - 1;
+          while (tmpIndex1 > 0) and (tmpIndex2 > 0) do
           begin
-            tmpVNodeData.QuoteData1 := tmpDayData1;
-            tmpVNodeData.Date := tmpDayData1.DealDate.Value;
-            tmpVNodeData.QuoteData2 := tmpDayData2;
-            Dec(tmpIndex1);
-            Dec(tmpIndex2);
-          end else
-          begin
-            if tmpDayData1.DealDate.Value > tmpDayData2.DealDate.Value then
+            tmpDayData1 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess1.RecordItem[tmpIndex1];
+            tmpDayData2 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess2.RecordItem[tmpIndex2];
+            tmpVNode := vtDayData.AddChild(nil);
+            tmpVNodeData := vtDayData.GetNodeData(tmpVNode);
+            if tmpDayData1.DealDate.Value = tmpDayData2.DealDate.Value then
             begin
               tmpVNodeData.QuoteData1 := tmpDayData1;
-              tmpVNodeData.Date := tmpDayData1.DealDate.Value;     
-              Dec(tmpIndex1); 
+              tmpVNodeData.Date := tmpDayData1.DealDate.Value;
+              tmpVNodeData.QuoteData2 := tmpDayData2;
+              Dec(tmpIndex1);
+              Dec(tmpIndex2);
             end else
             begin
-              tmpVNodeData.QuoteData2 := tmpDayData2;
-              tmpVNodeData.Date := tmpDayData2.DealDate.Value; 
-              Dec(tmpIndex2);
+              if tmpDayData1.DealDate.Value > tmpDayData2.DealDate.Value then
+              begin
+                tmpVNodeData.QuoteData1 := tmpDayData1;
+                tmpVNodeData.Date := tmpDayData1.DealDate.Value;     
+                Dec(tmpIndex1); 
+              end else
+              begin
+                tmpVNodeData.QuoteData2 := tmpDayData2;
+                tmpVNodeData.Date := tmpDayData2.DealDate.Value; 
+                Dec(tmpIndex2);
+              end;
             end;
-          end;
-        end;   
-        while (tmpIndex1 > 0) do
-        begin
-          tmpVNode := vtDayData.AddChild(nil);
-          tmpVNodeData := vtDayData.GetNodeData(tmpVNode);   
-          tmpDayData1 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess1.RecordItem[tmpIndex1]; 
-          tmpVNodeData.QuoteData1 := tmpDayData1;
-          tmpVNodeData.Date := tmpDayData1.DealDate.Value;
-          Dec(tmpIndex1);
-        end; 
-        while (tmpIndex2 > 0) do
-        begin
-          tmpVNode := vtDayData.AddChild(nil);
-          tmpVNodeData := vtDayData.GetNodeData(tmpVNode);   
-          tmpDayData2 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess2.RecordItem[tmpIndex2]; 
-          tmpVNodeData.QuoteData2 := tmpDayData2;
-          tmpVNodeData.Date := tmpDayData2.DealDate.Value;
-          Dec(tmpIndex2);
+          end;   
+          while (tmpIndex1 > 0) do
+          begin
+            tmpVNode := vtDayData.AddChild(nil);
+            tmpVNodeData := vtDayData.GetNodeData(tmpVNode);   
+            tmpDayData1 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess1.RecordItem[tmpIndex1]; 
+            tmpVNodeData.QuoteData1 := tmpDayData1;
+            tmpVNodeData.Date := tmpDayData1.DealDate.Value;
+            Dec(tmpIndex1);
+          end; 
+          while (tmpIndex2 > 0) do
+          begin
+            tmpVNode := vtDayData.AddChild(nil);
+            tmpVNodeData := vtDayData.GetNodeData(tmpVNode);   
+            tmpDayData2 := fRepairFormData.StockDataTreeCtrlData.DayDataAccess2.RecordItem[tmpIndex2]; 
+            tmpVNodeData.QuoteData2 := tmpDayData2;
+            tmpVNodeData.Date := tmpDayData2.DealDate.Value;
+            Dec(tmpIndex2);
+          end;  
+        finally
+          vtDayData.EndUpdate;
         end;
       end;
     end;
@@ -268,6 +277,7 @@ procedure TfrmSDRepair.vtDayDataGetText(Sender: TBaseVirtualTree;
   
 var
   tmpVData: PStockDayDataNode;
+  tmpOffset: double;
 begin
   inherited;
   CellText := '';
@@ -282,10 +292,69 @@ begin
         exit;        
       end;
     end;
+    if nil <> fRepairFormData.StockDataTreeCtrlData.Col_WeightPriceOffset then
+    begin
+      if Column = fRepairFormData.StockDataTreeCtrlData.Col_WeightPriceOffset.Index then
+      begin
+        CellText := '0';   
+        if (nil <> tmpVData.QuoteData1) and (nil <> tmpVData.QuoteData2) then
+        begin
+          if tmpVData.QuoteData2.Weight.Value > 1000 then
+          begin
+            tmpOffset := (tmpVData.QuoteData1.PriceRange.PriceOpen.Value * tmpVData.QuoteData2.Weight.Value) / 1000;
+            tmpOffset := tmpOffset - tmpVData.QuoteData2.PriceRange.PriceOpen.Value;
+            //tmpOffset := Abs(tmpOffset);
+            CellText := FloatToStr(tmpOffset);   
+          end;
+        end;
+        exit;        
+      end;
+    end;
     if GetDayDataCellText(tmpVData.QuoteData1, @fRepairFormData.StockDataTreeCtrlData.Cols_DataSrc1) then
       exit;
     GetDayDataCellText(tmpVData.QuoteData2, @fRepairFormData.StockDataTreeCtrlData.Cols_DataSrc2);
   end;           
+end;
+
+procedure TfrmSDRepair.vtDayDataPaintText(Sender: TBaseVirtualTree;
+  const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
+  TextType: TVSTTextType); 
+var
+  tmpVData: PStockDayDataNode;
+  tmpOffset: double;
+begin
+  inherited;           
+  tmpVData := Sender.GetNodeData(Node);
+  if nil <> tmpVData then
+  begin
+    if (nil = tmpVData.QuoteData1) or (nil = tmpVData.QuoteData2) then
+    begin
+      TargetCanvas.Font.Color := clRed;
+    end else
+    begin
+      if tmpVData.QuoteData2.Weight.Value > 1000 then
+      begin
+        tmpOffset := Abs((tmpVData.QuoteData1.PriceRange.PriceOpen.Value * tmpVData.QuoteData2.Weight.Value) / 1000 -
+             tmpVData.QuoteData2.PriceRange.PriceOpen.Value);
+        if tmpOffset > 20 then
+        begin
+          TargetCanvas.Font.Color := clRed;
+        end else
+        begin
+          if tmpOffset > 10 then
+          begin
+            TargetCanvas.Font.Color := clBlue;
+          end;
+        end;
+      end else
+      begin
+        if tmpVData.QuoteData2.Weight.Value < 1000 then
+        begin
+          TargetCanvas.Font.Color := clRed;
+        end;
+      end;
+    end;
+  end;
 end;
 
 procedure TfrmSDRepair.InitializeStockDayDataListView(ATreeView: TVirtualStringTree); 
@@ -328,7 +397,9 @@ var
 begin      
   ATreeView.NodeDataSize := SizeOf(TStockDayDataNode);
   ATreeView.Header.Options := [hoVisible, hoColumnResize];
-  ATreeView.OnGetText := vtDayDataGetText;   
+  ATreeView.OnGetText := vtDayDataGetText;
+  ATreeView.OnPaintText := vtDayDataPaintText;
+
   ATreeView.Indent := 4;
   ATreeView.TreeOptions.AnimationOptions := [];
   ATreeView.TreeOptions.SelectionOptions := [toExtendedFocus,toFullRowSelect];
@@ -337,9 +408,15 @@ begin
   tmpCol := ATreeView.Header.Columns.Add;
   tmpCol.Text := 'Date';
   tmpCol.Width := ATreeView.Canvas.TextWidth('2000-12-12');
-  tmpCol.Width := tmpCol.Width + ATreeView.TextMargin * 2 + ATreeView.Indent;
+  tmpCol.Width := tmpCol.Width + ATreeView.TextMargin * 2 + ATreeView.Indent * 2;
   fRepairFormData.StockDataTreeCtrlData.Col_Date := tmpCol;
-
+                                                    
+  tmpCol := ATreeView.Header.Columns.Add;
+  tmpCol.Text := 'WeightPrice Offset';
+  tmpCol.Width := ATreeView.Canvas.TextWidth('2000');
+  tmpCol.Width := tmpCol.Width + ATreeView.TextMargin * 2 + ATreeView.Indent;
+  fRepairFormData.StockDataTreeCtrlData.Col_WeightPriceOffset := tmpCol;
+  
   InitializeDayDataColumns(@fRepairFormData.StockDataTreeCtrlData.Cols_DataSrc1, '1');    
   InitializeDayDataColumns(@fRepairFormData.StockDataTreeCtrlData.Cols_DataSrc2, '2');
 end;
