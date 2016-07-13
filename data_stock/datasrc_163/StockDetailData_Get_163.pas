@@ -43,7 +43,8 @@ implementation
 uses
   Classes,
   nexcel,
-  define_price,
+  define_price,     
+  UtilsLog,
   StockDetailDataAccess,
   StockDetailData_Save,
   define_stock_quotes,
@@ -198,6 +199,8 @@ begin
   //ADealDay := Trunc(EncodeDate(2016, 6, 6));
   // 2016/20160216/1002414.xls
   tmpUrl := Base163DetailUrl1 + FormatDateTime('yyyy', ADealDay) + '/' + FormatDateTime('yyyymmdd', ADealDay) + '/' + GetStockCode_163(AStockItem) + '.xls';
+
+  //Log('', 'Get Stock Detail:' + tmpUrl);  
   tmpHttpData := GetHttpUrlData(tmpUrl, AHttpClientSession);
   if nil <> tmpHttpData then
   begin
@@ -258,7 +261,8 @@ var
 begin             
   Result := false;
 //  Parser_163Xls('e:\0600000.xls');
-//  Exit;
+//  Exit;               
+  //Log('', 'Get Stock Detail:' + AStockDayAccess.StockItem.sCode + ' last:' + FormatDateTime('yyyymmdd', AStockDayAccess.LastDealDate));
   if 0 < AStockDayAccess.LastDealDate then
   begin            
     AStockDayAccess.Sort;
@@ -270,7 +274,7 @@ begin
         Continue;
       if 1 > tmpDealDay.DealAmount then
         Continue;
-      if 2 < tmpCount then
+      if 5 < tmpCount then
         Break;
       DecodeDate(tmpDealDay.DealDate.Value, tmpYear, tmpMonth, tmpDay);
       if 2016 > tmpYear then
@@ -283,7 +287,8 @@ begin
         begin          
           tmpFileUrl := ChangeFileExt(tmpFilePathYear + tmpFileName, '.sdet');
           if not FileExists(tmpFileUrl) then
-          begin             
+          begin          
+            //Log('', 'Get Stock Detail:' + tmpFileUrl);   
             if GetStockDayDetailData_163(App, AStockDayAccess.StockItem, AHttpClientSession, tmpDealDay.DealDate.Value) then
             begin
               if not Result then
@@ -292,15 +297,18 @@ begin
             Inc(tmpCount);
           end else
           begin
-            Break;
+            Inc(tmpCount);
+            Continue;
           end;
         end else
         begin
-          Break;
+          Inc(tmpCount);
+          Continue;
         end;
       end else
       begin
-        Break;
+        Inc(tmpCount);
+        Continue;
       end;
     end;
   end;

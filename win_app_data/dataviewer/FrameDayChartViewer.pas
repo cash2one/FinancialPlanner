@@ -4,14 +4,14 @@ interface
 
 uses
   Classes, Controls, Graphics, Forms, Messages, SysUtils, Windows,  
-  define_DealItem,
+  define_DealItem, define_price,
   BaseApp, BaseForm, StockDayDataAccess, UIDealItemNode,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, ExtCtrls;
 
 type             
   TDataChartViewerData = record
     StockDayDataAccess: StockDayDataAccess.TStockDayDataAccess;  
-    IsWeight: Boolean;
+    WeightMode: TWeightMode;
     
     //fRule_Boll_Price: TRule_Boll_Price;
     Rule_CYHT_Price: TRule_CYHT_Price;
@@ -70,7 +70,7 @@ begin
   fDataChartData.StockDayDataAccess := AStockItem.StockDayDataAccess;
 
   if nil = fDataChartData.StockDayDataAccess then
-    fDataChartData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataChartData.DataSrcId, fDataChartData.IsWeight);  
+    fDataChartData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataChartData.DataSrcId, fDataChartData.WeightMode);  
   fDataChartData.Rule_BDZX_Price := AStockItem.Rule_BDZX_Price;
   fDataChartData.Rule_CYHT_Price := AStockItem.Rule_CYHT_Price;
   fDataChartData.Rule_Boll := AStockItem.Rule_Boll;

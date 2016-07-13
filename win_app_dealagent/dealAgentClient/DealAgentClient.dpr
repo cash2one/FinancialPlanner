@@ -21,6 +21,7 @@ uses
   NetMgr in 'net\NetMgr.pas',
   NetObjClient in 'net\NetObjClient.pas',
   NetBaseObj in 'net\NetBaseObj.pas',
+  NetClientIocp in 'net\NetClientIocp.pas',
   NetObjClientProc in 'net\NetObjClientProc.pas',
   BaseDataIO in 'net\BaseDataIO.pas',
   DealAgentClientApp in 'DealAgentClientApp.pas',

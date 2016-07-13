@@ -2,10 +2,11 @@ unit StockDay_Repair_Sina;
 
 interface
 
-uses
+uses         
+  Define_Price,
   BaseApp;
 
-  procedure RepairStockDataDay_Sina_All(App: TBaseApp; AIsWeight: Boolean);
+  procedure RepairStockDataDay_Sina_All(App: TBaseApp; AWeightMode: TWeightMode);
 
 implementation
 
@@ -14,14 +15,13 @@ uses
   Sysutils,
   Classes,
   UtilsHttp,
-  Define_Price,
   Define_DealItem,
   Define_DataSrc,    
   define_stock_quotes,
   StockDayData_Repair_Sina,
      
   UtilsDateTime,
-  HtmlParser,
+  //HtmlParser,
   UtilsLog,
   
   StockDayDataAccess,
@@ -48,11 +48,11 @@ begin
 
 end;
                  
-procedure DoTest(App: TBaseApp; ADealItem: PRT_DealItem; AIsWeight: Boolean);
+procedure DoTest(App: TBaseApp; ADealItem: PRT_DealItem; AWeightMode: TWeightMode);
 var
   tmpTestStockDataAccess: TStockDayDataAccess;
 begin
-  tmpTestStockDataAccess := TStockDayDataAccess.Create(ADealItem, DataSrc_Sina, AIsWeight);
+  tmpTestStockDataAccess := TStockDayDataAccess.Create(ADealItem, DataSrc_Sina, AWeightMode);
   StockDayData_Load.LoadStockDayData(App, tmpTestStockDataAccess);
   if 0 < tmpTestStockDataAccess.RecordCount then
   begin
@@ -60,7 +60,7 @@ begin
   end;
 end;
 
-procedure RepairStockDataDay_Sina_All(App: TBaseApp; AIsWeight: Boolean);
+procedure RepairStockDataDay_Sina_All(App: TBaseApp; AWeightMode: TWeightMode);
 var
   tmpDBStockItem: TDBDealItem;
   tmpRepairSession: TRepairSession;
@@ -96,17 +96,17 @@ begin
             begin
               Continue;
             end;
-            DoTest(App, tmpDealItem, AIsWeight);
+            DoTest(App, tmpDealItem, AWeightMode);
             exit;
           end;
-          if RepairStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
+          if RepairStockDataDay_Sina(App, tmpDealItem, AWeightMode, @tmpRepairSession) then
           begin
             //Log('', 'GetStockDataDay_Sina ' + tmpDealItem.sCode + ' Succ');
             Sleep(200);
-            if RepairStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
+            if RepairStockDataDay_Sina(App, tmpDealItem, AWeightMode, @tmpRepairSession) then
             begin
               Sleep(200);
-              if RepairStockDataDay_Sina(App, tmpDealItem, AIsWeight, @tmpRepairSession) then
+              if RepairStockDataDay_Sina(App, tmpDealItem, AWeightMode, @tmpRepairSession) then
               begin
                 Sleep(200);
               end;

@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, Graphics, zsAttach, zsProcess;
     
-  procedure ConfirmDeal(AZsDealSession: PZsDealSession);
+  procedure ConfirmDeal(AZsDealSession: PZsDealSession);     
+  function FindZSDealConfirmDialogWindow(AZsDealSession: PZsDealSession): Boolean;
   
 implementation
 

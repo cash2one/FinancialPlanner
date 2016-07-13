@@ -63,6 +63,9 @@ uses
   zsLoginUtils,
   IniFiles,
   UtilsApplication,
+  zsDialogDeal,
+  zsDialogUtils,
+  zsUserUnlock,
   zsVariants,
   zsMainWindow,
   zsLoginWindow;
@@ -105,7 +108,7 @@ begin
   if BuyStock(@GZsDealSession, tmpStock, Message.LParam / 1000, 10000) then
   begin
         // 出错 可能未 开通创业板权限
-    ConfirmDeal(@GZsDealSession);
+    zsDialogDeal.ConfirmDeal(@GZsDealSession);
   end;
 end;
 
@@ -322,7 +325,7 @@ begin
     if not FindZSMainWindow(@GZsDealSession) then
       exit;
   end;    
-  FindZSLockPanelWindow(@GZsDealSession);
+  zsUserUnlock.FindZSLockPanelWindow(@GZsDealSession);
 end;
 
 procedure TfrmZSHelper.btnConfirmPwdClick(Sender: TObject);

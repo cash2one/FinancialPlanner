@@ -11,7 +11,8 @@ implementation
 
 uses
   Windows,
-  define_datasrc,
+  define_datasrc,  
+  define_price,
   DB_DealItem,
   DB_DealItem_Load,
   DB_DealItem_Save,    
@@ -26,7 +27,7 @@ procedure DownloadDealItemDayDetailData(App: TBaseApp; AStockItem: PRT_DealItem;
 var
   tmpDayData: TStockDayDataAccess;
 begin                   
-  tmpDayData := TStockDayDataAccess.Create(AStockItem, DataSrc_163, false);
+  tmpDayData := TStockDayDataAccess.Create(AStockItem, DataSrc_163, weightNone);
   try
     try
       if LoadStockDayData(App, tmpDayData) then

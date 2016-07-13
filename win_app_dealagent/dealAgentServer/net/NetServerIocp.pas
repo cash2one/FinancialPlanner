@@ -186,7 +186,10 @@ begin
     Sleep(1);
     FillChar(tmpAddr, SizeOf(tmpAddr), 0);
     tmpAddrlen := SizeOf(tmpAddr);
-    tmpClientConnectionSocket := WinSock2.WSAAccept(AParam.Server.BaseServer.ListenSocketHandle, @tmpAddr, @tmpAddrlen, nil, 0);
+    tmpClientConnectionSocket := WinSock2.WSAAccept(AParam.Server.BaseServer.ListenSocketHandle,
+        @tmpAddr, @tmpAddrlen, nil, 0);
+//    tmpClientConnectionSocket := WinSock2.Accept(
+//        AParam.Server.BaseServer.ListenSocketHandle, @tmpAddr, tmpAddrlen);
     if INVALID_SOCKET  <> tmpClientConnectionSocket then
     begin
       if 1 <> AParam.SysThread.Core.IsActiveStatus then

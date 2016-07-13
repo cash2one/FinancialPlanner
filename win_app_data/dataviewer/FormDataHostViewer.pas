@@ -5,7 +5,7 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   BaseApp, BaseForm, VirtualTrees, ExtCtrls, Tabs,
-  db_dealItem, StockDayDataAccess,
+  db_dealItem, StockDayDataAccess, define_price,
   FrameDataViewer,
   FrameDayChartViewer,
   FrameDataCompareViewer,
@@ -25,7 +25,7 @@ type
 
     StockDayDataAccess: TStockDayDataAccess;   
     DataSrc: integer;
-    IsWeight: Boolean;
+    WeightMode: TWeightMode;
   end;
 
   TfrmDataViewer = class(TfrmBase)
@@ -83,28 +83,28 @@ end;
 procedure TfrmDataViewer.cbbDataSrcChange(Sender: TObject);
 var
   tmpOldDataSrc: integer;
-  tmpOldIsWeight: Boolean;
+  tmpOldIsWeight: TWeightMode;
 begin
   inherited;
   tmpOldDataSrc := fDataViewerData.DataSrc;
-  tmpOldIsWeight := fDataViewerData.IsWeight;
+  tmpOldIsWeight := fDataViewerData.WeightMode;
   if 0 = cbbDataSrc.ItemIndex then
   begin
     fDataViewerData.DataSrc := DataSrc_163;
-    fDataViewerData.IsWeight := false;
+    fDataViewerData.WeightMode := weightNone;
   end;
   if 1 = cbbDataSrc.ItemIndex then
   begin
     fDataViewerData.DataSrc := DataSrc_Sina;
-    fDataViewerData.IsWeight := false;
+    fDataViewerData.WeightMode := weightNone;
   end;
   if 2 = cbbDataSrc.ItemIndex then
   begin
     fDataViewerData.DataSrc := DataSrc_Sina;
-    fDataViewerData.IsWeight := true;
+    fDataViewerData.WeightMode := weightbackward;
   end;              
   if (tmpOldDataSrc <> fDataViewerData.DataSrc) or
-     (tmpOldIsWeight <> fDataViewerData.IsWeight) then
+     (tmpOldIsWeight <> fDataViewerData.WeightMode) then
   begin
     RefreshStockData;
   end;
@@ -226,9 +226,9 @@ begin
       if 0 = fDataViewerData.DataSrc then
       begin
         fDataViewerData.DataSrc := DataSrc_163;
-        fDataViewerData.IsWeight := false;
+        fDataViewerData.WeightMode := weightNone;
       end;
-      fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(tmpNodeData.StockItem, fDataViewerData.DataSrc, fDataViewerData.IsWeight);    
+      fDataViewerData.StockDayDataAccess := TStockDayDataAccess.Create(tmpNodeData.StockItem, fDataViewerData.DataSrc, fDataViewerData.WeightMode);    
       StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess);
       tmpNodeData.StockDayDataAccess := fDataViewerData.StockDayDataAccess;
                                                                  

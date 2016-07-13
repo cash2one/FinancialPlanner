@@ -5,7 +5,8 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Controls, Forms,
   BaseApp, BaseForm, VirtualTrees, ExtCtrls, 
-  define_dealItem,  
+  define_dealItem,                         
+  define_price,  
   db_dealItem,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, 
   StockDayDataAccess, UIDealItemNode,
@@ -16,7 +17,7 @@ type
     DayDataAccess: StockDayDataAccess.TStockDayDataAccess;
     DetailDataAccess: StockDetailDataAccess.TStockDetailDataAccess;
      
-    IsWeight: Boolean;
+    WeightMode: TWeightMode;
         
     Rule_BDZX_Price: TRule_BDZX_Price;  
     Rule_CYHT_Price: TRule_CYHT_Price;
@@ -207,7 +208,7 @@ begin
     exit;
   fDataViewerData.DayDataAccess := AStockItem.StockDayDataAccess;
   if nil = fDataViewerData.DayDataAccess then
-    fDataViewerData.DayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DayDataSrcId, fDataViewerData.IsWeight);
+    fDataViewerData.DayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataViewerData.DayDataSrcId, fDataViewerData.WeightMode);
   fDataViewerData.Rule_BDZX_Price := AStockItem.Rule_BDZX_Price;
   fDataViewerData.Rule_CYHT_Price := AStockItem.Rule_CYHT_Price;
 

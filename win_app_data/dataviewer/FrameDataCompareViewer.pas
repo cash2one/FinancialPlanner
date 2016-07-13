@@ -46,6 +46,7 @@ implementation
 uses
   BaseStockApp,
   Define_DataSrc,
+  define_price,
   //UtilsLog,
   define_stock_quotes,
   StockDayData_Load,
@@ -137,17 +138,17 @@ begin
 
   if nil = fDataViewerData.StockDayDataAccess_163 then
   begin
-    fDataViewerData.StockDayDataAccess_163 := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_163, false);
+    fDataViewerData.StockDayDataAccess_163 := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_163, weightNone);
     StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess_163);
   end;
   if nil = fDataViewerData.StockDayDataAccess_sina then
   begin
-    fDataViewerData.StockDayDataAccess_sina := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_Sina, false);
+    fDataViewerData.StockDayDataAccess_sina := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_Sina, weightNone);
     StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess_sina);
   end;
   if nil = fDataViewerData.StockDayDataAccess_SinaW then
   begin
-    fDataViewerData.StockDayDataAccess_SinaW := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_Sina, true);
+    fDataViewerData.StockDayDataAccess_SinaW := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_Sina, weightBackward);
     StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess_SinaW);
   end;
   tmpStr := '';

@@ -44,13 +44,13 @@ uses
   StockDayData_Load,
   StockDayData_Save;
 
-function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean; overload;
+function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpurl: string;  
   tmpHttpData: PIOBuffer;        
 begin          
   Result := false;
-  if weightNone <> AWeightMode then
+  if weightNone <> ADataAccess.WeightMode then
     tmpUrl := BaseSinaDayUrl_weight
   else
     tmpUrl := BaseSinaDayUrl1;
@@ -60,6 +60,7 @@ begin
   begin
     try
       //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+      //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
       Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
     finally
       CheckInIOBuffer(tmpHttpData);
@@ -98,6 +99,7 @@ begin
     begin
       try
         //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+        //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
         Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
       finally
         CheckInIOBuffer(tmpHttpData);
@@ -188,7 +190,7 @@ begin
       DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, ANetSession);
       Inc(tmpJidu);
     end;
-    DataGet_DayData_SinaNow(tmpStockDataAccess, AWeightMode, ANetSession);
+    DataGet_DayData_SinaNow(tmpStockDataAccess, ANetSession);
 
     tmpStockDataAccess.Sort;
     SaveStockDayData(App, tmpStockDataAccess); 

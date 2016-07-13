@@ -5,7 +5,8 @@ interface
 uses
   BaseApp,
   Sysutils,
-  UtilsHttp,
+  UtilsHttp,    
+  define_price,        
   define_dealitem,
   define_stockday_sina,
   StockDayDataAccess;
@@ -30,33 +31,33 @@ const
      http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/000300/type/S.phtml
   //*)
 
-  function RepairStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ARepairSession: PRepairSession): Boolean;
-  function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
-  function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
+  function RepairStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; ARepairSession: PRepairSession): Boolean;
+  function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean; overload;
+  function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean; overload;
   
 implementation
 
 uses
   Classes,
-  Windows,
-  define_price,         
+  Windows, 
   Define_DataSrc,    
   define_stock_quotes,  
   UtilsDateTime,
   UtilsLog,        
   win.iobuffer,
-  StockDayData_Parse_Sina_Html1,
-  StockDayData_Parse_Sina_Html2,
+  //StockDayData_Parse_Sina_Html1,
+  //StockDayData_Parse_Sina_Html2,
+  StockDayData_Parse_Sina_Html3,
   StockDayData_Load,
   StockDayData_Save;
 
-function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
+function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpurl: string;  
   tmpHttpData: PIOBuffer;        
 begin          
   Result := false;
-  if AIsWeight then
+  if weightNone <> AWeightMode then
     tmpUrl := BaseSinaDayUrl2
   else
     tmpUrl := BaseSinaDayUrl1;
@@ -66,7 +67,8 @@ begin
   begin
     try
       //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
-      Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+      //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);   
+      Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
     finally
       CheckInIOBuffer(tmpHttpData);
     end;
@@ -74,14 +76,14 @@ begin
   Sleep(100);
 end;
 
-function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AIsWeight: Boolean; ANetSession: PHttpClientSession): Boolean; overload;
+function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;
   tmpRepeat: Integer;    
 begin
   Result := false;
-  if AIsWeight then
+  if weightNone <> AWeightMode then
     tmpUrl := BaseSinaDayUrl2
   else
     tmpUrl := BaseSinaDayUrl1;
@@ -100,7 +102,8 @@ begin
     begin
       try
         //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
-        Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
+        //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);    
+        Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
       finally
         CheckInIOBuffer(tmpHttpData);
       end;
@@ -112,7 +115,7 @@ begin
   end;
 end;
 
-function RepairStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AIsWeight: Boolean; ARepairSession: PRepairSession): Boolean;
+function RepairStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; ARepairSession: PRepairSession): Boolean;
 var 
   tmpYear, tmpMonth, tmpDay: Word;   
   tmpJidu: integer;
@@ -126,9 +129,9 @@ var
 begin
   Result := false;
   if nil = ARepairSession.StockDataSina then
-    ARepairSession.StockDataSina := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AIsWeight);
+    ARepairSession.StockDataSina := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AWeightMode);
   if nil = ARepairSession.StockData163 then
-    ARepairSession.StockData163 := TStockDayDataAccess.Create(AStockItem, DataSrc_163, false);
+    ARepairSession.StockData163 := TStockDayDataAccess.Create(AStockItem, DataSrc_163, weightNone);
   tmpUpdateTimes := TStringList.Create;
   try
     if 1 > ARepairSession.StockData163.RecordCount then
@@ -194,7 +197,7 @@ begin
         tmpSeason := tmpUpdateTimes[i];
         tmpYear := StrToIntDef(Copy(tmpSeason, 1, 4), 0);
         tmpJidu := StrToIntDef(Copy(tmpSeason, 6, maxint), 0);
-        DataGet_DayData_Sina(ARepairSession.StockDataSina, tmpYear, tmpJidu, AIsWeight, @ARepairSession.NetSession);
+        DataGet_DayData_Sina(ARepairSession.StockDataSina, tmpYear, tmpJidu, AWeightMode, @ARepairSession.NetSession);
         Sleep(500);
       end;
       ARepairSession.StockDataSina.Sort;

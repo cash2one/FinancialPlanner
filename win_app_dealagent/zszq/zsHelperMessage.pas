@@ -3,7 +3,7 @@ unit zsHelperMessage;
 interface
 
 uses
-  Define_Message;
+  windef_msg;
 
 const
   WM_C2S_LaunchProgram    = WM_CustomAppBase + 11;
