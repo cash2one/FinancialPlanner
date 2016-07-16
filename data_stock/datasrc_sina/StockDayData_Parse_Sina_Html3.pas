@@ -29,7 +29,7 @@ type
      DealDayData: TRT_Quote_M1_Day;
   end;
 
-function GetNodeText(ANode: PHtmlDomNode): WideString;
+function GetNodeText(ANode: PHtmlDomNode; AColIndex: TDealDayDataHeadName_Sina): WideString;
 var
   i: integer;
   tmpNode: PHtmlDomNode;
@@ -39,6 +39,24 @@ begin
     exit;
   if nil = ANode.childNodes then
     Exit;
+  if headDay = AColIndex then
+  begin         
+    for i := 0 to ANode.childNodes.length - 1 do
+    begin                       
+      tmpNode := ANode.childNodes.item(i);
+      if HTMLDOM_NODE_ELEMENT = tmpNode.nodetype then
+      begin
+       Result := Result + GetNodeText(tmpNode, AColIndex);
+      end;
+      if '' <> Result then
+        exit;
+      if HTMLDOM_NODE_TEXT = tmpNode.nodetype then
+      begin
+        Result := Trim(tmpNode.nodeValue);
+      end;
+    end;
+    exit;
+  end;
   for i := 0 to ANode.childNodes.length - 1 do
   begin
     tmpNode := ANode.childNodes.item(i);
@@ -46,12 +64,14 @@ begin
     begin
       if 1 = ANode.childNodes.length then
       begin
-        Result := GetNodeText(ANode.childNodes.item(0));
+        Result := GetNodeText(tmpNode, AColIndex); 
+        if '' <> Result then
+          exit;
       end;
     end;
     if HTMLDOM_NODE_TEXT = tmpNode.nodetype then
     begin
-      Result := tmpNode.nodeValue;   
+      Result := Trim(tmpNode.nodeValue);   
     end;
   end;
 end;
@@ -80,7 +100,7 @@ begin
         tmpStr := trim(tmpChild.nodeValue);
         if '' = tmpStr then
         begin
-          tmpStr := GetNodeText(tmpChild);
+          tmpStr := GetNodeText(tmpChild, headNone);
         end;
         if '' <> tmpStr then
         begin
@@ -97,16 +117,19 @@ begin
       end else
       begin    
         // 处理 行数据
-        tmpStr := trim(tmpChild.nodeValue);
-        if '' = tmpStr then
-        begin
-          tmpStr := Trim(GetNodeText(tmpChild));
-        end;        
         for tmpHeadColName := Low(TDealDayDataHeadName_Sina) to High(TDealDayDataHeadName_Sina) do
         begin           
           if AParseRecord.TableHeader.HeadNameIndex[tmpHeadColName] = tmpTDIndex then
-          begin     
-            ParseCellData(tmpHeadColName, @AParseRecord.DealDayData, tmpStr);
+          begin                        
+            tmpStr := trim(tmpChild.nodeValue);
+            if '' = tmpStr then
+            begin
+              tmpStr := Trim(GetNodeText(tmpChild, tmpHeadColName));
+            end;                                    
+            if '' <> tmpStr then
+            begin
+              ParseCellData(tmpHeadColName, @AParseRecord.DealDayData, tmpStr);
+            end;
           end;
         end;
       end;
@@ -194,7 +217,7 @@ begin
         tmpNode := ANode.attributes.item(i);
         if SameText('id', tmpNode.nodeName) then
         begin
-          tmpTableId := GetNodeText(tmpNode);
+          tmpTableId := GetNodeText(tmpNode, headNone);
           Break;
         end;
       end;
@@ -249,13 +272,15 @@ begin
   Result := False;
   if nil = AResultData then
     exit;
+  Log('StockDayData_Parse_Sina_Html3.pas', ADataAccess.StockItem.sCode);
+
   FillChar(tmpParseRec, SizeOf(tmpParseRec), 0);
   FIllChar(tmpHttpHeadSession, SizeOf(tmpHttpHeadSession), 0);
   
   HttpBufferHeader_Parser(AResultData, @tmpHttpHeadSession);
   if (199 < tmpHttpHeadSession.RetCode) and (300 > tmpHttpHeadSession.RetCode)then
   begin      
-    SaveHttpResponseToFile(AResultData, @tmpHttpHeadSession, 'e:\test.html');
+    //SaveHttpResponseToFile(AResultData, @tmpHttpHeadSession, 'e:\test.html');
 
     try
       tmpParseRec.HtmlDoc := HtmlParserparseString(WideString(AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1]))));         

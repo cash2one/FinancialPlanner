@@ -255,6 +255,7 @@ var
   tmpFilePathYear: string;
   tmpFileName: string;
   tmpFileUrl: string;
+  tmpLastDealDate: integer;
   tmpYear, tmpMonth, tmpDay: Word;
   tmpDealDay: PRT_Quote_M1_Day;
   tmpCount: integer;
@@ -266,7 +267,8 @@ begin
   if 0 < AStockDayAccess.LastDealDate then
   begin            
     AStockDayAccess.Sort;
-    tmpCount :=0;                      
+    tmpCount :=0;
+    tmpLastDealDate := 0;         
     for i := AStockDayAccess.RecordCount - 1 downto 0 do
     begin
       tmpDealDay := AStockDayAccess.RecordItem[i];
@@ -278,7 +280,15 @@ begin
         Break;
       DecodeDate(tmpDealDay.DealDate.Value, tmpYear, tmpMonth, tmpDay);
       if 2016 > tmpYear then
-        Break;           
+        Break;
+      if 0 = tmpLastDealDate then
+      begin
+        tmpLastDealDate := tmpDealDay.DealDate.Value;
+      end else
+      begin
+        if 14 < tmpLastDealDate - tmpDealDay.DealDate.Value then
+          Break;
+      end;
       tmpFilePathYear := App.Path.GetFilePath(FilePath_DBType_DetailData, DataSrc_163, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem);
       tmpFileName := App.Path.GetFileName(FilePath_DBType_DetailData, DataSrc_163, tmpDealDay.DealDate.Value, AStockDayAccess.StockItem, '');   
       if '' <> tmpFileName then

@@ -21,30 +21,30 @@ const
   // sd_31  sdw_31
   // 5日线
   // sd5_31 sdw5_31
-  FileExt_StockDay        = 'sd';
+  FileExt_StockDay        = 'd';
 
 
-  FileExt_StockDayWeight  = 'sdw';
+  FileExt_StockDayWeight  = 'dw';
   FileExt_StockDetail     = 'sdt';  // rename to se
 
   // 分钟线 由 detail 线 分析总结来的
   // sm60_31 60 分钟线 如果不带 分钟数 则为月线
   // smw60_31 smw60_32
-  FileExt_StockMinute     = 'sm';
-  FileExt_StockMinuteWeight = 'smw';
+  FileExt_StockMinute     = 'm';
+  FileExt_StockMinuteWeight = 'mw';
   
-  FileExt_StockWeek       = 'sk';  
-  FileExt_StockWeekWeight = 'skw';
+  FileExt_StockWeek       = 'w';
+  FileExt_StockWeekWeight = 'ww';
 
   // sm_31 smw_31
-  FileExt_StockMonth      = 'sm';
-  FileExt_StockMonthWeight = 'smw';
+  FileExt_StockMonth      = 'm';
+  FileExt_StockMonthWeight = 'mw';
 
-  FileExt_StockAnalysis   = 'sa';
-  FileExt_StockInstant    = 'si';
+  FileExt_StockAnalysis   = 'a';
+  FileExt_StockInstant    = 'i';
 
   // 总体统计分析
-  FileExt_StockSummaryValue = 'ssv';
+  FileExt_StockSummaryValue = 'sv';
 
   FileExt_FuturesDetail   = 'qe';
   FileExt_FuturesAnalysis = 'qa';
