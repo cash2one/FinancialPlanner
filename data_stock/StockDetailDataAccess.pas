@@ -30,9 +30,9 @@ type
     constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
     destructor Destroy; override;
     
-    function FindRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
-    function CheckOutRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
-    function NewRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
+    function FindRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_Detail;
+    function CheckOutRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_Detail;
+    function NewRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_Detail;
     procedure Sort; override;    
     procedure Clear; override;
     property FirstDealDate: Word read GetFirstDealDate write SetFirstDealDate;
@@ -186,26 +186,26 @@ end;
 procedure TStockDetailDataAccess.Clear;  
 var
   i: integer;
-  tmpQuote: PRT_Quote_M2;
+  tmpQuote: PRT_Quote_Detail;
 begin
   inherited;
   if nil <> fDetailDealData then
   begin
     for i := fDetailDealData.Count - 1 downto 0 do
     begin
-      tmpQuote := PRT_Quote_M2(fDetailDealData.Objects[i]);
+      tmpQuote := PRT_Quote_Detail(fDetailDealData.Objects[i]);
       FreeMem(tmpQuote);
     end;
     fDetailDealData.Clear;
   end;
 end;
 
-function TStockDetailDataAccess.NewRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
+function TStockDetailDataAccess.NewRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_Detail;
 var
   tmpIndex: integer;
 begin
-  Result := System.New(PRT_Quote_M2);
-  FillChar(Result^, SizeOf(TRT_Quote_M2), 0);
+  Result := System.New(PRT_Quote_Detail);
+  FillChar(Result^, SizeOf(TRT_Quote_Detail), 0);
   Result.DealDateTime.DateValue := ADealDay;
   Result.DealDateTime.TimeValue := ADealTime;
 
@@ -213,7 +213,7 @@ begin
   fDetailDealData.AddObject(tmpIndex, TObject(Result));
 end;
 
-function TStockDetailDataAccess.CheckOutRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
+function TStockDetailDataAccess.CheckOutRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_Detail;
 begin
   Result := nil;
   if ADealTime < 1 then
@@ -225,7 +225,7 @@ begin
   end;
 end;
 
-function TStockDetailDataAccess.FindRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_M2;
+function TStockDetailDataAccess.FindRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_Detail;
 var
   tmpPos: integer;
   tmpDealDateTime: TRT_DateTimePack; 
@@ -241,7 +241,7 @@ begin
     tmpPos := fDetailDealData.IndexOf(tmpIndex);
   end;
   if 0 <= tmpPos then
-    Result := PRT_Quote_M2(fDetailDealData.Objects[tmpPos]);
+    Result := PRT_Quote_Detail(fDetailDealData.Objects[tmpPos]);
 end;
 
 end.

@@ -23,8 +23,8 @@ procedure SaveStockMinuteDataToBuffer(App: TBaseApp; ADataAccess: TStockMinuteDa
 var
   tmpHead: PStore_Quote_M1_Day_Header_V1Rec;
   tmpQuoteData: PStore_Quote64_M1;
-  tmpStoreDayData: PStore_Quote64_M1_Day_V1;
-  tmpRTDayData: PRT_Quote_M1_Day;
+  tmpStoreMinuteData: PStore_Quote64_Minute_V1;
+  tmpRTMinuteData: PRT_Quote_Minute;
   i: integer;
 begin
   tmpHead := AMemory;  
@@ -59,17 +59,17 @@ begin
   tmpQuoteData := PStore_Quote64_M1(tmpHead);
   for i := 0 to ADataAccess.RecordCount - 1 do
   begin
-    tmpRTDayData := ADataAccess.RecordItem[i];
-    if nil <> tmpRTDayData then
+    tmpRTMinuteData := ADataAccess.RecordItem[i];
+    if nil <> tmpRTMinuteData then
     begin
-      tmpStoreDayData := PStore_Quote64_M1_Day_V1(tmpQuoteData);
-      RTPricePackRange2StorePriceRange(@tmpStoreDayData.PriceRange, @tmpRTDayData.PriceRange); 
-      tmpStoreDayData.DealVolume          := tmpRTDayData.DealVolume;         // 8 - 24 成交量
-      tmpStoreDayData.DealAmount          := tmpRTDayData.DealAmount;         // 8 - 32 成交金额
-      tmpStoreDayData.DealDate            := tmpRTDayData.DealDate.Value;       // 4 - 36 交易日期
-      tmpStoreDayData.Weight.Value        := tmpRTDayData.Weight.Value; // 4 - 40 复权权重 * 100
-      tmpStoreDayData.TotalValue          := tmpRTDayData.TotalValue;         // 8 - 48 总市值
-      tmpStoreDayData.DealValue           := tmpRTDayData.DealValue;         // 8 - 56 流通市值
+      tmpStoreMinuteData := PStore_Quote64_Minute_V1(tmpQuoteData);
+      RTPricePackRange2StorePriceRange(@tmpStoreMinuteData.PriceRange, @tmpRTMinuteData.PriceRange); 
+      tmpStoreMinuteData.DealVolume          := tmpRTMinuteData.DealVolume;         // 8 - 24 成交量
+      tmpStoreMinuteData.DealAmount          := tmpRTMinuteData.DealAmount;         // 8 - 32 成交金额
+      //tmpStoreMinuteData.DealDate            := tmpRTMinuteData.DealDate.Value;       // 4 - 36 交易日期
+      //tmpStoreMinuteData.Weight.Value        := tmpRTMinuteData.Weight.Value; // 4 - 40 复权权重 * 100
+      //tmpStoreMinuteData.TotalValue          := tmpRTMinuteData.TotalValue;         // 8 - 48 总市值
+      //tmpStoreMinuteData.DealValue           := tmpRTMinuteData.DealValue;         // 8 - 56 流通市值
       Inc(tmpQuoteData);
     end;
   end;

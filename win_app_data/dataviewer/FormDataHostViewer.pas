@@ -321,22 +321,22 @@ end;
 
 function TfrmDataViewer.DoGetStockOpenPrice(AIndex: integer): double;
 begin
-  Result := PRT_Quote_M1_Day(fDataViewerData.StockDayDataAccess.RecordItem[AIndex]).PriceRange.PriceOpen.Value;
+  Result := PRT_Quote_Day(fDataViewerData.StockDayDataAccess.RecordItem[AIndex]).PriceRange.PriceOpen.Value;
 end;
                           
 function TfrmDataViewer.DoGetStockClosePrice(AIndex: integer): double;
 begin
-  Result := PRT_Quote_M1_Day(fDataViewerData.StockDayDataAccess.RecordItem[AIndex]).PriceRange.PriceClose.Value;
+  Result := PRT_Quote_Day(fDataViewerData.StockDayDataAccess.RecordItem[AIndex]).PriceRange.PriceClose.Value;
 end;
 
 function TfrmDataViewer.DoGetStockHighPrice(AIndex: integer): double;
 begin
-  Result := PRT_Quote_M1_Day(fDataViewerData.StockDayDataAccess.RecordItem[AIndex]).PriceRange.PriceHigh.Value;
+  Result := PRT_Quote_Day(fDataViewerData.StockDayDataAccess.RecordItem[AIndex]).PriceRange.PriceHigh.Value;
 end;
 
 function TfrmDataViewer.DoGetStockLowPrice(AIndex: integer): double;
 begin
-  Result := PRT_Quote_M1_Day(fDataViewerData.StockDayDataAccess.RecordItem[AIndex]).PriceRange.PriceLow.Value;
+  Result := PRT_Quote_Day(fDataViewerData.StockDayDataAccess.RecordItem[AIndex]).PriceRange.PriceLow.Value;
 end;
 
 function TfrmDataViewer.DoGetStockDealDays: integer;

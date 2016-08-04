@@ -44,8 +44,8 @@ type
     constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer; AWeightMode: TWeightMode);
     destructor Destroy; override;
     
-    function FindRecord(ADate: Integer): PRT_Quote_M1_Day;
-    function CheckOutRecord(ADate: Word): PRT_Quote_M1_Day;
+    function FindRecord(ADate: Integer): PRT_Quote_Minute;
+    function CheckOutRecord(ADate: Word): PRT_Quote_Minute;
 
     
     function DoGetRecords: integer; 
@@ -64,7 +64,7 @@ type
     property WeightMode: TWeightMode read GetWeightMode write SetWeightMode;
   end;
                             
-  procedure AddDealDayData(ADataAccess: TStockMinuteDataAccess; ATempDealDayData: PRT_Quote_M1_Day);
+  procedure AddDealDayData(ADataAccess: TStockMinuteDataAccess; ATempDealDayData: PRT_Quote_Minute);
   
 implementation
 
@@ -74,14 +74,14 @@ uses
   
 { TStockMinuteDataAccess }
 
-procedure AddDealDayData(ADataAccess: TStockMinuteDataAccess; ATempDealDayData: PRT_Quote_M1_Day);
+procedure AddDealDayData(ADataAccess: TStockMinuteDataAccess; ATempDealDayData: PRT_Quote_Minute);
 var
-  tmpAddDealDayData: PRT_Quote_M1_Day;
+  tmpAddDealDayData: PRT_Quote_Minute;
 //  tmpDate: string;
 begin
   if (nil = ATempDealDayData) then
     exit;
-  if (ATempDealDayData.DealDate.Value > 0) and
+  if //(ATempDealDayData.DealDate.Value > 0) and
                  (ATempDealDayData.PriceRange.PriceOpen.Value > 0) and
                  (ATempDealDayData.PriceRange.PriceClose.Value > 0) and
                  (ATempDealDayData.DealVolume > 0) and
@@ -91,14 +91,14 @@ begin
 //    if '' <> tmpDate then
 //    begin
 //    end;
-    tmpAddDealDayData := ADataAccess.CheckOutRecord(ATempDealDayData.DealDate.Value);
+    //tmpAddDealDayData := ADataAccess.CheckOutRecord(ATempDealDayData.DealDate.Value);
     tmpAddDealDayData.PriceRange.PriceHigh := ATempDealDayData.PriceRange.PriceHigh;
     tmpAddDealDayData.PriceRange.PriceLow := ATempDealDayData.PriceRange.PriceLow;
     tmpAddDealDayData.PriceRange.PriceOpen := ATempDealDayData.PriceRange.PriceOpen;
     tmpAddDealDayData.PriceRange.PriceClose := ATempDealDayData.PriceRange.PriceClose;
     tmpAddDealDayData.DealVolume := ATempDealDayData.DealVolume;
     tmpAddDealDayData.DealAmount := ATempDealDayData.DealAmount;
-    tmpAddDealDayData.Weight := ATempDealDayData.Weight;
+    //tmpAddDealDayData.Weight := ATempDealDayData.Weight;
   end;
 end;
         
@@ -127,13 +127,13 @@ end;
 procedure TStockMinuteDataAccess.Clear;   
 var
   i: integer;
-  tmpQuoteDay: PRT_Quote_M1_Day;
+  tmpQuoteDay: PRT_Quote_Minute;
 begin
   if nil <> fStockMinuteData.MinuteDealData then
   begin
     for i := fStockMinuteData.MinuteDealData.Count - 1 downto 0 do
     begin
-      tmpQuoteDay := PRT_Quote_M1_Day(fStockMinuteData.MinuteDealData.Objects[i]);
+      tmpQuoteDay := PRT_Quote_Minute(fStockMinuteData.MinuteDealData.Objects[i]);
       FreeMem(tmpQuoteDay);
     end;
     fStockMinuteData.MinuteDealData.Clear;
@@ -210,7 +210,7 @@ begin
   fStockMinuteData.MinuteDealData.Sort;
 end;
 
-function TStockMinuteDataAccess.CheckOutRecord(ADate: Word): PRT_Quote_M1_Day;
+function TStockMinuteDataAccess.CheckOutRecord(ADate: Word): PRT_Quote_Minute;
 begin             
   Result := nil;
   if ADate < 1 then
@@ -224,41 +224,41 @@ begin
       fStockMinuteData.FirstDealDate := ADate;
     if fStockMinuteData.LastDealDate < ADate then
       fStockMinuteData.LastDealDate := ADate;
-    Result := System.New(PRT_Quote_M1_Day);
-    FillChar(Result^, SizeOf(TRT_Quote_M1_Day), 0);
-    Result.DealDate.Value := ADate;
+    Result := System.New(PRT_Quote_Minute);
+    FillChar(Result^, SizeOf(TRT_Quote_Minute), 0);
+    //Result.DealDate.Value := ADate;
     fStockMinuteData.MinuteDealData.AddObject(ADate, TObject(Result));
   end;
 end;
 
-function TStockMinuteDataAccess.FindRecord(ADate: Integer): PRT_Quote_M1_Day;
+function TStockMinuteDataAccess.FindRecord(ADate: Integer): PRT_Quote_Minute;
 var
   tmpPos: integer;
 begin
   Result := nil;
   tmpPos := fStockMinuteData.MinuteDealData.IndexOf(ADate);
   if 0 <= tmpPos then
-    Result := PRT_Quote_M1_Day(fStockMinuteData.MinuteDealData.Objects[tmpPos]);
+    Result := PRT_Quote_Minute(fStockMinuteData.MinuteDealData.Objects[tmpPos]);
 end;
 
 function TStockMinuteDataAccess.DoGetStockOpenPrice(AIndex: integer): double;
 begin
-  Result := PRT_Quote_M1_Day(RecordItem[AIndex]).PriceRange.PriceOpen.Value;
+  Result := PRT_Quote_Minute(RecordItem[AIndex]).PriceRange.PriceOpen.Value;
 end;
                           
 function TStockMinuteDataAccess.DoGetStockClosePrice(AIndex: integer): double;
 begin
-  Result := PRT_Quote_M1_Day(RecordItem[AIndex]).PriceRange.PriceClose.Value;
+  Result := PRT_Quote_Minute(RecordItem[AIndex]).PriceRange.PriceClose.Value;
 end;
 
 function TStockMinuteDataAccess.DoGetStockHighPrice(AIndex: integer): double;
 begin
-  Result := PRT_Quote_M1_Day(RecordItem[AIndex]).PriceRange.PriceHigh.Value;
+  Result := PRT_Quote_Minute(RecordItem[AIndex]).PriceRange.PriceHigh.Value;
 end;
 
 function TStockMinuteDataAccess.DoGetStockLowPrice(AIndex: integer): double;
 begin
-  Result := PRT_Quote_M1_Day(RecordItem[AIndex]).PriceRange.PriceLow.Value;
+  Result := PRT_Quote_Minute(RecordItem[AIndex]).PriceRange.PriceLow.Value;
 end;
 
 

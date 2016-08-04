@@ -92,12 +92,12 @@ type
   PStockDayDataNode = ^TStockDayDataNode;
   TStockDayDataNode = record
     DayIndex: integer;         
-    QuoteData: PRT_Quote_M1_Day;
+    QuoteData: PRT_Quote_Day;
   end;
   
   PStockDetailDataNode = ^TStockDetailDataNode;
   TStockDetailDataNode = record
-    QuoteData: PRT_Quote_M2;
+    QuoteData: PRT_Quote_Detail;
   end;
   
 const
@@ -175,7 +175,7 @@ procedure TfmeDataViewer.LoadDetailTreeView;
 var
   i: integer;
   tmpNodeData: PStockDetailDataNode;
-  tmpDetailData: PRT_Quote_M2;   
+  tmpDetailData: PRT_Quote_Detail;   
   tmpNode: PVirtualNode;
 begin
   vtDetailDatas.Clear;
@@ -200,7 +200,7 @@ procedure TfmeDataViewer.LoadDayDataTreeView(AStockItem: PStockItemNode);
 var
   i: integer;       
   tmpStockDataNode: PStockDayDataNode;
-  tmpStockData: PRT_Quote_M1_Day;
+  tmpStockData: PRT_Quote_Day;
   tmpNode: PVirtualNode;
 begin
   vtDayDatas.Clear;

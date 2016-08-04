@@ -38,8 +38,8 @@ type
   end;     
 
   { 日线数据 }
-  PRT_Quote_M1_Day    = ^TRT_Quote_M1_Day;
-  TRT_Quote_M1_Day    = record           // 56
+  PRT_Quote_Day       = ^TRT_Quote_Day;
+  TRT_Quote_Day       = record           // 56
     DealDate          : TRT_DatePack;    // 4
     PriceRange        : TRT_PricePack_Range; // 16 - 20
     DealVolume        : Int64;               // 8 - 28 成交量
@@ -52,8 +52,8 @@ type
   { 及时行情数据
     1 分钟 -- 60 分钟 < 日线
   }
-  PRT_Quote_M1_Time   = ^TRT_Quote_M1_Time;
-  TRT_Quote_M1_Time   = record
+  PRT_Quote_Minute    = ^TRT_Quote_Minute;
+  TRT_Quote_Minute    = record
     DealDateTime      : TRT_DateTimeFull;    // 8  
     PriceRange        : TRT_PricePack_Range; // 16 - 24   
     DealVolume        : Integer;             // 4 - 28 成交量
@@ -61,8 +61,8 @@ type
   end;
   
   { 交易明细 }
-  PRT_Quote_M2        = ^TRT_Quote_M2;
-  TRT_Quote_M2        = record
+  PRT_Quote_Detail    = ^TRT_Quote_Detail;
+  TRT_Quote_Detail    = record
     DealDateTime      : TRT_DateTimePack;    // 4 - 4
     Price             : TRT_PricePack;       // 4 - 8
     DealVolume        : Integer;             // 4 - 12 成交量
@@ -100,8 +100,8 @@ type
   end;
 
   { 日线数据 } 
-  PStore_Quote64_M1_Day  = ^TStore_Quote64_M1_Day_V1;
-  TStore_Quote64_M1_Day  = packed record  // 56
+  PStore_Quote64_Day    = ^TStore_Quote64_Day;
+  TStore_Quote64_Day    = packed record  // 56
     PriceRange          : TStore_PriceRange;  // 16
     DealVolume          : Int64;         // 8 - 24 成交量
     DealAmount          : Int64;         // 8 - 32 成交金额
@@ -111,8 +111,8 @@ type
     DealValue           : Int64;         // 8 - 56 流通市值 
   end;
         
-  PStore_Quote64_M1_Day_V1  = ^TStore_Quote64_M1_Day_V1;
-  TStore_Quote64_M1_Day_V1  = packed record  // 56      
+  PStore_Quote64_Day_V1 = ^TStore_Quote64_Day_V1;
+  TStore_Quote64_Day_V1 = packed record  // 56
     PriceRange          : TStore_PriceRange;  // 16
     DealVolume          : Int64;         // 8 - 24 成交量
     DealAmount          : Int64;         // 8 - 32 成交金额
@@ -122,15 +122,15 @@ type
     DealValue           : Int64;         // 8 - 56 流通市值 
   end;
                  
-  PStore_Quote64_M1_Day_V2  = ^TStore_Quote64_M1_Day_V2; //--> PStore_Quote64_M1
-  TStore_Quote64_M1_Day_V2  = packed record  // 56    
-    QuoteDay            : TStore_Quote64_M1_Day;   
-    Reserve             : array [0..64 - SizeOf(TStore_Quote64_M1_Day) - 1] of Byte;
+  PStore_Quote64_Day_V2 = ^TStore_Quote64_Day_V2; //--> PStore_Quote64_M1
+  TStore_Quote64_Day_V2 = packed record  // 56
+    QuoteDay            : TStore_Quote64_Day;   
+    Reserve             : array [0..64 - SizeOf(TStore_Quote64_Day) - 1] of Byte;
   end;
            
   { 分时数据 detail }
-  PStore_Quote32_M1_Time  = ^TStore_Quote32_M1_Time;  //
-  TStore_Quote32_M1_Time  = packed record  // 28
+  PStore_Quote32_Minute = ^TStore_Quote32_Minute;  //
+  TStore_Quote32_Minute = packed record  // 28
     PriceRange          : TStore_PriceRange;  // 16
     DealVolume          : Integer;       // 4 - 20 成交量
     DealAmount          : Integer;       // 4 - 24 成交金额
@@ -138,24 +138,29 @@ type
     DealStartTime       : Word;        // 2 - 28 时间
   end;
 
-  TStore_Quote32_M1_Time_V1 = record
-    QuoteTime            : TStore_Quote32_M1_Time;
-    Reserve             : array [0..32 - SizeOf(TStore_Quote32_M1_Time) - 1] of Byte;
+  TStore_Quote32_Minute_V1 = record
+    QuoteTime            : TStore_Quote32_Minute;
+    Reserve             : array [0..32 - SizeOf(TStore_Quote32_Minute) - 1] of Byte;
   end;
   
-  PStore_Quote64_M1_Time_V1  = ^TStore_Quote64_M1_Time_V1;  //
-  TStore_Quote64_M1_Time_V1  = packed record  // 56
+  PStore_Quote64_Minute_V1  = ^TStore_Quote64_Minute_V1;  //
+  TStore_Quote64_Minute_V1  = packed record  // 56
     PriceRange          : TStore_PriceRange;  // 16
     DealVolume          : Integer;       // 8 - 24 成交量
     DealAmount          : Integer;       // 8 - 32 成交金额
     DealDateTime        : Double;        // 4 - 36 交易日期
   end;
 
-  TStore_Quote64_M1_Detail_V1 = TStore_Quote64_M1_Time_V1;
+  TStore_Quote64_Detail_V1  = packed record  // 56
+    PriceRange          : TStore_PriceRange;  // 16
+    DealVolume          : Integer;       // 8 - 24 成交量
+    DealAmount          : Integer;       // 8 - 32 成交金额
+    DealDateTime        : Double;        // 4 - 36 交易日期
+  end;
                
   // 只有一个价格 必然是 及时报价数据
-  PStore_Quote_M2       = ^TStore_Quote_M2;
-  TStore_Quote_M2       = packed record  // 8     
+  PStore_Quote_Detail   = ^TStore_Quote_Detail;
+  TStore_Quote_Detail   = packed record  // 8     
     QuoteDealTime       : Word;       // 4 - 8 1 小时 3600 秒  9 -- 15
     QuoteDealDate       : Word;            
     Price               : TStore_Price;  // 4 - 4
@@ -164,10 +169,10 @@ type
     DealType            : Byte; // 买盘卖盘中性盘
   end;
 
-  PStore_Quote32_M2_V1  = ^TStore_Quote32_M2_V1;
-  TStore_Quote32_M2_V1  = packed record
-    Quote               : TStore_Quote_M2;
-    Reserve             : array [0..32 - SizeOf(TStore_Quote_M2) - 1] of Byte;
+  PStore_Quote32_Detail_V1  = ^TStore_Quote32_Detail_V1;
+  TStore_Quote32_Detail_V1  = packed record
+    Quote               : TStore_Quote_Detail;
+    Reserve             : array [0..32 - SizeOf(TStore_Quote_Detail) - 1] of Byte;
   end;          
 
 const

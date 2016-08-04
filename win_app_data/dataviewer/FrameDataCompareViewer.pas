@@ -65,9 +65,9 @@ type
   PStockDayDataNode = ^TStockDayDataNode;
   TStockDayDataNode = record
     DayIndex: integer;         
-    QuoteData_163: PRT_Quote_M1_Day;
-    QuoteData_Sina: PRT_Quote_M1_Day;
-    QuoteData_SinaW: PRT_Quote_M1_Day;        
+    QuoteData_163: PRT_Quote_Day;
+    QuoteData_Sina: PRT_Quote_Day;
+    QuoteData_SinaW: PRT_Quote_Day;        
   end;
   
 const
@@ -120,7 +120,7 @@ var
   i: integer;
   tmpIndex: Integer;    
   tmpStockDataNode: PStockDayDataNode;
-  tmpStockData: PRT_Quote_M1_Day;
+  tmpStockData: PRT_Quote_Day;
   tmpNode: PVirtualNode;
   tmpStr: string;
 begin

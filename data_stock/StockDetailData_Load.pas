@@ -77,9 +77,9 @@ end;
 procedure LoadStockDetailDataFromBuffer(App: TBaseApp; ADataAccess: TStockDetailDataAccess; AMemory: pointer; AIsDoLog: Boolean = false);
 var 
   tmpHead: PStore_Quote_M2_Detail_Header_V1Rec;
-  tmpStoreDetailData: PStore_Quote32_M2_V1;
+  tmpStoreDetailData: PStore_Quote32_Detail_V1;
   
-  tmpRTDetailData: PRT_Quote_M2;
+  tmpRTDetailData: PRT_Quote_Detail;
   tmpRecordCount: integer;
   tmpDate: Word;
   i: integer;
@@ -108,7 +108,7 @@ begin
         begin
           tmpRecordCount := tmpHead.Header.BaseHeader.RecordCount;
           Inc(tmpHead);
-          tmpStoreDetailData := PStore_Quote32_M2_V1(tmpHead);
+          tmpStoreDetailData := PStore_Quote32_Detail_V1(tmpHead);
           for i := 0 to tmpRecordCount - 1 do
           begin
             tmpDate := tmpStoreDetailData.Quote.QuoteDealDate;

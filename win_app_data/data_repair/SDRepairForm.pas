@@ -74,8 +74,8 @@ type
   PStockDayDataNode = ^TStockDayDataNode;
   TStockDayDataNode = record
     Date: Word;
-    QuoteData1: PRT_Quote_M1_Day;
-    QuoteData2: PRT_Quote_M1_Day;    
+    QuoteData1: PRT_Quote_Day;
+    QuoteData2: PRT_Quote_Day;    
   end;
 
 { TfrmSDRepair }
@@ -142,8 +142,8 @@ var
   tmpNodeData: PDealItemNode;
   tmpVNode: PVirtualNode;
   tmpVNodeData: PStockDayDataNode;
-  tmpDayData1: PRT_Quote_M1_Day;
-  tmpDayData2: PRT_Quote_M1_Day;  
+  tmpDayData1: PRT_Quote_Day;
+  tmpDayData2: PRT_Quote_Day;  
   tmpIndex1: integer;
   tmpIndex2: integer;
 begin
@@ -223,7 +223,7 @@ procedure TfrmSDRepair.vtDayDataGetText(Sender: TBaseVirtualTree;
   Node: PVirtualNode; Column: TColumnIndex; TextType: TVSTTextType;
   var CellText: WideString);
 
-  function GetDayDataCellText(ADayData: PRT_Quote_M1_Day; ADayDataCols: PStockDayDataColumns): Boolean;
+  function GetDayDataCellText(ADayData: PRT_Quote_Day; ADayDataCols: PStockDayDataColumns): Boolean;
   begin
     Result := false;
     if nil = ADayData then

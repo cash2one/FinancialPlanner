@@ -97,7 +97,7 @@ var
   tmpCandleRect: TRect;
   tmpPaintBox: TPaintBox;
   tmpCandleWidth: integer;
-  tmpDayQuote: PRT_Quote_M1_Day;
+  tmpDayQuote: PRT_Quote_Day;
   tmpPaintCount: integer;
   tmpFirstDayIndex: integer;
   i: integer;

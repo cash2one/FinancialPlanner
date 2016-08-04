@@ -89,8 +89,8 @@ function LoadStockMinuteDataFromBuffer(ADataAccess: TStockMinuteDataAccess; AMem
 var 
   tmpHead: PStore_Quote_M1_Day_Header_V1Rec;
   tmpQuoteData: PStore_Quote64_M1;
-  tmpStoreDayData: PStore_Quote64_M1_Day_V1;
-  tmpRTDayData: PRT_Quote_M1_Day;
+  tmpStoreMinuteData: PStore_Quote64_Minute_V1;
+  tmpRTMinuteData: PRT_Quote_Minute;
   tmpRecordCount: integer; 
   i: integer;
 begin
@@ -106,16 +106,16 @@ begin
     for i := 0 to tmpRecordCount - 1 do
     begin            
       Result := true;
-      tmpStoreDayData := PStore_Quote64_M1_Day_V1(tmpQuoteData);
-      tmpRTDayData := ADataAccess.CheckOutRecord(tmpStoreDayData.DealDate);
-      if nil <> tmpRTDayData then
+      tmpStoreMinuteData := PStore_Quote64_Minute_V1(tmpQuoteData);
+      //tmpRTMinuteData := ADataAccess.CheckOutRecord(tmpStoreMinuteData.DealDateTime);
+      if nil <> tmpRTMinuteData then
       begin
-        StorePriceRange2RTPricePackRange(@tmpRTDayData.PriceRange, @tmpStoreDayData.PriceRange);   
-        tmpRTDayData.DealVolume := tmpStoreDayData.DealVolume;         // 8 - 24 成交量
-        tmpRTDayData.DealAmount := tmpStoreDayData.DealAmount;         // 8 - 32 成交金额
-        tmpRTDayData.Weight.Value := tmpStoreDayData.Weight.Value; // 4 - 40 复权权重 * 100
-        tmpRTDayData.TotalValue := tmpStoreDayData.TotalValue;         // 8 - 48 总市值
-        tmpRTDayData.DealValue := tmpStoreDayData.DealValue;         // 8 - 56 流通市值
+        StorePriceRange2RTPricePackRange(@tmpRTMinuteData.PriceRange, @tmpStoreMinuteData.PriceRange);   
+        tmpRTMinuteData.DealVolume := tmpStoreMinuteData.DealVolume;         // 8 - 24 成交量
+        tmpRTMinuteData.DealAmount := tmpStoreMinuteData.DealAmount;         // 8 - 32 成交金额
+        //tmpRTMinuteData.Weight.Value := tmpStoreMinuteData.Weight.Value; // 4 - 40 复权权重 * 100
+        //tmpRTMinuteData.TotalValue := tmpStoreMinuteData.TotalValue;         // 8 - 48 总市值
+        //tmpRTMinuteData.DealValue := tmpStoreMinuteData.DealValue;         // 8 - 56 流通市值
       end;
       Inc(tmpQuoteData);
     end;

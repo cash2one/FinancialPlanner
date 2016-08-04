@@ -23,8 +23,8 @@ procedure SaveStockDayDataToBuffer(App: TBaseApp; ADataAccess: TStockDayDataAcce
 var
   tmpHead: PStore_Quote_M1_Day_Header_V1Rec;
   tmpQuoteData: PStore_Quote64_M1;
-  tmpStoreDayData: PStore_Quote64_M1_Day_V1;
-  tmpRTDayData: PRT_Quote_M1_Day;
+  tmpStoreDayData: PStore_Quote64_Day_V1;
+  tmpRTDayData: PRT_Quote_Day;
   i: integer;
 begin
   tmpHead := AMemory;  
@@ -62,7 +62,7 @@ begin
     tmpRTDayData := ADataAccess.RecordItem[i];
     if nil <> tmpRTDayData then
     begin
-      tmpStoreDayData := PStore_Quote64_M1_Day_V1(tmpQuoteData);
+      tmpStoreDayData := PStore_Quote64_Day_V1(tmpQuoteData);
       RTPricePackRange2StorePriceRange(@tmpStoreDayData.PriceRange, @tmpRTDayData.PriceRange); 
       tmpStoreDayData.DealVolume          := tmpRTDayData.DealVolume;         // 8 - 24 成交量
       tmpStoreDayData.DealAmount          := tmpRTDayData.DealAmount;         // 8 - 32 成交金额

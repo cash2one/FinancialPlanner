@@ -3,7 +3,7 @@ unit SDTdxForm;
 interface
 
 uses
-  Windows, Forms, BaseForm, Classes, Controls, Sysutils, StdCtrls,
+  Windows, Forms, BaseForm, Classes, Controls, Sysutils, StdCtrls;
   win.diskfile;
 
 type
@@ -12,7 +12,8 @@ type
     procedure btnImportClick(Sender: TObject);
   protected
     procedure ImportDayData;
-    procedure ImportTxtData;   
+    procedure ImportTxtData; overload; 
+    procedure ImportTxtData(AFileUrl: string); overload;
     procedure ImportLcData;
   public
   end;
@@ -21,6 +22,12 @@ implementation
 
 {$R *.dfm}
 
+uses
+  define_datasrc,
+  define_price,
+  StockMinuteDataAccess,
+  StockMinuteData_Save;
+  
 type
   TTdxMinuteDataHead = packed record  // 26 字节
     // 570 的话表示9:30分(570/60=9.5)
@@ -79,10 +86,11 @@ end;
 procedure TfrmSDTdx.ImportDayData;  
 var
   tmpFileUrl: string;     
-  tmpWinFile: PWinFile;
+  //tmpWinFile: PWinFile;
   tmpFileData: PTdxData;
 begin                 
   // Vipdoc\sh\lday\*.day
+  (*
   tmpFileUrl := 'E:\StockApp\sdata\sh600000.day';  
   tmpWinFile := CheckOutWinFile;
   try
@@ -98,7 +106,8 @@ begin
     end;
   finally
     CheckInWinFile(tmpWinFile);
-  end; 
+  end;
+  //*)
 end;
 
 type
@@ -146,7 +155,14 @@ begin
   end;
 end;
 
-procedure TfrmSDTdx.ImportTxtData;  
+procedure TfrmSDTdx.ImportTxtData();
+var        
+  tmpFileUrl: string;
+begin
+  tmpFileUrl := 'E:\StockApp\sdata\999999.txt';
+end;
+
+procedure TfrmSDTdx.ImportTxtData(AFileUrl: string);
 type
   TColumns = (colTime, colOpen, colHigh, colLow, colClose, colVolume);
   TColumnsHeader = array[TColumns] of string;
@@ -155,7 +171,7 @@ const
   ColumnsHeader: TColumnsHeader =
     ('时间','开盘','最高','最低','收盘','成交量');   
 var
-  tmpFileUrl: string;
+  tmpFileName: string;
   tmpRowData: string;
   tmpTime: string;
   tmpFileContent: TStringList;    
@@ -165,63 +181,70 @@ var
   iCol: TColumns;
   i, j: integer;
   tmpDateTimeParse: TDateTimeParseRecord;
+  tmpMinuteDataAccess: TStockMinuteDataAccess;
 begin                 
-  tmpFileUrl := 'E:\StockApp\sdata\999999.txt';
-  if FileExists(tmpFileUrl) then
-  begin
-    tmpFileContent := TStringList.Create;
-    tmpRowDatas := TStringList.Create;
-    try
-      tmpFileContent.LoadFromFile(tmpFileUrl);
-      tmpIsReadHead := false;
-      for iCol := Low(TColumns) to High(TColumns) do
-        tmpColumnIndex[iCol] := -1;
-      for i := 0 to tmpFileContent.Count - 1 do
+  if not FileExists(AFileUrl) then
+    exit;
+  tmpFileName := ExtractFileName(AFileUrl);
+    
+  tmpMinuteDataAccess := nil;
+  tmpFileContent := TStringList.Create;
+  tmpRowDatas := TStringList.Create;
+  try
+    tmpFileContent.LoadFromFile(AFileUrl);
+    tmpIsReadHead := false;
+    for iCol := Low(TColumns) to High(TColumns) do
+      tmpColumnIndex[iCol] := -1;
+    for i := 0 to tmpFileContent.Count - 1 do
+    begin
+      tmpRowData := Trim(tmpFileContent[i]);
+      if '' <> tmpRowData then
       begin
-        tmpRowData := Trim(tmpFileContent[i]);
-        if '' <> tmpRowData then
-        begin
-          // 上证指数 (999999)
-          // '时间'#9'    开盘'#9'    最高'#9'    最低'#9'    收盘'#9'         成交量'#9'BOLL-M.BOLL  '#9'BOLL-M.UB    '#9'BOLL-M.LB    '#9'  VOL.VOLUME'#9'  VOL.MAVOL1'#9'  VOL.MAVOL2'#9' CYHT.高抛  '#9' CYHT.SK    '#9' CYHT.SD    '#9' CYHT.低吸  '#9' CYHT.强弱分界'#9' CYHT.卖出  '#9' CYHT.买进  '#9' BDZX.AK    '#9' BDZX.AD1   '#9' BDZX.AJ    '#9' BDZX.aa    '#9' BDZX.bb    '#9' BDZX.cc    '#9' BDZX.买进  '#9' BDZX.卖出'
-          tmpRowDatas.Text := StringReplace(tmpRowData, #9, #13#10, [rfReplaceAll]);
-          if not tmpIsReadHead then
-          begin                    
-            for iCol := Low(TColumns) to High(TColumns) do
+        // 上证指数 (999999)
+        // '时间'#9'    开盘'#9'    最高'#9'    最低'#9'    收盘'#9'         成交量'#9'BOLL-M.BOLL  '#9'BOLL-M.UB    '#9'BOLL-M.LB    '#9'  VOL.VOLUME'#9'  VOL.MAVOL1'#9'  VOL.MAVOL2'#9' CYHT.高抛  '#9' CYHT.SK    '#9' CYHT.SD    '#9' CYHT.低吸  '#9' CYHT.强弱分界'#9' CYHT.卖出  '#9' CYHT.买进  '#9' BDZX.AK    '#9' BDZX.AD1   '#9' BDZX.AJ    '#9' BDZX.aa    '#9' BDZX.bb    '#9' BDZX.cc    '#9' BDZX.买进  '#9' BDZX.卖出'
+        tmpRowDatas.Text := StringReplace(tmpRowData, #9, #13#10, [rfReplaceAll]);
+        if not tmpIsReadHead then
+        begin                    
+          for iCol := Low(TColumns) to High(TColumns) do
+          begin
+            for j := 0 to tmpRowDatas.Count - 1 do
             begin
-              for j := 0 to tmpRowDatas.Count - 1 do
+              if SameText(ColumnsHeader[iCol], Trim(tmpRowDatas[j])) then
               begin
-                if SameText(ColumnsHeader[iCol], Trim(tmpRowDatas[j])) then
-                begin
-                  tmpIsReadHead := True;
-                  tmpColumnIndex[iCol] := j; 
-                end;
+                tmpIsReadHead := True;
+                tmpColumnIndex[iCol] := j; 
               end;
             end;
-          end else
+          end;
+        end else
+        begin
+          FillChar(tmpDateTimeParse, SizeOf(tmpDateTimeParse), 0);
+          tmpTime := '';
+          if 0 <= tmpColumnIndex[colTime] then
           begin
-            FillChar(tmpDateTimeParse, SizeOf(tmpDateTimeParse), 0);
-            tmpTime := '';
-            if 0 <= tmpColumnIndex[colTime] then
+            tmpTime := tmpRowDatas[tmpColumnIndex[colTime]];
+            // 2014/06/12-10:30
+          end;
+          if '' <> tmpTime then
+          begin
+            ParseDateTime(@tmpDateTimeParse, tmpTime);
+          end;
+          if (0 < tmpDateTimeParse.Date) and (0 < tmpDateTimeParse.Time) then
+          begin
+            if nil = tmpMinuteDataAccess then
             begin
-              tmpTime := tmpRowDatas[tmpColumnIndex[colTime]];
-              // 2014/06/12-10:30
-            end;
-            if '' <> tmpTime then
-            begin
-              ParseDateTime(@tmpDateTimeParse, tmpTime);
-            end;
-            if (0 < tmpDateTimeParse.Date) and (0 < tmpDateTimeParse.Time) then
-            begin
-            end;
+              tmpMinuteDataAccess := TStockMinuteDataAccess.Create(nil, DataSrc_TongDaXin, weightNone);
+            end;  
+            //tmpMinuteDataAccess.CheckOutRecord(ADate: Word): PRT_Quote_M1_Day;
           end;
         end;
       end;
-    //except
-    finally
-      tmpRowDatas.Clear;
-      tmpRowDatas.Free;
-      tmpFileContent.Free;
     end;
+  //except
+  finally
+    tmpRowDatas.Clear;
+    tmpRowDatas.Free;
+    tmpFileContent.Free;
   end;
 end;
 

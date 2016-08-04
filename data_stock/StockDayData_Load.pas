@@ -89,8 +89,8 @@ function LoadStockDayDataFromBuffer(ADataAccess: TStockDayDataAccess; AMemory: p
 var 
   tmpHead: PStore_Quote_M1_Day_Header_V1Rec;
   tmpQuoteData: PStore_Quote64_M1;
-  tmpStoreDayData: PStore_Quote64_M1_Day_V1;
-  tmpRTDayData: PRT_Quote_M1_Day;
+  tmpStoreDayData: PStore_Quote64_Day_V1;
+  tmpRTDayData: PRT_Quote_Day;
   tmpRecordCount: integer; 
   i: integer;
 begin
@@ -106,7 +106,7 @@ begin
     for i := 0 to tmpRecordCount - 1 do
     begin            
       Result := true;
-      tmpStoreDayData := PStore_Quote64_M1_Day_V1(tmpQuoteData);
+      tmpStoreDayData := PStore_Quote64_Day_V1(tmpQuoteData);
       tmpRTDayData := ADataAccess.CheckOutRecord(tmpStoreDayData.DealDate);
       if nil <> tmpRTDayData then
       begin

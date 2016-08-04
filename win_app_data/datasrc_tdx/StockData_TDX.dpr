@@ -38,9 +38,12 @@ uses
   StockDayData_Save in '..\..\data_stock\StockDayData_Save.pas',
   StockDayData_Load in '..\..\data_stock\StockDayData_Load.pas',
   StockDayDataAccess in '..\..\data_stock\StockDayDataAccess.pas',
+  StockMinuteData_Save in '..\..\data_stock\StockMinuteData_Save.pas',
+  StockMinuteData_Load in '..\..\data_stock\StockMinuteData_Load.pas',
+  StockMinuteDataAccess in '..\..\data_stock\StockMinuteDataAccess.pas',
+  StockData_Import_tdx in '..\..\data_stock\datasrc_tdx\StockData_Import_tdx.pas',
   StockDataTDXApp in 'StockDataTDXApp.pas',
-  SDTdxForm in 'SDTdxForm.pas' {frmSDTdx},
-  StockData_Import_tdx in '..\..\data_stock\datasrc_tdx\StockData_Import_tdx.pas';
+  SDTdxForm in 'SDTdxForm.pas' {frmSDTdx};
 
 {$R *.res}
 

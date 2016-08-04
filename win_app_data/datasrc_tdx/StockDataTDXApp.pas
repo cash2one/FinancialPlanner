@@ -41,9 +41,9 @@ uses
   Define_DataSrc,
   win.iobuffer,
   UtilsLog,
-  StockDayDataAccess,
-  StockDayData_Load,
-  StockDayData_Save,
+  StockMinuteDataAccess,
+  StockMinuteData_Load,
+  StockMinuteData_Save,
   define_stock_quotes,
   DB_dealItem_Load,
   DB_dealItem_Save;
