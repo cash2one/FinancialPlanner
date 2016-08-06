@@ -41,6 +41,7 @@ uses
   BaseStockApp,
   define_datasrc,
   StockDayData_Get_163,
+  StockDayData_Get_Sina,
   UtilsLog;
 
 var
@@ -150,6 +151,11 @@ begin
     begin
       GetStockDataDay_163(fBaseAppAgentData.HostApp, tmpStockItem, @ADownloaderApp.HttpClientSession);
       SDLog('', 'Downloader_Download 163:' + IntToStr(AStockCode));
+    end;                  
+    if DataSrc_Sina = ADataSrc then
+    begin
+      GetStockDataDay_Sina(fBaseAppAgentData.HostApp, tmpStockItem, weightBackward, @ADownloaderApp.HttpClientSession);
+      //SDLog('', 'Downloader_Download Sina:' + IntToStr(AStockCode));
     end;
     if Downloader_CheckConsoleProcess(ADownloaderApp) then
     begin

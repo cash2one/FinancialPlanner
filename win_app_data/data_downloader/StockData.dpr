@@ -36,6 +36,7 @@ uses
   BaseStockApp in '..\..\base\BaseStockApp.pas',
   StockAppPath in '..\..\base\StockAppPath.pas',
   define_datasrc in '..\..\basedefine\define_datasrc.pas',
+  define_datetime in '..\..\basedefine\define_datetime.pas',
   define_dealitem in '..\..\basedefine\define_dealitem.pas',
   define_price in '..\..\basedefine\define_price.pas',
   define_stock_quotes in '..\..\basedefine\define_stock_quotes.pas',

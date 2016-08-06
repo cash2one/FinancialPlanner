@@ -220,7 +220,7 @@ var
   tmpRowDatas: TStringList;
   tmpParseDatas: TStringList;
   i: integer;
-  tmpDealData: PRT_Quote_M1_Day;
+  tmpDealData: PRT_Quote_Day;
   tmpIsCheckedName: Boolean;
   tmpHttpHeadParse: THttpHeadParseSession;
 begin
@@ -302,7 +302,7 @@ var
   tmpUrl: string;
   tmpLastDealDate: Word;
   tmpInt: integer;
-  tmpQuoteDay: PRT_Quote_M1_Day;
+  tmpQuoteDay: PRT_Quote_Day;
   tmpHttpData: PIOBuffer;
 begin
   Result := false;

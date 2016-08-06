@@ -19,6 +19,10 @@ type
     btnDownloadXueqiuAll: TButton;
     btnDownloadQQ: TButton;
     btnDownloadQQAll: TButton;
+    lbStock163: TEdit;
+    lbStockSina: TEdit;
+    lbStockXQ: TEdit;
+    lbStockQQ: TEdit;
     procedure btnDownload163Click(Sender: TObject);
     procedure btnDownloadSinaClick(Sender: TObject);
     procedure btnDownloadXueqiuClick(Sender: TObject);

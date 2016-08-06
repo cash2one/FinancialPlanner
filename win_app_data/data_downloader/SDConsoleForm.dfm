@@ -2,8 +2,8 @@ object frmSDConsole: TfrmSDConsole
   Left = 619
   Top = 335
   Caption = 'frmSDConsole'
-  ClientHeight = 223
-  ClientWidth = 394
+  ClientHeight = 357
+  ClientWidth = 402
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -47,8 +47,8 @@ object frmSDConsole: TfrmSDConsole
     Text = '600000'
   end
   object btnImportTDX: TButton
-    Left = 240
-    Top = 196
+    Left = 124
+    Top = 238
     Width = 110
     Height = 25
     Caption = 'Import TDX'
@@ -73,8 +73,8 @@ object frmSDConsole: TfrmSDConsole
     OnClick = btnDownloadSinaAllClick
   end
   object btnDownloadAll: TButton
-    Left = 240
-    Top = 84
+    Left = 124
+    Top = 286
     Width = 110
     Height = 25
     Caption = 'Download All'
@@ -116,5 +116,53 @@ object frmSDConsole: TfrmSDConsole
     Caption = 'Download QQ All'
     TabOrder = 10
     OnClick = btnDownloadQQAllClick
+  end
+  object lbStock163: TEdit
+    Left = 256
+    Top = 56
+    Width = 121
+    Height = 19
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    Ctl3D = False
+    ParentCtl3D = False
+    TabOrder = 11
+    Text = '600000'
+  end
+  object lbStockSina: TEdit
+    Left = 256
+    Top = 87
+    Width = 121
+    Height = 19
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    Ctl3D = False
+    ParentCtl3D = False
+    TabOrder = 12
+    Text = '600000'
+  end
+  object lbStockXQ: TEdit
+    Left = 256
+    Top = 118
+    Width = 121
+    Height = 19
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    Ctl3D = False
+    ParentCtl3D = False
+    TabOrder = 13
+    Text = '600000'
+  end
+  object lbStockQQ: TEdit
+    Left = 256
+    Top = 149
+    Width = 121
+    Height = 19
+    BevelInner = bvNone
+    BevelOuter = bvNone
+    Ctl3D = False
+    ParentCtl3D = False
+    TabOrder = 14
+    Text = '600000'
   end
 end

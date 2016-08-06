@@ -26,7 +26,7 @@ type
      IsInTable: Integer;   
      IsTableHeadReady: Boolean;  
      TableHeader: TRT_DealDayData_HeaderSina;
-     DealDayData: TRT_Quote_M1_Day;
+     DealDayData: TRT_Quote_Day;
   end;
 
 function GetNodeText(ANode: PHtmlDomNode; AColIndex: TDealDayDataHeadName_Sina): WideString;
@@ -192,7 +192,7 @@ end;
 
 function HtmlParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AParseRecord: PParseRecord; ANode: PHtmlDomNode): Boolean;
 var
-  i, j: integer;
+  i: integer;
   tmpcnt: integer;
   tmpTableId: WideString;
   tmpNode: PHtmlDomNode;      

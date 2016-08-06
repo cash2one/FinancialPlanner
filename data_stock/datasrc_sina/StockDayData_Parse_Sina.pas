@@ -8,11 +8,11 @@ uses
   define_stock_quotes,
   define_price;
                  
-  procedure ParseCellData(AHeadCol: TDealDayDataHeadName_Sina; ADealDayData: PRT_Quote_M1_Day; AStringData: string);
+  procedure ParseCellData(AHeadCol: TDealDayDataHeadName_Sina; ADealDayData: PRT_Quote_Day; AStringData: string);
 
 implementation
                              
-procedure ParseCellData(AHeadCol: TDealDayDataHeadName_Sina; ADealDayData: PRT_Quote_M1_Day; AStringData: string);
+procedure ParseCellData(AHeadCol: TDealDayDataHeadName_Sina; ADealDayData: PRT_Quote_Day; AStringData: string);
 var
   tmpPos: integer; 
   tmpDate: TDateTime;

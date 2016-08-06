@@ -71,7 +71,7 @@ function TAIStockDataViewerApp.Initialize: Boolean;
 begin
   Application.Initialize;
   InitializeDBStockItem;
-  Result := true;
+  Result := StockItemDB.RecordCount > 0;
 end;
               
 procedure TAIStockDataViewerApp.Run;
