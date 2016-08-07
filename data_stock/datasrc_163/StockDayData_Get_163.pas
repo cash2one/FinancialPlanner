@@ -342,12 +342,14 @@ begin
         if ParseStockDataDay_163(tmpStockDataAccess, tmpHttpData) then
         begin        
           Result := true;
+          tmpStockDataAccess.Sort;
           SaveStockDayData(App, tmpStockDataAccess);
         end;     
       finally
         CheckInIOBuffer(tmpHttpData);
       end;
     end;
+  finally    
     if 0 = AStockItem.FirstDealDate then
     begin
       if 0 < tmpStockDataAccess.RecordCount then
@@ -357,7 +359,6 @@ begin
         AStockItem.IsDataChange := 1;
       end;
     end;
-  finally
     tmpStockDataAccess.Free;
   end;
 end;

@@ -1,4 +1,4 @@
-unit StockDataApp;
+unit StockDataTestApp;
 
 interface
 
@@ -10,19 +10,19 @@ uses
   BaseApp,
   BaseStockApp,
   StockDataDownloaderApp,
-  StockDataConsoleApp;
+  StockDataTestAppAgent;
 
 type
-  TStockDataAppData = record
+  TStockDataTestAppData = record
     RunMode: TStockDataAppRunMode;
     AppAgent: TBaseAppAgent;
     //ConsoleAppData: TConsoleAppData;
     //DownloaderAppData: TDownloaderAppData;
   end;
   
-  TStockDataApp = class(TBaseStockApp)
+  TStockDataTestApp = class(TBaseStockApp)
   protected
-    fStockDataAppData: TStockDataAppData;
+    fStockDataAppData: TStockDataTestAppData;
     //function CreateAppCommandWindow: Boolean;
     
     //procedure RunStart;
@@ -36,8 +36,7 @@ type
 
     //procedure Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode: integer); overload;
     //procedure Downloader_Download(AStockCode: integer); overload;
-    //function Downloader_CheckConsoleProcess(ADownloaderApp: PDownloaderAppData): Boolean; 
-    procedure CheckSaveStockItemDB;
+    //function Downloader_CheckConsoleProcess(ADownloaderApp: PDownloaderAppData): Boolean;
   public
     constructor Create(AppClassId: AnsiString); override;
     procedure Run; override;   
@@ -56,15 +55,15 @@ uses
   DB_dealItem_Load,
   DB_dealItem_Save;
 
-{ TStockDataApp }
+{ TStockDataTestApp }
 
-constructor TStockDataApp.Create(AppClassId: AnsiString);
+constructor TStockDataTestApp.Create(AppClassId: AnsiString);
 begin
   inherited;
   FillChar(fStockDataAppData, SizeOf(fStockDataAppData), 0);
 end;
 
-function TStockDataApp.Initialize: Boolean;
+function TStockDataTestApp.Initialize: Boolean;
 begin
   Result := inherited Initialize;
   if Result then
@@ -73,7 +72,7 @@ begin
     if Result then
     begin
       fStockDataAppData.RunMode := runMode_Console;  
-      fStockDataAppData.AppAgent := TStockDataConsoleApp.Create(Self);
+      fStockDataAppData.AppAgent := TStockDataTestAppAgent.Create(Self);
       Result := fStockDataAppData.AppAgent.Initialize; 
       if not Result then
         exit;
@@ -107,34 +106,8 @@ begin
   end;
 end;
 
-procedure TStockDataApp.CheckSaveStockItemDB;
-var
-  tmpIsNeedSaveStockItemDB: Boolean;
-  tmpDealItem: PRT_DealItem;
-  i: integer;
+procedure TStockDataTestApp.Finalize;
 begin
-  if 0 < Self.StockItemDB.RecordCount then
-  begin
-    tmpIsNeedSaveStockItemDB := false;
-    for i := 0 to StockItemDB.RecordCount - 1 do
-    begin
-      tmpDealItem := StockItemDB.RecordItem[i];
-      if 0 <> tmpDealItem.IsDataChange then
-      begin
-        tmpIsNeedSaveStockItemDB := true;
-        Break;
-      end;
-    end;
-    if tmpIsNeedSaveStockItemDB then
-    begin     
-      SaveDBStockItem(Self, Self.StockItemDB);
-    end; 
-  end;
-end;
-
-procedure TStockDataApp.Finalize;
-begin
-  CheckSaveStockItemDB;
   if nil <> fStockDataAppData.AppAgent then
   begin
     fStockDataAppData.AppAgent.Finalize;
@@ -150,28 +123,28 @@ begin
     WM_AppStart: begin
       if nil <> GlobalBaseStockApp then
       begin
-        TStockDataApp(GlobalBaseStockApp).RunStart;
+        TStockDataTestApp(GlobalBaseStockApp).RunStart;
       end;
       exit;
     end;
     WM_AppRequestEnd: begin    
-      TStockDataApp(GlobalBaseStockApp).Terminate;
+      TStockDataTestApp(GlobalBaseStockApp).Terminate;
     end;
     WM_Downloader2Console_Command_DownloadOK: begin    
-      TStockDataApp(GlobalBaseStockApp).Console_Notify_DownloadOK(wParam);
+      TStockDataTestApp(GlobalBaseStockApp).Console_Notify_DownloadOK(wParam);
     end;
     WM_Console2Downloader_Command_Download: begin
       PostMessage(AWnd, WM_Downloader_Command_Download, wParam, 0)
     end;
     WM_Downloader_Command_Download: begin
-      TStockDataApp(GlobalBaseStockApp).Downloader_Download(wParam);
+      TStockDataTestApp(GlobalBaseStockApp).Downloader_Download(wParam);
     end;
   end;
   Result := DefWindowProcA(AWnd, AMsg, wParam, lParam);
 end;
 //*)
 (*//
-function TStockDataApp.CreateAppCommandWindow: Boolean;
+function TStockDataTestApp.CreateAppCommandWindow: Boolean;
 var
   tmpRegWinClass: TWndClassA;  
   tmpGetWinClass: TWndClassA;
@@ -218,7 +191,7 @@ begin
 end;
 //*)
 (*//                                        
-procedure TStockDataApp.Console_NotifyDownloadData(AConsoleApp: PConsoleAppData; ADealItem: PRT_DealItem);
+procedure TStockDataTestApp.Console_NotifyDownloadData(AConsoleApp: PConsoleAppData; ADealItem: PRT_DealItem);
 begin
   if nil = ADealItem then
   begin   
@@ -231,7 +204,7 @@ begin
   end;
 end;
                                    
-function TStockDataApp.Console_GetNextDownloadDealItem(AConsoleApp: PConsoleAppData): PRT_DealItem;
+function TStockDataTestApp.Console_GetNextDownloadDealItem(AConsoleApp: PConsoleAppData): PRT_DealItem;
 var
   tmpDealItem: PRT_DealItem;
 begin
@@ -274,12 +247,12 @@ begin
   end;
 end;
 
-procedure TStockDataApp.Console_NotifyDownloadData(AConsoleApp: PConsoleAppData);
+procedure TStockDataTestApp.Console_NotifyDownloadData(AConsoleApp: PConsoleAppData);
 begin
   Console_NotifyDownloadData(AConsoleApp, Console_GetNextDownloadDealItem(AConsoleApp));
 end;
 
-procedure TStockDataApp.Console_Notify_DownloadOK(AStockCode: integer);
+procedure TStockDataTestApp.Console_Notify_DownloadOK(AStockCode: integer);
 var
   tmpConsoleApp: PConsoleAppData;
 begin
@@ -287,7 +260,7 @@ begin
   Console_NotifyDownloadData(tmpConsoleApp, Console_GetNextDownloadDealItem(tmpConsoleApp));
 end;
 
-function TStockDataApp.Console_CheckDownloaderProcess(AConsoleApp: PConsoleAppData): Boolean;
+function TStockDataTestApp.Console_CheckDownloaderProcess(AConsoleApp: PConsoleAppData): Boolean;
 var
   i: integer;
   tmpRetCode: DWORD;
@@ -324,7 +297,7 @@ begin
 end;
 //*)   
 (*//
-procedure TStockDataApp.RunStart_Console(AConsoleApp: PConsoleAppData);
+procedure TStockDataTestApp.RunStart_Console(AConsoleApp: PConsoleAppData);
 begin
   // run downloader process
   //if Console_CheckDownloaderProcess(AConsoleApp) then
@@ -335,7 +308,7 @@ begin
 end;  
 //*)  
 (*//
-procedure TStockDataApp.Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode: integer);
+procedure TStockDataTestApp.Downloader_Download(ADownloaderApp: PDownloaderAppData; AStockCode: integer);
 var
   tmpStockItem: PRT_DealItem;
 begin
@@ -355,7 +328,7 @@ begin
   end;
 end;
                        
-function TStockDataApp.Downloader_CheckConsoleProcess(ADownloaderApp: PDownloaderAppData): Boolean;
+function TStockDataTestApp.Downloader_CheckConsoleProcess(ADownloaderApp: PDownloaderAppData): Boolean;
 begin
   Result := IsWindow(ADownloaderApp.Console_Process.Core.AppCmdWnd);
   if not Result then
@@ -365,13 +338,13 @@ begin
   end;
 end;
 
-procedure TStockDataApp.Downloader_Download(AStockCode: integer);
+procedure TStockDataTestApp.Downloader_Download(AStockCode: integer);
 begin
   Downloader_Download(@fStockDataAppData.DownloaderAppData, AStockCode);
 end;
 //*)   
 (*//
-procedure TStockDataApp.RunStart_Downloader;
+procedure TStockDataTestApp.RunStart_Downloader;
 begin
 
 end; 
@@ -399,7 +372,7 @@ end;
 //*)
      
 (*//                        
-procedure TStockDataApp.RunStart;
+procedure TStockDataTestApp.RunStart;
 begin
   case fStockDataAppData.RunMode of
     //runMode_Console: RunStart_Console(@fStockDataAppData.ConsoleAppData);
@@ -408,7 +381,7 @@ begin
 end;
 //*)  
 
-procedure TStockDataApp.Run;
+procedure TStockDataTestApp.Run;
 begin                  
   if runMode_Console = fStockDataAppData.RunMode then
   begin

@@ -1,4 +1,4 @@
-program StockData;
+program StockDataTest1;
 
 uses
   Windows,
@@ -53,25 +53,24 @@ uses
   StockDayData_Parse_Sina_Html3 in '..\..\data_stock\datasrc_sina\StockDayData_Parse_Sina_Html3.pas',
   StockData_Import_tdx in '..\..\data_stock\datasrc_tdx\StockData_Import_tdx.pas',
   define_stockday_sina in '..\datasrc_sina\define_stockday_sina.pas',
-  StockDataApp in 'StockDataApp.pas',
-  SDConsoleForm in 'SDConsoleForm.pas' {frmSDConsole},
-  StockDataConsoleApp in 'StockDataConsoleApp.pas',
+  StockDataTestApp in 'StockDataTestApp.pas',
+  SDDataTestForm in 'SDDataTestForm.pas' {frmSDDataTest},
+  StockDataTestAppAgent in 'StockDataTestAppAgent.pas',
   define_StockDataApp in 'define_StockDataApp.pas',
-  StockDataDownloaderApp in 'StockDataDownloaderApp.pas';
+  StockDataDownloaderApp in 'StockDataDownloaderApp.pas',
+  win.shutdown in '..\..\..\devwintech\v0001\winproc\win.shutdown.pas';
 
 {$R *.res}
 
 var
-  GlobalApp: TStockDataApp = nil;
+  GlobalApp: TStockDataTestApp = nil;
 begin
-  GlobalApp := TStockDataApp.Create('');
+  GlobalApp := TStockDataTestApp.Create('');
   try
     if GlobalApp.Initialize then
       GlobalApp.Run;
-    GlobalApp.IsActiveStatus := IsActiveStatus_RequestShutdown;
     GlobalApp.Finalize;
-  finally         
-    GlobalApp.IsActiveStatus := IsActiveStatus_Shutdown;
+  finally
     GlobalApp.Free;
   end;
 end.
