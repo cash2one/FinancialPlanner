@@ -4,7 +4,8 @@ interface
 
 uses
   BaseApp,
-  Sysutils,
+  Sysutils,     
+  define_price,
   define_dealitem,
   StockDayDataAccess;
          
@@ -12,7 +13,7 @@ type
   PRepairSession = ^TRepairSession;
   TRepairSession = record
     StockItem: PRT_DealItem;
-    IsWeight: Boolean; 
+    WeightMode: TWeightMode;
     StockDataSina: TStockDayDataAccess;
     StockData163: TStockDayDataAccess;
   end;
@@ -24,7 +25,6 @@ implementation
 uses
   Classes,
   Windows,
-  define_price,         
   Define_DataSrc,    
   define_stock_quotes,
   UtilsDateTime,
@@ -36,21 +36,21 @@ procedure RepairDayData_Sina_Mode2(ARepairSession: PRepairSession; APrev163Index
 var   
   tmpIdx163: integer;
   tmpIdxSina: integer;
-  tmpStockData_163: PRT_Quote_M1_Day;   
-  tmpStockData_Sina: PRT_Quote_M1_Day;
+  tmpStockData_163: PRT_Quote_Day;
+  tmpStockData_Sina: PRT_Quote_Day;
 begin
   tmpStockData_163 := ARepairSession.StockData163.RecordItem[tmpIdx163];
   tmpStockData_Sina := ARepairSession.StockDataSina.RecordItem[tmpIdxSina];
 end;
 
 function RepairStockDataDay_Sina_Mode2(App: TBaseApp; ARepairSession: PRepairSession): Boolean;
-var 
-  tmpYear, tmpMonth, tmpDay: Word;   
+var
+  tmpYear, tmpMonth, tmpDay: Word;
   tmpJidu: integer;
-  
-  tmpUpdateTimes: TStringList;   
-  tmpStockData_163: PRT_Quote_M1_Day;   
-  tmpStockData_Sina: PRT_Quote_M1_Day;
+
+  tmpUpdateTimes: TStringList;
+  tmpStockData_163: PRT_Quote_Day;
+  tmpStockData_Sina: PRT_Quote_Day;
   tmpIdx163: integer;
   tmpIdxSina: integer;
 
@@ -69,9 +69,9 @@ var
 begin
   Result := false;
   if nil = ARepairSession.StockDataSina then
-    ARepairSession.StockDataSina := TStockDayDataAccess.Create(ARepairSession.StockItem, DataSrc_Sina, ARepairSession.IsWeight);
+    ARepairSession.StockDataSina := TStockDayDataAccess.Create(ARepairSession.StockItem, DataSrc_Sina, ARepairSession.WeightMode);
   if nil = ARepairSession.StockData163 then
-    ARepairSession.StockData163 := TStockDayDataAccess.Create(ARepairSession.StockItem, DataSrc_163, false);
+    ARepairSession.StockData163 := TStockDayDataAccess.Create(ARepairSession.StockItem, DataSrc_163, weightNone);
   tmpUpdateTimes := TStringList.Create;
   try
     if 1 > ARepairSession.StockData163.RecordCount then

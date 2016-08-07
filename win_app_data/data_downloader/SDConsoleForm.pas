@@ -23,6 +23,7 @@ type
     lbStockSina: TEdit;
     lbStockXQ: TEdit;
     lbStockQQ: TEdit;
+    btnShutDown: TButton;
     procedure btnDownload163Click(Sender: TObject);
     procedure btnDownloadSinaClick(Sender: TObject);
     procedure btnDownloadXueqiuClick(Sender: TObject);
@@ -32,6 +33,7 @@ type
     procedure btnDownloadQQClick(Sender: TObject);
     procedure btnDownloadQQAllClick(Sender: TObject);
     procedure btnDownloadAllClick(Sender: TObject);
+    procedure btnShutDownClick(Sender: TObject);
   private
     { Private declarations }      
     function GetStockCode: integer;       
@@ -46,6 +48,7 @@ implementation
 
 uses
   windef_msg,
+  win.shutdown,
   define_datasrc,
   define_StockDataApp,
   BaseWinApp;
@@ -106,6 +109,12 @@ end;
 procedure TfrmSDConsole.btnDownloadXueqiuClick(Sender: TObject);
 begin
   RequestDownloadStockData(GetStockCode, DataSrc_XQ);
+end;
+
+procedure TfrmSDConsole.btnShutDownClick(Sender: TObject);
+begin
+  inherited;
+  win.shutdown.ShutDown;
 end;
 
 end.

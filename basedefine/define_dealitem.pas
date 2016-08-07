@@ -51,7 +51,9 @@ uses
   
 function getStockCodePack(AStockCode: AnsiString) : integer;
 begin
-  Result := 0;                   
+  Result := 0;                 
+  if 6 > Length(AStockCode) then
+    AStockCode := Copy('000000', 1, 6 - length(AStockCode)) + AStockCode;  
   if 6 < Length(AStockCode) then
     AStockCode := Copy(AStockCode, Length(AStockCode) - 6 + 1, maxint);
   if 6 = Length(AStockCode) then

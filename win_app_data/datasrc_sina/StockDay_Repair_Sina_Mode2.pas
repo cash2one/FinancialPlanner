@@ -2,10 +2,11 @@ unit StockDay_Repair_Sina_Mode2;
 
 interface
 
-uses
+uses      
+  Define_Price,
   BaseApp;
 
-  procedure RepairStockDataDay_Sina_All_Mode2(App: TBaseApp; AIsWeight: Boolean);
+  procedure RepairStockDataDay_Sina_All_Mode2(App: TBaseApp; AWeightMode: TWeightMode);
 
 implementation
 
@@ -13,7 +14,6 @@ uses
   Windows,
   Sysutils,
   Classes,
-  Define_Price,
   Define_DealItem,
   Define_DataSrc,    
   define_stock_quotes,
@@ -25,7 +25,7 @@ uses
   DB_DealItem_Load;                 
                     
 
-procedure RepairStockDataDay_Sina_All_Mode2(App: TBaseApp; AIsWeight: Boolean);
+procedure RepairStockDataDay_Sina_All_Mode2(App: TBaseApp; AWeightMode: TWeightMode);
 var
   tmpDBStockItem: TDBDealItem;
   tmpRepairSession: TRepairSession;
@@ -49,7 +49,7 @@ begin
           if nil <> tmpRepairSession.StockData163 then
             FreeAndNil(tmpRepairSession.StockData163);
           tmpRepairSession.StockItem := tmpDealItem;
-          tmpRepairSession.IsWeight := AIsWeight;
+          tmpRepairSession.WeightMode := AWeightMode;
           if RepairStockDataDay_Sina_Mode2(App, @tmpRepairSession) then
           begin
             Sleep(200);

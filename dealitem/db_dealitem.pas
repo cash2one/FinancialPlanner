@@ -138,7 +138,10 @@ begin
   begin
     tmpPackStockCode := getStockCodePack(Copy(AStockCode, 3, MaxInt));
   end else if 6 = Length(AStockCode) then
-  begin                                                          
+  begin
+    tmpPackStockCode := getStockCodePack(AStockCode);
+  end else if 6 > Length(AStockCode) then
+  begin
     tmpPackStockCode := getStockCodePack(AStockCode);
   end;
   if 0 < tmpPackStockCode then

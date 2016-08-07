@@ -91,7 +91,7 @@ begin
   if Result then
   begin
     UtilsLog.CloseLogFiles;
-    UtilsLog.G_LogFile.FileName := ChangeFileExt(ParamStr(0), '.down.log');
+    UtilsLog.G_LogFile.FileName := ChangeFileExt(ParamStr(0), '.down.' + IntToStr(Windows.GetCurrentProcessId) + '.log');
     UtilsLog.SDLog('StockDataDownloaderApp.pas', 'init mode downloader');
     Result := CreateAppCommandWindow;
   end;

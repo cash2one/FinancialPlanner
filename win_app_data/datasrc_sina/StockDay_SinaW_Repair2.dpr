@@ -53,7 +53,7 @@ end;
 
 procedure TStockDaySinaRepairMode2App.Run;
 begin
-  RepairStockDataDay_Sina_All_Mode2(Self, true);
+  RepairStockDataDay_Sina_All_Mode2(Self, weightBackward);
 end;
 
 var

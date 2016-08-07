@@ -49,7 +49,8 @@ type
     function CreateAppCommandWindow: Boolean;
     function Console_GetNextDownloadDealItem(ADownloadTask: PDownloadTask): PRT_DealItem;
     procedure Console_NotifyDownloadData(ADownloadTask: PDownloadTask);
-    function Console_CheckDownloaderProcess(ADownloadTask: PDownloadTask): Boolean;
+    function Console_CheckDownloaderProcess(ADownloadTask: PDownloadTask): Boolean;  
+    procedure Console_NotifyDownloaderShutdown(ADownloadTask: PDownloadTask);
   end;
   
 implementation
@@ -79,7 +80,10 @@ begin
       begin
         GlobalBaseStockApp.Terminate;
       end;
-    end;          
+    end;
+    WM_AppNotifyShutdownMachine: begin
+    
+    end;   
     WM_Console_Command_Download: begin
       if nil <> GlobalBaseStockApp then
       begin
@@ -115,7 +119,9 @@ begin
             PostMessage(AWnd, WM_Console_Command_Download, tmpDownloadTask.TaskDealItemCode, tmpDownloadTask.TaskDataSrc);
           end else
           begin
-            // 都下载完了 ???
+            // 都下载完了 ???                      
+            G_StockDataConsoleApp.Console_NotifyDownloaderShutdown(tmpDownloadTask);
+            //PostMessage(AWnd, WM_AppRequestEnd, 0, 0);
           end;
         end else
         begin
@@ -391,5 +397,13 @@ begin
   end;
   Result := IsWindow(ADownloadTask.DownloadProcess.Core.AppCmdWnd);
 end;
-       
+
+procedure TStockDataConsoleApp.Console_NotifyDownloaderShutdown(ADownloadTask: PDownloadTask);
+begin
+  if IsWindow(ADownloadTask.DownloadProcess.Core.AppCmdWnd) then
+  begin
+    PostMessage(ADownloadTask.DownloadProcess.Core.AppCmdWnd, WM_AppRequestEnd, 0, 0);
+  end;
+end;
+
 end.

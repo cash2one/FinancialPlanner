@@ -165,4 +165,13 @@ object frmSDConsole: TfrmSDConsole
     TabOrder = 14
     Text = '600000'
   end
+  object btnShutDown: TButton
+    Left = 240
+    Top = 238
+    Width = 110
+    Height = 25
+    Caption = 'ShutDown'
+    TabOrder = 15
+    OnClick = btnShutDownClick
+  end
 end

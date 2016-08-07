@@ -121,9 +121,10 @@ var
   tmpJidu: integer;
   
   tmpUpdateTimes: TStringList;   
-  tmpStockData_163: PRT_Quote_M1_Day;   
-  tmpStockData_Sina: PRT_Quote_M1_Day;
-  tmpIdx163, tmpIdxSina: integer;
+  tmpStockData_163: PRT_Quote_Day;
+  tmpStockData_Sina: PRT_Quote_Day;
+  tmpIdx163: integer;
+  tmpIdxSina: integer;
   tmpSeason: string;
   i: integer;
 begin

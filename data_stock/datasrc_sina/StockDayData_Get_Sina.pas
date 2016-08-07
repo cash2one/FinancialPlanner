@@ -117,9 +117,13 @@ var
   tmpStockDataAccess: TStockDayDataAccess; 
   tmpLastDealDate: Word;
   tmpInt: integer; 
-  tmpQuoteDay: PRT_Quote_M1_Day;
-  tmpFromYear, tmpFromMonth, tmpFromDay: Word;   
-  tmpCurrentYear, tmpCurrentMonth, tmpCurrentDay: Word; 
+  tmpQuoteDay: PRT_Quote_Day;
+  tmpFromYear: Word;   
+  tmpFromMonth: Word;
+  tmpFromDay: Word;
+  tmpCurrentYear: Word; 
+  tmpCurrentMonth: Word;
+  tmpCurrentDay: Word;
   tmpJidu: integer;
 begin
   Result := false;
