@@ -20,6 +20,14 @@ object frmSDRepair: TfrmSDRepair
     Height = 41
     Align = alTop
     BevelOuter = bvNone
+    object btnCheckFirstDate: TButton
+      Left = 80
+      Top = 10
+      Width = 120
+      Height = 25
+      Caption = 'Check First Date'
+      OnClick = btnCheckFirstDateClick
+    end
   end
   object pnlBottom: TPanel
     Left = 0

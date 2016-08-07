@@ -52,6 +52,14 @@ begin
   tmpHead.Header.BaseHeader.StorePriceFactor    := 1000;             // 2 - 34
                                                 
   tmpHead.Header.FirstDealDate       := ADataAccess.FirstDealDate;             // 2 - 36
+  if 0 = ADataAccess.StockItem.FirstDealDate then
+  begin
+    if ADataAccess.FirstDealDate <> ADataAccess.StockItem.FirstDealDate then
+    begin
+      ADataAccess.StockItem.FirstDealDate := ADataAccess.FirstDealDate;
+      ADataAccess.StockItem.IsDataChange := 1;
+    end;
+  end;
   tmpHead.Header.LastDealDate        := ADataAccess.LastDealDate;             // 2 - 38
   tmpHead.Header.EndDealDate         := ADataAccess.EndDealDate;             // 2 - 40
 

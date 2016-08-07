@@ -27,7 +27,7 @@ type
     procedure btnClearClick(Sender: TObject);
     procedure btnSaveIniClick(Sender: TObject);
   protected
-    fDealItemTree: TDealItemTree;   
+    fDealItemTree: TDealItemTreeCtrl;   
     fAppStartTimer: TTimer;
     procedure WMDropFiles(var msg : TWMDropFiles) ; message WM_DROPFILES;
     procedure SaveDealItemDBAsDic(AFileUrl: string); 
@@ -108,8 +108,8 @@ begin
     fAppStartTimer.Enabled := false;
     fAppStartTimer.OnTimer := nil;
   end;
-  fDealItemTree := TDealItemTree.Create(pnlLeft);
-  fDealItemTree.InitializeDealItemsTree;
+  fDealItemTree := TDealItemTreeCtrl.Create(pnlLeft);
+  fDealItemTree.InitializeDealItemsTree(fDealItemTree.TreeView);
   fDealItemTree.BuildDealItemsTreeNodes;
 end;
                 

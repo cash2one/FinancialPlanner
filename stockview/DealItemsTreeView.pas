@@ -68,6 +68,8 @@ type
     function AddDealItemsTreeColumn_Name: TVirtualTreeColumn;
     function AddDealItemsTreeColumn_FirstDeal: TVirtualTreeColumn;
     function AddDealItemsTreeColumn_EndDeal: TVirtualTreeColumn;
+    
+    property TreeView: TBaseVirtualTree read fDealItemTreeData.TreeView;
   end;
   
 implementation

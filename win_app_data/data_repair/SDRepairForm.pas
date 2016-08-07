@@ -5,7 +5,7 @@ interface
 uses
   Windows, Forms, Classes, Controls, ExtCtrls, SysUtils, Graphics,
   VirtualTrees, define_price,
-  BaseForm, BaseApp, DealItemsTreeView, StockDayDataAccess;
+  BaseForm, BaseApp, DealItemsTreeView, StockDayDataAccess, StdCtrls;
 
 type
   PStockDayDataColumns = ^TStockDayDataColumns;
@@ -41,12 +41,14 @@ type
     pnlStocks: TPanel;
     vtStocks: TVirtualStringTree;
     vtDayData: TVirtualStringTree;
+    btnCheckFirstDate: TButton;
     procedure vtDayDataGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
     procedure vtStocksChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vtDayDataPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
+    procedure btnCheckFirstDateClick(Sender: TObject);
   private
     { Private declarations }    
     fRepairFormData: TRepairFormData;
@@ -68,6 +70,7 @@ uses
   define_datasrc,
   define_stock_quotes,
   StockDayData_Load,
+  db_dealitem_save,
   define_dealitem;
   
 type
@@ -99,6 +102,40 @@ begin
   InitializeStockDayDataListView(vtDayData);
 end;
                          
+procedure TfrmSDRepair.btnCheckFirstDateClick(Sender: TObject);
+var
+  i: integer; 
+  tmpStockItem: PRT_DealItem;
+  tmpDayDataAccess: TStockDayDataAccess;
+  tmpIsChanged: Boolean;
+begin
+  inherited;
+  tmpIsChanged := false;
+  for i := 0 to TBaseStockApp(App).StockItemDB.RecordCount - 1 do
+  begin
+    tmpStockItem := TBaseStockApp(App).StockItemDB.RecordItem[i];
+    if 0 = tmpStockItem.FirstDealDate then
+    begin       
+      tmpDayDataAccess := TStockDayDataAccess.Create(tmpStockItem, DataSrc_163, weightNone);
+      try
+        LoadStockDayData(App, tmpDayDataAccess);
+        if 0 < tmpDayDataAccess.RecordCount then
+        begin
+          tmpDayDataAccess.Sort;
+          tmpStockItem.FirstDealDate := PRT_Quote_Day(tmpDayDataAccess.RecordItem[0]).DealDate.Value;
+          tmpIsChanged := true;
+        end;
+      finally
+        tmpDayDataAccess.Free;
+      end;
+    end;
+  end;
+  if tmpIsChanged then
+  begin
+    SaveDBStockItem(App, TBaseStockApp(App).StockItemDB);
+  end;
+end;
+
 procedure TfrmSDRepair.ClearDayData;
 begin
   if nil <> fRepairFormData.StockDataTreeCtrlData.DayDataAccess1 then
