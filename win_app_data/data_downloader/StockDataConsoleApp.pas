@@ -14,7 +14,7 @@ uses
 type
   PDownloadTask       = ^TDownloadTask;
   TDownloadTask       = record
-    DownloadProcess   : TOwnedProcess;
+    DownloadProcess   : TRT_OwnedProcess;
     TaskID            : Integer;
     TaskDataSrc       : Integer;
     TaskDealItemCode  : Integer;

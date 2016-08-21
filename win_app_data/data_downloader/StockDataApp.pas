@@ -83,9 +83,10 @@ begin
       begin                        
       end;
     end else
-    begin              
-      Result := CheckSingleInstance(AppMutexName_StockDataDownloader);
-      if Result then
+    begin
+      //只要不是 console 就是 downloader 或者 sub console process      
+      //Result := CheckSingleInstance(AppMutexName_StockDataDownloader);
+      //if Result then
       begin      
         fStockDataAppData.RunMode := runMode_DataDownloader; 
         fStockDataAppData.AppAgent := TStockDataDownloaderApp.Create(Self);

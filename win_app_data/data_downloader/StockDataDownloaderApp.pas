@@ -16,7 +16,7 @@ uses
 type
   PDownloaderAppData = ^TDownloaderAppData;
   TDownloaderAppData = record
-    Console_Process: TExProcess;
+    Console_Process: TRT_ExProcess;
     HttpClientSession: THttpClientSession;
     HttpData: win.iobuffer.PIOBuffer;
   end;
@@ -39,6 +39,7 @@ implementation
             
 uses
   windef_msg,
+  win.thread,
   BaseWinApp,
   BaseStockApp,
   define_datasrc,
@@ -56,8 +57,14 @@ begin
     WM_AppStart: begin
       exit;
     end;
-    WM_AppRequestEnd: begin    
+    WM_AppRequestEnd: begin
+      // query if should end    
       GlobalBaseStockApp.Terminate;
+      PostMessage(AWnd, WM_AppNotifyEnd, 0, 0);
+    end;
+    WM_AppNotifyEnd: begin
+      GlobalBaseStockApp.Terminate;
+      Windows.TerminateProcess(Windows.GetCurrentProcess, 0);
     end;
     WM_Console2Downloader_Command_Download: begin
       PostMessage(AWnd, WM_Downloader_Command_Download, wParam, lParam)
@@ -91,6 +98,8 @@ end;
 function TStockDataDownloaderApp.Initialize: Boolean;
 begin
   Result := inherited Initialize;
+  if Result then
+    Result := Downloader_CheckConsoleProcess(@fDownloaderAppData);
   if Result then
   begin
     UtilsLog.CloseLogFiles;
@@ -179,6 +188,46 @@ begin
   end;
 end;
                        
+function CheckParentProcessThreadProc(AParentProcess: PCoreProcess): DWORD; stdcall;
+begin
+  Result := 0;
+  while True do
+  begin
+    Sleep(500);     
+    if not IsWindow(AParentProcess.AppCmdWnd) then
+    begin
+      Break;
+    end;
+  end;
+  GlobalBaseWinApp.Terminate;
+  ExitThread(0);
+end;
+
+var
+  ParentProcessMonitorThread: TSysWinThread = (
+    core: (threadhandle: 0; threadid: 0)
+  );
+
+procedure CreateParentProcessMonitorThread(ACoreProcess: PCoreProcess);
+var
+  tmpExitCode: DWORD;
+begin
+  if (0 <> ParentProcessMonitorThread.Core.ThreadHandle) and
+     (INVALID_HANDLE_VALUE <> ParentProcessMonitorThread.Core.ThreadHandle) then
+  begin
+    Windows.GetExitCodeThread(ParentProcessMonitorThread.Core.ThreadHandle, tmpExitCode);
+    if Windows.STILL_ACTIVE = tmpExitCode then
+    begin
+      exit;
+    end;
+  end;
+  
+  ParentProcessMonitorThread.Core.ThreadHandle :=
+        Windows.CreateThread(nil, 0, @CheckParentProcessThreadProc, ACoreProcess, CREATE_SUSPENDED,
+        ParentProcessMonitorThread.Core.ThreadId);
+  ResumeThread(ParentProcessMonitorThread.Core.ThreadHandle);
+end;
+    
 function TStockDataDownloaderApp.Downloader_CheckConsoleProcess(ADownloaderApp: PDownloaderAppData): Boolean;
 begin
   Result := IsWindow(ADownloaderApp.Console_Process.Core.AppCmdWnd);
@@ -186,6 +235,16 @@ begin
   begin      
     ADownloaderApp.Console_Process.Core.AppCmdWnd := Windows.FindWindowA(AppCmdWndClassName_StockDataDownloader_Console, nil);    
     Result := IsWindow(ADownloaderApp.Console_Process.Core.AppCmdWnd);
+    if Result then
+    begin
+      Windows.GetWindowThreadProcessId(ADownloaderApp.Console_Process.Core.AppCmdWnd,
+        ADownloaderApp.Console_Process.Core.ProcessId);
+      if (0 <> ADownloaderApp.Console_Process.Core.ProcessId) and
+         (INVALID_HANDLE_VALUE <> ADownloaderApp.Console_Process.Core.ProcessId) then
+      begin
+        CreateParentProcessMonitorThread(@ADownloaderApp.Console_Process.Core);
+      end;
+    end;
   end;
 end;
 
