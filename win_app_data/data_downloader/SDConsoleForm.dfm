@@ -174,4 +174,10 @@ object frmSDConsole: TfrmSDConsole
     TabOrder = 15
     OnClick = btnShutDownClick
   end
+  object tmrRefreshDownloadTask: TTimer
+    Enabled = False
+    OnTimer = tmrRefreshDownloadTaskTimer
+    Left = 80
+    Top = 192
+  end
 end

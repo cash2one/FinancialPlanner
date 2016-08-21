@@ -10,6 +10,7 @@ uses
   define_dealItem,
   define_stockapp,
   define_StockDataApp,
+  win.iobuffer,
   win.process;
 
 type
@@ -17,6 +18,7 @@ type
   TDownloaderAppData = record
     Console_Process: TExProcess;
     HttpClientSession: THttpClientSession;
+    HttpData: win.iobuffer.PIOBuffer;
   end;
                
   TStockDataDownloaderApp = class(BaseApp.TBaseAppAgent)
@@ -73,6 +75,7 @@ end;
 constructor TStockDataDownloaderApp.Create(AHostApp: TBaseApp);
 begin
   inherited;
+  FillChar(fDownloaderAppData, SizeOf(fDownloaderAppData), 0);
   G_StockDataDownloaderApp := Self;
 end;
 
@@ -149,12 +152,16 @@ begin
   begin
     if DataSrc_163 = ADataSrc then
     begin
-      GetStockDataDay_163(fBaseAppAgentData.HostApp, tmpStockItem, @ADownloaderApp.HttpClientSession);
+      GetStockDataDay_163(fBaseAppAgentData.HostApp, tmpStockItem, @ADownloaderApp.HttpClientSession, fDownloaderAppData.HttpData);
       SDLog('', 'Downloader_Download 163:' + IntToStr(AStockCode));
     end;                  
     if DataSrc_Sina = ADataSrc then
     begin
-      GetStockDataDay_Sina(fBaseAppAgentData.HostApp, tmpStockItem, weightBackward, @ADownloaderApp.HttpClientSession);
+      if nil = fDownloaderAppData.HttpData then
+      begin
+        fDownloaderAppData.HttpData := CheckOutIOBuffer(SizeMode_512k);
+      end;
+      GetStockDataDay_Sina(fBaseAppAgentData.HostApp, tmpStockItem, weightBackward, @ADownloaderApp.HttpClientSession, fDownloaderAppData.HttpData);
       //SDLog('', 'Downloader_Download Sina:' + IntToStr(AStockCode));
     end;
     if Downloader_CheckConsoleProcess(ADownloaderApp) then

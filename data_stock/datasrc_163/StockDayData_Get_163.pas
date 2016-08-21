@@ -74,14 +74,15 @@ const
     '涨跌额', '涨跌幅', '换手率', '成交量',
     '成交金额', '总市值', '流通市值');
                   
-function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AHttpSession: PHttpClientSession): Boolean;
+function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AHttpSession: PHttpClientSession; AHttpData: PIOBuffer): Boolean;
 
 implementation
 
 uses
   Classes,
   Windows,    
-  Define_DataSrc,    
+  Define_DataSrc,
+  UtilsLog,  
   define_stock_quotes,
   StockDayData_Load,
   StockDayData_Save;
@@ -296,7 +297,7 @@ begin
   end;
 end;
                                                                                                                
-function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AHttpSession: PHttpClientSession): Boolean;
+function GetStockDataDay_163(App: TBaseApp; AStockItem: PRT_DealItem; AHttpSession: PHttpClientSession; AHttpData: PIOBuffer): Boolean;
 var
   tmpStockDataAccess: TStockDayDataAccess;
   tmpUrl: string;
@@ -326,7 +327,8 @@ begin
           tmpUrl := tmpUrl +
             '&start=' + FormatDateTime('yyyymmdd', tmpStockDataAccess.LastDealDate + 1) +
             '&end=' + FormatDateTime('yyyymmdd', tmpLastDealDate) +
-            '&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP';
+            '&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP';   
+          SDLog('', 'Downloader_Download 163:' + tmpUrl);
         end else
         begin
           exit;
@@ -335,7 +337,7 @@ begin
     end else
       exit;
     // parse result data
-    tmpHttpData := GetHttpUrlData(tmpUrl, AHttpSession);
+    tmpHttpData := GetHttpUrlData(tmpUrl, AHttpSession, AHttpData);
     if nil <> tmpHttpData then
     begin
       try
@@ -346,7 +348,10 @@ begin
           SaveStockDayData(App, tmpStockDataAccess);
         end;     
       finally
-        CheckInIOBuffer(tmpHttpData);
+        if AHttpData <> tmpHttpData then
+        begin
+          CheckInIOBuffer(tmpHttpData);
+        end;
       end;
     end;
   finally    

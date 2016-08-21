@@ -52,7 +52,10 @@ type
     function Console_CheckDownloaderProcess(ADownloadTask: PDownloadTask): Boolean;  
     procedure Console_NotifyDownloaderShutdown(ADownloadTask: PDownloadTask);
   end;
-  
+              
+var
+  G_StockDataConsoleApp: TStockDataConsoleApp = nil;
+                     
 implementation
 
 uses
@@ -60,10 +63,7 @@ uses
   BaseStockApp,
   SDConsoleForm,
   UtilsLog;
-                 
-var
-  G_StockDataConsoleApp: TStockDataConsoleApp = nil;
-                       
+
 function AppCommandWndProcA(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
 var
   tmpStockCode: integer;
@@ -141,6 +141,7 @@ begin
   inherited;
   G_StockDataConsoleApp := Self;
   FillChar(fConsoleAppData, SizeOf(fConsoleAppData), 0);
+  AHostApp.AppAgent := Self;
   fConsoleAppData.TaskList := TList.Create;
 end;
            

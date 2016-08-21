@@ -26,7 +26,8 @@ const
      http://vip.stock.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/000300/type/S.phtml
   //*)
   
-function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean;
+function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; ANetSession: PHttpClientSession; AHttpData: PIOBuffer): Boolean;        
+function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; ANetSession: PHttpClientSession; AHttpData: PIOBuffer): Boolean; overload;
 
 implementation
 
@@ -44,7 +45,7 @@ uses
   StockDayData_Load,
   StockDayData_Save;
 
-function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; ANetSession: PHttpClientSession): Boolean; overload;
+function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; ANetSession: PHttpClientSession; AHttpData: PIOBuffer): Boolean; overload;
 var
   tmpurl: string;  
   tmpHttpData: PIOBuffer;        
@@ -55,7 +56,7 @@ begin
   else
     tmpUrl := BaseSinaDayUrl1;
   tmpurl := tmpurl + ADataAccess.StockItem.sCode + '.phtml';
-  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_512k);
+  tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, AHttpData, SizeMode_512k);
   if nil <> tmpHttpData then
   begin
     try
@@ -63,13 +64,16 @@ begin
       //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
       Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
     finally
-      CheckInIOBuffer(tmpHttpData);
+      if AHttpData <> tmpHttpData then
+      begin
+        CheckInIOBuffer(tmpHttpData);
+      end;
     end;
   end;    
   Sleep(100);
 end;
 
-function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; ANetSession: PHttpClientSession): Boolean; overload;
+function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: Word; ANetSession: PHttpClientSession; AHttpData: PIOBuffer): Boolean; overload;
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;
@@ -94,7 +98,7 @@ begin
   tmpRepeat := 3;
   while tmpRepeat > 0 do
   begin
-    tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, SizeMode_512k);
+    tmpHttpData := GetHttpUrlData(tmpUrl, ANetSession, AHttpData, SizeMode_512k);
     if nil <> tmpHttpData then
     begin
       try
@@ -102,7 +106,10 @@ begin
         //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
         Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
       finally
-        CheckInIOBuffer(tmpHttpData);
+        if AHttpData <> tmpHttpData then
+        begin
+          CheckInIOBuffer(tmpHttpData);
+        end;
       end;
     end;
     if Result then
@@ -112,7 +119,7 @@ begin
   end;
 end;
 
-function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean;
+function GetStockDataDay_Sina(App: TBaseApp; AStockItem: PRT_DealItem; AWeightMode: TWeightMode; ANetSession: PHttpClientSession; AHttpData: PIOBuffer): Boolean;
 var
   tmpStockDataAccess: TStockDayDataAccess; 
   tmpLastDealDate: Word;
@@ -152,10 +159,15 @@ begin
     
     end else
       exit;
-      
-    if tmpStockDataAccess.StockItem.FirstDealDate < 1 then
+
+    (*//
+    // 先以 163 必须 获取到数据为前提 ???
+    if AStockItem.FirstDealDate < 1 then
+    begin
       exit;
-      
+    end;
+    //*)
+
     DecodeDate(now, tmpCurrentYear, tmpCurrentMonth, tmpCurrentDay);
     if (0 < tmpStockDataAccess.LastDealDate) and (0 < tmpStockDataAccess.FirstDealDate) then
     begin
@@ -183,7 +195,7 @@ begin
     begin
       while tmpJidu < 5 do
       begin
-        DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, ANetSession);
+        DataGet_DayData_Sina(tmpStockDataAccess, tmpFromYear, tmpJidu, ANetSession, AHttpData);
         Inc(tmpJidu);
       end;
       Inc(tmpFromYear);
@@ -191,10 +203,10 @@ begin
     end; 
     while tmpJidu < SeasonOfMonth(tmpCurrentMonth) do
     begin
-      DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, ANetSession);
+      DataGet_DayData_Sina(tmpStockDataAccess, tmpCurrentYear, tmpJidu, ANetSession, AHttpData);
       Inc(tmpJidu);
     end;
-    DataGet_DayData_SinaNow(tmpStockDataAccess, ANetSession);
+    DataGet_DayData_SinaNow(tmpStockDataAccess, ANetSession, AHttpData);
 
     tmpStockDataAccess.Sort;
     SaveStockDayData(App, tmpStockDataAccess); 
