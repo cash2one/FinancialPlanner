@@ -39,7 +39,8 @@ uses
   UtilsDateTime,
   //StockDayData_Parse_Sina_Html1,
   //StockDayData_Parse_Sina_Html2,  
-  StockDayData_Parse_Sina_Html3,  
+  StockDayData_Parse_Sina_Html3,
+  QuickList_Int,  
   UtilsLog,
   StockDayData_Parse_Sina,
   StockDayData_Load,
@@ -48,7 +49,9 @@ uses
 function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; ANetSession: PHttpClientSession; AHttpData: PIOBuffer): Boolean; overload;
 var
   tmpurl: string;  
-  tmpHttpData: PIOBuffer;        
+  tmpHttpData: PIOBuffer;
+  tmpDayDatas: TALIntegerList;
+  i: integer; 
 begin          
   Result := false;
   if weightNone <> ADataAccess.WeightMode then
@@ -62,7 +65,27 @@ begin
     try
       //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
       //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
-      Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
+      tmpDayDatas := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(tmpHttpData);
+      if nil <> tmpDayDatas then
+      begin
+        try
+          if 0 < tmpDayDatas.Count then
+          begin
+            for i := 0 to tmpDayDatas.Count - 1 do
+            begin
+              AddDealDayData(ADataAccess, PRT_Quote_Day(tmpDayDatas.Items[i]));
+              Result := True;
+            end;
+          end;
+          for i := tmpDayDatas.Count - 1 downto 0 do
+          begin
+            FreeMem(PRT_Quote_Day(tmpDayDatas.Items[i]));
+          end;
+          tmpDayDatas.Clear;
+        finally
+          tmpDayDatas.Free;
+        end;
+      end;
     finally
       if AHttpData <> tmpHttpData then
       begin
@@ -77,7 +100,9 @@ function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: 
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;
-  tmpRepeat: Integer;    
+  tmpRepeat: Integer;  
+  tmpDayDatas: TALIntegerList;   
+  i: integer; 
 begin
   Result := false;
   if weightNone <> ADataAccess.WeightMode then
@@ -104,7 +129,27 @@ begin
       try
         //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
         //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
-        Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
+        tmpDayDatas := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(tmpHttpData);
+        if nil <> tmpDayDatas then
+        begin
+          try
+            if 0 < tmpDayDatas.Count then
+            begin
+              for i := 0 to tmpDayDatas.Count - 1 do
+              begin
+                AddDealDayData(ADataAccess, PRT_Quote_Day(tmpDayDatas.Items[i]));
+                Result := True;
+              end;
+            end; 
+            for i := tmpDayDatas.Count - 1 downto 0 do
+            begin
+              FreeMem(PRT_Quote_Day(tmpDayDatas.Items[i]));
+            end;
+            tmpDayDatas.Clear;
+          finally
+            tmpDayDatas.Free;
+          end;
+        end;
       finally
         if AHttpData <> tmpHttpData then
         begin

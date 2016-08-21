@@ -45,6 +45,7 @@ uses
   UtilsDateTime,
   UtilsLog,        
   win.iobuffer,
+  QuickList_Int,
   //StockDayData_Parse_Sina_Html1,
   //StockDayData_Parse_Sina_Html2,
   StockDayData_Parse_Sina_Html3,
@@ -54,7 +55,9 @@ uses
 function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; AWeightMode: TWeightMode; ANetSession: PHttpClientSession): Boolean; overload;
 var
   tmpurl: string;  
-  tmpHttpData: PIOBuffer;        
+  tmpHttpData: PIOBuffer;
+  tmpDayDatas: TAlIntegerList;
+  i: integer;  
 begin          
   Result := false;
   if weightNone <> AWeightMode then
@@ -67,8 +70,28 @@ begin
   begin
     try
       //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
-      //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);   
-      Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+      //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+      tmpDayDatas := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(tmpHttpData);
+      if nil <> tmpDayDatas then
+      begin
+        try
+          if 0 < tmpDayDatas.Count then
+          begin
+            for i := 0 to tmpDayDatas.Count - 1 do
+            begin
+              AddDealDayData(ADataAccess, PRT_Quote_Day(tmpDayDatas[i]));
+            end;
+            for i := tmpDayDatas.Count - 1 downto 0 do
+            begin
+              FreeMem(PRT_Quote_Day(tmpDayDatas.Items[i]));
+            end;
+            tmpDayDatas.Clear;
+            Result := True;
+          end;
+        finally
+          tmpDayDatas.Free;
+        end;
+      end;
     finally
       CheckInIOBuffer(tmpHttpData);
     end;
@@ -80,7 +103,9 @@ function DataGet_DayData_Sina(ADataAccess: TStockDayDataAccess; AYear, ASeason: 
 var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;
-  tmpRepeat: Integer;    
+  tmpRepeat: Integer;      
+  tmpDayDatas: TAlIntegerList;
+  i: Integer;
 begin
   Result := false;
   if weightNone <> AWeightMode then
@@ -102,8 +127,28 @@ begin
     begin
       try
         //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
-        //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);    
-        Result := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+        //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
+        tmpDayDatas := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(tmpHttpData);
+        if nil <> tmpDayDatas then
+        begin
+          try
+            if 0 < tmpDayDatas.Count then
+            begin
+              for i := 0 to tmpDayDatas.Count - 1 do
+              begin                      
+                AddDealDayData(ADataAccess, PRT_Quote_Day(tmpDayDatas[i]));
+              end;
+              Result := true;
+            end;
+            for i := tmpDayDatas.Count - 1 downto 0 do
+            begin
+              FreeMem(PRT_Quote_Day(tmpDayDatas.Items[i]));
+            end;
+            tmpDayDatas.Clear;
+          finally
+            tmpDayDatas.Free;
+          end;
+        end;
       finally
         CheckInIOBuffer(tmpHttpData);
       end;
@@ -132,7 +177,7 @@ begin
   if nil = ARepairSession.StockDataSina then
     ARepairSession.StockDataSina := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AWeightMode);
   if nil = ARepairSession.StockData163 then
-    ARepairSession.StockData163 := TStockDayDataAccess.Create(AStockItem, DataSrc_163, weightNone);
+    ARepairSession.StockData163 := TStockDayDataAccess.Create(AStockItem, DataSrc_163, weightNone); 
   tmpUpdateTimes := TStringList.Create;
   try
     if 1 > ARepairSession.StockData163.RecordCount then

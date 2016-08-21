@@ -6,9 +6,12 @@ uses
   win.iobuffer,      
   define_stockday_sina,
   define_stock_quotes,
-  StockDayDataAccess;
+  QuickList_Int;
   
-  function DataParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AResultData: PIOBuffer): Boolean; overload;
+  // 这里一个原则 尽量不引入 AdataAccess 这种外部 数据访问 独立性强
+  //function DataParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AResultData: PIOBuffer): Boolean; overload;
+
+  function DataParse_DayData_Sina(AResultData: PIOBuffer): TALIntegerList; overload;
 
 implementation
 
@@ -76,7 +79,7 @@ begin
   end;
 end;
 
-procedure ParseStockDealDataTableRow(ADataAccess: TStockDayDataAccess; AParseRecord: PParseRecord; ANode: PHtmlDomNode);
+procedure ParseStockDealDataTableRow(ADayDatas: TALIntegerList; AParseRecord: PParseRecord; ANode: PHtmlDomNode);
 var
   i: integer;
   tmpChild: PHtmlDomNode;
@@ -84,6 +87,7 @@ var
   tmpStr: string;
   tmpTDIndex: integer;
   tmpIsHead: Boolean;
+  tmpDayData: PRT_Quote_Day;
 begin              
   FillChar(AParseRecord.DealDayData, SizeOf(AParseRecord.DealDayData), 0);
   tmpTDIndex := -1;
@@ -140,11 +144,25 @@ begin
     AParseRecord.IsTableHeadReady := tmpIsHead;
   end else
   begin
-    AddDealDayData(ADataAccess, @AParseRecord.DealDayData);
+    //AddDealDayData(ADataAccess, @AParseRecord.DealDayData);
+    if 0 < AParseRecord.DealDayData.DealDate.Value then
+    begin                       
+      i := ADayDatas.IndexOf(AParseRecord.DealDayData.DealDate.Value);
+      if 0 <= i then
+      begin
+        tmpDayData := PRT_Quote_Day(ADayDatas.Objects[i]);
+      end else
+      begin
+        tmpDayData := System.New(PRT_Quote_Day);
+        FillChar(tmpDayData^, SizeOf(TRT_Quote_Day), 0);
+        ADayDatas.AddObject(AParseRecord.DealDayData.DealDate.Value, TObject(tmpDayData));
+      end;
+      tmpDayData^ := AParseRecord.DealDayData;
+    end;
   end;
 end;
                          
-function HtmlParse_DayData_Sina_Table(ADataAccess: TStockDayDataAccess; AParseRecord: PParseRecord; ANode: PHtmlDomNode): Boolean;
+function HtmlParse_DayData_Sina_Table(ADayDatas: TALIntegerList; AParseRecord: PParseRecord; ANode: PHtmlDomNode): Boolean;
 var
   i, j: integer;
   tmpNode1: PHtmlDomNode;
@@ -169,7 +187,7 @@ begin
     tmpTagName := lowercase(tmpNode1.nodeName);
     if SameText(tmpTagName, 'tr') then
     begin
-      ParseStockDealDataTableRow(ADataAccess, AParseRecord, tmpNode1);
+      ParseStockDealDataTableRow(ADayDatas, AParseRecord, tmpNode1);
     end;
     if SameText(tmpTagName, 'tbody') then
     begin
@@ -178,7 +196,7 @@ begin
       begin
         if SameText(HtmlDomNodeGetName(tmpNode1.childNodes.item(j)), 'tr') then
         begin    
-          ParseStockDealDataTableRow(ADataAccess, AParseRecord, ANode.childNodes.item(i));
+          ParseStockDealDataTableRow(ADayDatas, AParseRecord, ANode.childNodes.item(i));
         end;
       end;
       continue;
@@ -190,7 +208,7 @@ begin
   end;
 end;
 
-function HtmlParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AParseRecord: PParseRecord; ANode: PHtmlDomNode): Boolean;
+function HtmlParse_DayData_Sina(ADayDatas: TALIntegerList; AParseRecord: PParseRecord; ANode: PHtmlDomNode): Boolean;
 var
   i: integer;
   tmpcnt: integer;
@@ -238,7 +256,7 @@ begin
   end;
   if tmpIsHandledNode then
   begin
-    result := HtmlParse_DayData_Sina_Table(ADataAccess, AParseRecord, ANode);      
+    result := HtmlParse_DayData_Sina_Table(ADayDatas, AParseRecord, ANode);      
   end else
   begin
     if nil <> ANode.childNodes then
@@ -249,10 +267,10 @@ begin
         tmpNode := ANode.childNodes.item(i);
         if not result then
         begin
-          result := HtmlParse_DayData_Sina(ADataAccess, AParseRecord, tmpNode);
+          result := HtmlParse_DayData_Sina(ADayDatas, AParseRecord, tmpNode);
         end else
         begin
-          HtmlParse_DayData_Sina(ADataAccess, AParseRecord, tmpNode);
+          HtmlParse_DayData_Sina(ADayDatas, AParseRecord, tmpNode);
         end;
       end;
     end;
@@ -263,17 +281,15 @@ begin
   end;
 end;
      
-function DataParse_DayData_Sina(ADataAccess: TStockDayDataAccess; AResultData: PIOBuffer): Boolean; overload;
+function DataParse_DayData_Sina(AResultData: PIOBuffer): TALIntegerList; overload;
 var     
   tmpParseRec: TParseRecord;
   // 168k 的数据太大 不能这样设置
   tmpHttpHeadSession: THttpHeadParseSession;
 begin
-  Result := False;
+  Result := nil;
   if nil = AResultData then
     exit;
-  Log('StockDayData_Parse_Sina_Html3.pas', ADataAccess.StockItem.sCode);
-
   FillChar(tmpParseRec, SizeOf(tmpParseRec), 0);
   FIllChar(tmpHttpHeadSession, SizeOf(tmpHttpHeadSession), 0);
   
@@ -287,14 +303,20 @@ begin
       if tmpParseRec.HtmlDoc <> nil then
       begin
         try
-          Result := HtmlParse_DayData_Sina(ADataAccess, @tmpParseRec, PHtmlDomNode(tmpParseRec.HtmlDoc));
+
+          Result := TALIntegerList.Create;
+          Result.Clear;
+          if HtmlParse_DayData_Sina(Result, @tmpParseRec, PHtmlDomNode(tmpParseRec.HtmlDoc)) then
+          begin
+          
+          end;
         finally
           HtmlDomNodeFree(PHtmlDomNode(tmpParseRec.HtmlDoc));
           tmpParseRec.HtmlDoc := nil;
         end;
       end;
     except
-      Log('ParserSinaDataError:', ADataAccess.StockItem.sCode + 'error html');// + AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
+      //Log('ParserSinaDataError:', ADataAccess.StockItem.sCode + 'error html');// + AnsiString(PAnsiChar(@AResultData.Data[tmpHttpHeadSession.HeadEndPos + 1])));
     end;
   end;
 end;
