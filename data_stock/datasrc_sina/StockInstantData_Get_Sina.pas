@@ -4,23 +4,23 @@ interface
 
 uses                
   define_stock_quotes_instant,    
-  UtilsHttp,
+  UtilsHttp,     
+  win.iobuffer,
   BaseApp;
                                           
 type
   PInstantArray = ^TInstantArray;
   TInstantArray = record
-    Data: array[0..10 - 1] of PRT_InstantQuote;
+    Data: array[0..100 - 1] of PRT_InstantQuote;
   end;
                 
-  procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; AHttpClientSession: PHttpClientSession);
+  procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; AHttpClientSession: PHttpClientSession; AHttpData: PIOBuffer);
 
 implementation
 
 uses
   Sysutils,
   Classes,
-  win.iobuffer,
   Define_Price,
   define_dealItem,
   define_datasrc,
@@ -77,14 +77,14 @@ begin
   end;
 end;
        
-procedure DataGet_Instant_Sina(App: TBaseApp; AInstant: PRT_InstantQuote);
+procedure DataGet_Instant_Sina(App: TBaseApp; AInstant: PRT_InstantQuote; ANetSession: PHttpClientSession; AHttpData: PIOBuffer);
 var  
   tmpUrl: string;
   tmpRetData: PIOBuffer;
   tmpHttpParse: THttpHeadParseSession;
 begin
   tmpUrl := BaseSinaInstantUrl1 + GetStockCode_Sina(AInstant.Item);
-  tmpRetData := GetHttpUrlData(tmpUrl, nil); 
+  tmpRetData := GetHttpUrlData(tmpUrl, ANetSession, AHttpData); 
   if nil <> tmpRetData then
   begin
     try
@@ -169,7 +169,7 @@ begin
   end;
 end;
 
-procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; AHttpClientSession: PHttpClientSession);
+procedure DataGet_InstantArray_Sina(App: TBaseApp; AInstantArray: PInstantArray; AHttpClientSession: UtilsHttp.PHttpClientSession; AHttpData: PIOBuffer);
 var  
   tmpUrl: string;
   tmpRetData: PIOBuffer;
@@ -189,7 +189,7 @@ begin
   if '' <> tmpUrl then
   begin
     tmpUrl := BaseSinaInstantUrl1 + tmpUrl;
-    tmpRetData := GetHttpUrlData(tmpUrl, AHttpClientSession);
+    tmpRetData := GetHttpUrlData(tmpUrl, AHttpClientSession, AHttpData);
     if nil <> tmpRetData then
     begin
       try

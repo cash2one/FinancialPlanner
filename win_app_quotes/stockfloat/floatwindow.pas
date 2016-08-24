@@ -7,6 +7,7 @@ uses
   Messages,
   Sysutils,
   BaseApp,
+  UtilsHttp,
   BaseFloatWindow,
   StockInstantData_Get_Sina;
 
@@ -15,18 +16,19 @@ type
   TRT_FloatWindow = record
     BaseFloatWindow: TRT_BaseFloatWindow;
     StockQuoteInstants: TInstantArray;
+    HttpSession: UtilsHttp.THttpClientSession;
     IsFirstGot    : Byte;
   end;
 
   function CreateFloatWindow(App: TBaseApp): Boolean; overload;
-  procedure CreateRefreshDataThread(ABaseFloatWindow: PRT_BaseFloatWindow);
+  procedure CreateRefreshDataThread(AFloatWindow: PRT_FloatWindow);
   procedure ShowFloatWindow; overload;
 
 implementation
               
 uses
   IniFiles,
-  define_message,
+  windef_msg,
   define_dealitem,
   define_stock_quotes_instant,
   DealTime,
@@ -143,7 +145,7 @@ begin
     end;
     if 0 <> AParam.BaseFloatWindow.BaseApp.IsActiveStatus then
     begin
-      DataGet_InstantArray_Sina(AParam.BaseFloatWindow.BaseApp, @AParam.StockQuoteInstants);
+      DataGet_InstantArray_Sina(AParam.BaseFloatWindow.BaseApp, @AParam.StockQuoteInstants, @AParam.HttpSession, nil);
       PostMessage(AParam.BaseFloatWindow.BaseWindow.UIWndHandle, CM_INVALIDATE, 0, 0);
     end else
     begin
@@ -161,11 +163,11 @@ begin
   ExitThread(Result);
 end;
 
-procedure CreateRefreshDataThread(ABaseFloatWindow: PRT_BaseFloatWindow);
+procedure CreateRefreshDataThread(AFloatWindow: PRT_FloatWindow);
 begin
-  ABaseFloatWindow.DataThread.Core.ThreadHandle := Windows.CreateThread(nil, 0, @ThreadProc_RefreshData,
-      ABaseFloatWindow, Create_Suspended, ABaseFloatWindow.DataThread.Core.ThreadID);
-  Windows.ResumeThread(ABaseFloatWindow.DataThread.Core.ThreadHandle);
+  AFloatWindow.BaseFloatWindow.DataThread.Core.ThreadHandle := Windows.CreateThread(nil, 0, @ThreadProc_RefreshData,
+      AFloatWindow, Create_Suspended, AFloatWindow.BaseFloatWindow.DataThread.Core.ThreadID);
+  Windows.ResumeThread(AFloatWindow.BaseFloatWindow.DataThread.Core.ThreadHandle);
 end;
 
 function CheckOutInstantQuote: PRT_InstantQuote;
@@ -216,6 +218,9 @@ begin
 
   AFloatWindow.BaseFloatWindow.BaseApp := App;
   AFloatWindow.BaseFloatWindow.OnPaint := Paint_FloatWindow;
+  //AFloatWindow.HttpSession.ConnectionSession.SendTimeOut := 200;
+  //AFloatWindow.HttpSession.ConnectionSession.ConnectTimeOut := 200;
+  //AFloatWindow.HttpSession.ConnectionSession.ReceiveTimeOut := 200;
 
   FillChar(tmpLogFontA, SizeOf(tmpLogFontA), 0);
   tmpLogFontA.lfHeight := 12;
@@ -323,12 +328,12 @@ begin
   Result := IsWindow(AFloatWindow.BaseFloatWindow.BaseWindow.UIWndHandle);
 end;
 
-procedure ShowFloatWindow(ABaseFloatWindow: PRT_BaseFloatWindow); overload;
+procedure ShowFloatWindow(AFloatWindow: PRT_FloatWindow); overload;
 begin
-  ShowWindow(ABaseFloatWindow.BaseWindow.UIWndHandle, SW_SHOW);
-  UpdateWindow(ABaseFloatWindow.BaseWindow.UIWndHandle);
-  Paint_FloatWindow_Layered(ABaseFloatWindow);
-  CreateRefreshDataThread(ABaseFloatWindow);
+  ShowWindow(AFloatWindow.BaseFloatWindow.BaseWindow.UIWndHandle, SW_SHOW);
+  UpdateWindow(AFloatWindow.BaseFloatWindow.BaseWindow.UIWndHandle);
+  Paint_FloatWindow_Layered(@AFloatWindow.BaseFloatWindow);
+  CreateRefreshDataThread(AFloatWindow);
 end;
              
 var
