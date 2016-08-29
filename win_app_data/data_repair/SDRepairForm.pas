@@ -42,6 +42,8 @@ type
     vtStocks: TVirtualStringTree;
     vtDayData: TVirtualStringTree;
     btnCheckFirstDate: TButton;
+    btnFindError: TButton;
+    mmoLogs: TMemo;
     procedure vtDayDataGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: WideString);
     procedure vtStocksChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
@@ -49,6 +51,7 @@ type
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType);
     procedure btnCheckFirstDateClick(Sender: TObject);
+    procedure btnFindErrorClick(Sender: TObject);
   private
     { Private declarations }    
     fRepairFormData: TRepairFormData;
@@ -78,7 +81,8 @@ type
   TStockDayDataNode = record
     Date: Word;
     QuoteData1: PRT_Quote_Day;
-    QuoteData2: PRT_Quote_Day;    
+    QuoteData2: PRT_Quote_Day;
+    ErrorCheckStatus: Word; 
   end;
 
 { TfrmSDRepair }
@@ -134,6 +138,12 @@ begin
   begin
     SaveDBStockItem(App, TBaseStockApp(App).StockItemDB);
   end;
+end;
+
+procedure TfrmSDRepair.btnFindErrorClick(Sender: TObject);
+begin
+  inherited;
+//
 end;
 
 procedure TfrmSDRepair.ClearDayData;
@@ -459,3 +469,4 @@ begin
 end;
 
 end.
+

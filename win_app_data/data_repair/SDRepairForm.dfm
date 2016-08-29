@@ -21,12 +21,21 @@ object frmSDRepair: TfrmSDRepair
     Align = alTop
     BevelOuter = bvNone
     object btnCheckFirstDate: TButton
-      Left = 80
+      Left = 16
       Top = 10
       Width = 120
       Height = 25
       Caption = 'Check First Date'
       OnClick = btnCheckFirstDateClick
+    end
+    object btnFindError: TButton
+      Left = 142
+      Top = 10
+      Width = 120
+      Height = 25
+      Caption = 'Find Error'
+      TabOrder = 1
+      OnClick = btnFindErrorClick
     end
   end
   object pnlBottom: TPanel
@@ -38,17 +47,12 @@ object frmSDRepair: TfrmSDRepair
     BevelOuter = bvNone
   end
   object pnlMain: TPanel
-    Left = 0
-    Top = 41
-    Width = 854
-    Height = 415
     Align = alClient
     BevelOuter = bvNone
     object pnlStocks: TPanel
       Left = 0
       Top = 0
       Width = 185
-      Height = 415
       Margins.Left = 1
       Margins.Top = 1
       Margins.Right = 1
@@ -63,10 +67,6 @@ object frmSDRepair: TfrmSDRepair
       Padding.Bottom = 1
       ParentCtl3D = False
       object vtStocks: TVirtualStringTree
-        Left = 1
-        Top = 1
-        Width = 181
-        Height = 411
         Align = alClient
         BevelInner = bvNone
         BevelOuter = bvNone
@@ -82,10 +82,6 @@ object frmSDRepair: TfrmSDRepair
       end
     end
     object vtDayData: TVirtualStringTree
-      Left = 185
-      Top = 0
-      Width = 669
-      Height = 415
       Margins.Left = 1
       Margins.Top = 1
       Margins.Right = 1
@@ -103,6 +99,13 @@ object frmSDRepair: TfrmSDRepair
       Header.MainColumn = -1
       ParentCtl3D = False
       Columns = <>
+    end
+    object mmoLogs: TMemo
+      Width = 185
+      Align = alRight
+      BevelInner = bvNone
+      Ctl3D = False
+      ParentCtl3D = False
     end
   end
 end
