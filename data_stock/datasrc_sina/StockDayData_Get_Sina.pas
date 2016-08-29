@@ -50,7 +50,8 @@ function DataGet_DayData_SinaNow(ADataAccess: TStockDayDataAccess; ANetSession: 
 var
   tmpurl: string;  
   tmpHttpData: PIOBuffer;
-  tmpDayDatas: TALIntegerList;
+  tmpDayDataList: TALIntegerList;
+  tmpDayData: PRT_Quote_Day;
   i: integer; 
 begin          
   Result := false;
@@ -65,25 +66,26 @@ begin
     try
       //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
       //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);      
-      tmpDayDatas := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(tmpHttpData);
-      if nil <> tmpDayDatas then
+      tmpDayDataList := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(tmpHttpData);
+      if nil <> tmpDayDataList then
       begin
         try
-          if 0 < tmpDayDatas.Count then
+          if 0 < tmpDayDataList.Count then
           begin
-            for i := 0 to tmpDayDatas.Count - 1 do
+            for i := 0 to tmpDayDataList.Count - 1 do
             begin
-              AddDealDayData(ADataAccess, PRT_Quote_Day(tmpDayDatas.Items[i]));
+              tmpDayData := PRT_Quote_Day(tmpDayDataList.Objects[i]);
+              AddDealDayData(ADataAccess, tmpDayData);
               Result := True;
             end;
           end;
-          for i := tmpDayDatas.Count - 1 downto 0 do
+          for i := tmpDayDataList.Count - 1 downto 0 do
           begin
-            FreeMem(PRT_Quote_Day(tmpDayDatas.Items[i]));
+            FreeMem(PRT_Quote_Day(tmpDayDataList.Objects[i]));
           end;
-          tmpDayDatas.Clear;
+          tmpDayDataList.Clear;
         finally
-          tmpDayDatas.Free;
+          tmpDayDataList.Free;
         end;
       end;
     finally
@@ -101,8 +103,9 @@ var
   tmpUrl: string;
   tmpHttpData: PIOBuffer;
   tmpRepeat: Integer;  
-  tmpDayDatas: TALIntegerList;   
-  i: integer; 
+  tmpDayDataList: TALIntegerList;   
+  i: integer;
+  tmpDayData: PRT_Quote_Day;
 begin
   Result := false;
   if weightNone <> ADataAccess.WeightMode then
@@ -129,25 +132,26 @@ begin
       try
         //Result := StockDayData_Parse_Sina_Html1.DataParse_DayData_Sina(ADataAccess, tmpHttpData);
         //Result := StockDayData_Parse_Sina_Html2.DataParse_DayData_Sina(ADataAccess, tmpHttpData);        
-        tmpDayDatas := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(tmpHttpData);
-        if nil <> tmpDayDatas then
+        tmpDayDataList := StockDayData_Parse_Sina_Html3.DataParse_DayData_Sina(tmpHttpData);
+        if nil <> tmpDayDataList then
         begin
           try
-            if 0 < tmpDayDatas.Count then
+            if 0 < tmpDayDataList.Count then
             begin
-              for i := 0 to tmpDayDatas.Count - 1 do
+              for i := 0 to tmpDayDataList.Count - 1 do
               begin
-                AddDealDayData(ADataAccess, PRT_Quote_Day(tmpDayDatas.Items[i]));
+                tmpDayData := PRT_Quote_Day(tmpDayDataList.Objects[i]);
+                AddDealDayData(ADataAccess, tmpDayData);
                 Result := True;
               end;
             end; 
-            for i := tmpDayDatas.Count - 1 downto 0 do
+            for i := tmpDayDataList.Count - 1 downto 0 do
             begin
-              FreeMem(PRT_Quote_Day(tmpDayDatas.Items[i]));
+              FreeMem(PRT_Quote_Day(tmpDayDataList.Objects[i]));
             end;
-            tmpDayDatas.Clear;
+            tmpDayDataList.Clear;
           finally
-            tmpDayDatas.Free;
+            tmpDayDataList.Free;
           end;
         end;
       finally
