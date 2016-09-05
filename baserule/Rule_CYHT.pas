@@ -21,6 +21,12 @@ type
     Ret_SK_EMA: TRule_EMA;
     Ret_SD_EMA: TRule_EMA;
   end;
+
+  PRule_CYHT_Result_Day = ^TRule_CYHT_Result_Day;
+  TRule_CYHT_Result_Day = record
+    SK: double;
+    SD: double;
+  end;
   
   TRule_CYHT_Price = class(TBaseStockRule)
   protected
