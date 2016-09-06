@@ -76,8 +76,13 @@ begin
   tmpUrl := 'http://vip.stock.finance.sina.com.cn/mkt'; // --> 301
   tmpUrl := 'http://vip.stock.finance.sina.com.cn/mkt/'; // --> 200
   tmpUrl := 'http://vip.stock.finance.sina.com.cn/mkt/#sw_qgzz';
+
   tmpUrl := 'http://vip.stock.finance.sina.com.cn/quotes_service/' +
       'api/json_v2.php/Market_Center.getHQNodeStockCount?node=gn_jght';
+  {
+    (new String("130"))
+  }
+  // gn_jght ¸ÅÄî°å¿é - ¾ü¹¤º½Ìì
   tmpUrl := 'http://vip.stock.finance.sina.com.cn/quotes_service/' +
       'api/json_v2.php/Market_Center.getHQNodeData?page=1&num=40&sort=symbol&asc=1&node=gn_jght&symbol=&_s_r_a=init';
   (*//
@@ -86,7 +91,7 @@ begin
   //*)
   FillChar(tmpHttpClientSession, SizeOf(tmpHttpClientSession), 0);
   tmpHttpClientSession.IsKeepAlive := True;
-  tmpHttpData := GetHttpUrlData(tmpUrl, @tmpHttpClientSession);
+  tmpHttpData := GetHttpUrlData(tmpUrl, @tmpHttpClientSession, nil);
   if nil <> tmpHttpData then
   begin
     try
