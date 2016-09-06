@@ -44,13 +44,16 @@ end;
            
 function TBollAnalysisApp.Initialize: Boolean;
 begin
-  inherited Initialize;
-  Result := false;
-  InitializeDBStockItem;
-  if nil <> fBaseStockAppData.StockItemDB then
+  Result := inherited Initialize;
+  if Result then
   begin
-    if 0 < fBaseStockAppData.StockItemDB.RecordCount then
+    InitializeDBStockItem;
+    if nil <> fBaseStockAppData.StockItemDB then
     begin
+      Result :=0 < fBaseStockAppData.StockItemDB.RecordCount;
+      if Result then
+      begin
+      end;
     end;
   end;
 end;

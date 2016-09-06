@@ -13,6 +13,7 @@ uses
   BaseFile in '..\..\..\devwintech\v0001\obj\app_base\BaseFile.pas',
   BaseThread in '..\..\..\devwintech\v0001\obj\app_base\BaseThread.pas',
   BaseWinApp in '..\..\..\devwintech\v0001\obj\win_app\BaseWinApp.pas',
+  IMCode in '..\..\..\devwintech\prestudy\v0000\chinese2pinyin\IMCode.pas',
   BaseDataSet in '..\..\..\devwintech\v0000\app_base\BaseDataSet.pas',
   BaseWinFile in '..\..\..\devwintech\v0000\win_base\BaseWinFile.pas',
   win.iobuffer in '..\..\..\devwintech\v0000\win_data\win.iobuffer.pas',
