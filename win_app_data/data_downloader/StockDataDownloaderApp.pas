@@ -102,9 +102,11 @@ begin
     Result := Downloader_CheckConsoleProcess(@fDownloaderAppData);
   if Result then
   begin
+    (*//
     UtilsLog.CloseLogFiles;
     UtilsLog.G_LogFile.FileName := ChangeFileExt(ParamStr(0), '.down.' + IntToStr(Windows.GetCurrentProcessId) + '.log');
     UtilsLog.SDLog('StockDataDownloaderApp.pas', 'init mode downloader');
+    //*)
     Result := CreateAppCommandWindow;
   end;
 end;
@@ -120,6 +122,7 @@ var
   tmpRegWinClass: TWndClassA;  
   tmpGetWinClass: TWndClassA;
   tmpIsReged: Boolean;
+  tmpWindowName: AnsiString;
 begin
   Result := false;          
   FillChar(tmpRegWinClass, SizeOf(tmpRegWinClass), 0);
@@ -140,13 +143,14 @@ begin
     if 0 = RegisterClassA(tmpRegWinClass) then
       exit;
   end;
+  tmpWindowName := IntToStr(GetCurrentProcessId);
   TBaseStockApp(fBaseAppAgentData.HostApp).AppWindow := CreateWindowExA(
     WS_EX_TOOLWINDOW
     //or WS_EX_APPWINDOW
     //or WS_EX_TOPMOST
     ,
     tmpRegWinClass.lpszClassName,
-    '', WS_POPUP {+ 0},
+    PAnsiChar(tmpWindowName), WS_POPUP {+ 0},
     0, 0, 0, 0,
     HWND_MESSAGE, 0, HInstance, nil);
   Result := Windows.IsWindow(TBaseStockApp(fBaseAppAgentData.HostApp).AppWindow);
@@ -162,7 +166,7 @@ begin
     if DataSrc_163 = ADataSrc then
     begin
       GetStockDataDay_163(fBaseAppAgentData.HostApp, tmpStockItem, @ADownloaderApp.HttpClientSession, fDownloaderAppData.HttpData);
-      SDLog('', 'Downloader_Download 163:' + IntToStr(AStockCode));
+      //SDLog('', 'Downloader_Download 163:' + IntToStr(AStockCode));
     end;                  
     if DataSrc_Sina = ADataSrc then
     begin
@@ -175,7 +179,7 @@ begin
     end;
     if Downloader_CheckConsoleProcess(ADownloaderApp) then
     begin
-      SDLog('', 'Downloader_Downloaded:' + IntToStr(AStockCode));
+      //SDLog('', 'Downloader_Downloaded:' + IntToStr(AStockCode));
       PostMessage(ADownloaderApp.Console_Process.Core.AppCmdWnd, WM_Downloader2Console_Command_DownloadResult, Windows.GetCurrentProcessId, 0);
     end else
     begin
@@ -184,7 +188,7 @@ begin
     end;
   end else
   begin
-    SDLog('', 'Downloader_Download can not find stock:' + IntToStr(AStockCode));
+    //SDLog('', 'Downloader_Download can not find stock:' + IntToStr(AStockCode));
   end;
 end;
                        

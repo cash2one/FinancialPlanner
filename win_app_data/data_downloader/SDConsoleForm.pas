@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Forms, BaseForm, Classes, Controls, StdCtrls, Sysutils,
-  StockDataConsoleApp, ExtCtrls;
+  StockDataConsoleApp, ExtCtrls,
+  define_datasrc;
 
 type
   TFormSDConsoleData = record
@@ -48,8 +49,9 @@ type
   private
     { Private declarations }
     fFormSDConsoleData: TFormSDConsoleData;
-    function GetStockCode: integer;
-    procedure RequestDownloadStockData(AStockCode, ADataSrc: integer);
+    function GetStockCode: integer;     
+    function NewDownloadAllTask(ADataSrc: TDealDataSource; ADownloadTask: PDownloadTask): PDownloadTask;
+    procedure RequestDownloadStockData(ADataSrc: TDealDataSource; AStockCode: integer);
   public
     { Public declarations }
     constructor Create(Owner: TComponent); override;
@@ -62,7 +64,6 @@ implementation
 uses
   windef_msg,
   win.shutdown,
-  define_datasrc,
   define_StockDataApp,
   BaseWinApp;
               
@@ -77,11 +78,11 @@ begin
   Result := StrToIntDef(edtStockCode.Text, 0);
 end;
                                      
-procedure TfrmSDConsole.RequestDownloadStockData(AStockCode, ADataSrc: integer);
+procedure TfrmSDConsole.RequestDownloadStockData(ADataSrc: TDealDataSource; AStockCode: integer);
 begin
   if IsWindow(TBaseWinApp(App).AppWindow) then
   begin
-    PostMessage(TBaseWinApp(App).AppWindow, WM_Console_Command_Download, AStockCode, ADataSrc);
+    PostMessage(TBaseWinApp(App).AppWindow, WM_Console_Command_Download, AStockCode, GetDealDataSourceCode(ADataSrc))
   end;
 end;
                     
@@ -132,109 +133,65 @@ end;
                
 procedure TfrmSDConsole.btnDownload163Click(Sender: TObject);
 begin
-  RequestDownloadStockData(GetStockCode, DataSrc_163);
+  RequestDownloadStockData(src_163, GetStockCode);
 end;
                       
 procedure TfrmSDConsole.btnDownloadSinaClick(Sender: TObject);
 begin
-  RequestDownloadStockData(GetStockCode, DataSrc_Sina);
+  RequestDownloadStockData(Src_Sina, GetStockCode);
 end;
                     
 procedure TfrmSDConsole.btnDownloadQQClick(Sender: TObject);
 begin
-  RequestDownloadStockData(GetStockCode, DataSrc_QQ);  
+  RequestDownloadStockData(Src_QQ, GetStockCode);  
 end;
 
 procedure TfrmSDConsole.btnDownloadXueqiuClick(Sender: TObject);
 begin
-  RequestDownloadStockData(GetStockCode, DataSrc_XQ);
+  RequestDownloadStockData(Src_XQ, GetStockCode);
+end;
+
+function TfrmSDConsole.NewDownloadAllTask(ADataSrc: TDealDataSource; ADownloadTask: PDownloadTask): PDownloadTask;
+begin
+  Result := ADownloadTask;
+  if nil = Result then
+  begin
+    Result := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(ADataSrc, 0);
+    if nil = Result then
+    begin
+      Result := TStockDataConsoleApp(App.AppAgent).NewDownloadTask(ADataSrc, 0);
+    end;
+    RequestDownloadStockData(ADataSrc, 0);
+  end;
+  if not tmrRefreshDownloadTask.Enabled then
+    tmrRefreshDownloadTask.Enabled := True;
 end;
 
 procedure TfrmSDConsole.btnDownload163AllClick(Sender: TObject);
-var
-  i: integer;
 begin
-  RequestDownloadStockData(0, DataSrc_163);
-  Application.ProcessMessages;
-  for i := 0 to 100 do
-  begin
-    Application.ProcessMessages;
-    Sleep(10);
-    fFormSDConsoleData.Download163AllTask := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(src_163, 0);
-    if nil <> fFormSDConsoleData.Download163AllTask then
-      Break;
-  end;
-  if nil <> fFormSDConsoleData.Download163AllTask then
-  begin
-    tmrRefreshDownloadTask.Enabled := True;
-  end;
+  fFormSDConsoleData.Download163AllTask := NewDownloadAllTask(src_163, fFormSDConsoleData.Download163AllTask);
 end;
 
 procedure TfrmSDConsole.btnDownloadSinaAllClick(Sender: TObject); 
-var
-  i: integer;
-begin
-  RequestDownloadStockData(0, DataSrc_Sina);   
-  Application.ProcessMessages; 
-  for i := 0 to 100 do
-  begin           
-    Application.ProcessMessages;
-    Sleep(10);
-    fFormSDConsoleData.DownloadSinaAllTask := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(src_sina, 0);
-    if nil <> fFormSDConsoleData.DownloadSinaAllTask then
-      Break;
-  end;       
-  if nil <> fFormSDConsoleData.DownloadSinaAllTask then
-  begin
-    tmrRefreshDownloadTask.Enabled := True;
-  end;
+begin                     
+  fFormSDConsoleData.DownloadSinaAllTask := NewDownloadAllTask(src_sina, fFormSDConsoleData.DownloadSinaAllTask);
 end;
            
-procedure TfrmSDConsole.btnDownloadQQAllClick(Sender: TObject); 
-var
-  i: integer;
-begin
-  RequestDownloadStockData(0, DataSrc_QQ);   
-  Application.ProcessMessages;
-  for i := 0 to 100 do
-  begin            
-    Application.ProcessMessages;
-    Sleep(10);
-    fFormSDConsoleData.DownloadQQAllTask := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(src_QQ, 0);
-    if nil <> fFormSDConsoleData.DownloadQQAllTask then
-      Break;
-  end;       
-  if nil <> fFormSDConsoleData.DownloadQQAllTask then
-  begin
-    tmrRefreshDownloadTask.Enabled := True;
-  end;
+procedure TfrmSDConsole.btnDownloadQQAllClick(Sender: TObject);
+begin       
+  fFormSDConsoleData.DownloadQQAllTask := NewDownloadAllTask(src_QQ, fFormSDConsoleData.DownloadQQAllTask);
 end;
 
 procedure TfrmSDConsole.btnDownloadXueqiuAllClick(Sender: TObject);   
-var
-  i: integer;
-begin
-  RequestDownloadStockData(0, DataSrc_XQ); 
-  Application.ProcessMessages; 
-  for i := 0 to 100 do
-  begin                 
-    Application.ProcessMessages;
-    Sleep(10);
-    fFormSDConsoleData.DownloadXQAllTask := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(Src_XQ, 0);
-    if nil <> fFormSDConsoleData.DownloadXQAllTask then
-      Break;
-  end;       
-  if nil <> fFormSDConsoleData.DownloadXQAllTask then
-  begin
-    tmrRefreshDownloadTask.Enabled := True;
-  end;
+begin                 
+  fFormSDConsoleData.DownloadXQAllTask := NewDownloadAllTask(Src_XQ, fFormSDConsoleData.DownloadXQAllTask);
 end;
                 
 procedure TfrmSDConsole.btnDownloadAllClick(Sender: TObject);  
 var
   i: integer;
 begin
-  RequestDownloadStockData(0, 0);  
+  RequestDownloadStockData(Src_All, 0);  
   Application.ProcessMessages;
   for i := 0 to 100 do
   begin             

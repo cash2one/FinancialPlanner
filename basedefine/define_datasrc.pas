@@ -8,6 +8,7 @@ uses
 type
   TDealDataSource = (
     src_unknown,
+    src_all,
     src_ctp,
     src_offical,
     src_tongdaxin,
@@ -19,7 +20,8 @@ type
     src_xq
   );
 
-const          
+const                     
+  DataSrc_All        = 1;
   DataSrc_CTP        = 11;
   DataSrc_Standard   = 12; // 来至官方 证券交易所
                            
@@ -47,6 +49,7 @@ function GetDealDataSource(ASourceCode: integer): TDealDataSource;
 begin
   Result := src_unknown;
   case ASourceCode of
+    DataSrc_All: Result := src_all;
     DataSrc_CTP: Result := src_ctp;
     DataSrc_Standard: Result := src_offical;
     DataSrc_tongdaxin: Result := src_tongdaxin;
@@ -62,7 +65,8 @@ end;
 function GetDealDataSourceCode(ASource: TDealDataSource): integer;
 begin           
   Result := 0;
-  case ASource of
+  case ASource of            
+    src_all: Result := DataSrc_All;
     src_ctp: Result := DataSrc_Ctp;
     src_offical: Result := DataSrc_Standard;
     src_tongdaxin: Result := DataSrc_tongdaxin;

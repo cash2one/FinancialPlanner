@@ -373,6 +373,7 @@ function TStockDataConsoleApp.Console_CheckDownloaderProcess(ADownloadTask: PDow
 var
   i: integer;
   tmpRetCode: DWORD;
+  tmpWindowName: AnsiString;
 begin
   Result := false;
   if nil = ADownloadTask then
@@ -396,13 +397,13 @@ begin
     if (0 = ADownloadTask.DownloadProcess.Core.ProcessHandle) or
        (INVALID_HANDLE_VALUE = ADownloadTask.DownloadProcess.Core.ProcessHandle) then
       exit;
-
+    tmpWindowName := IntToStr(ADownloadTask.DownloadProcess.Core.ProcessId);
     for i := 0 to 100 do
     begin
       if IsWindow(ADownloadTask.DownloadProcess.Core.AppCmdWnd) then
-        Break;
-      ADownloadTask.DownloadProcess.Core.AppCmdWnd := Windows.FindWindowA(AppCmdWndClassName_StockDataDownloader, nil);
+        Break;                   
       Sleep(10);
+      ADownloadTask.DownloadProcess.Core.AppCmdWnd := Windows.FindWindowA(AppCmdWndClassName_StockDataDownloader, PAnsiChar(tmpWindowName));
     end;
   end;
   Result := IsWindow(ADownloadTask.DownloadProcess.Core.AppCmdWnd);
