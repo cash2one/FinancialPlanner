@@ -174,6 +174,14 @@ object frmSDConsole: TfrmSDConsole
     TabOrder = 15
     OnClick = btnShutDownClick
   end
+  object chkShutDown: TCheckBox
+    Left = 199
+    Top = 184
+    Width = 178
+    Height = 17
+    Caption = 'Shut Down After Task'
+    TabOrder = 16
+  end
   object tmrRefreshDownloadTask: TTimer
     Enabled = False
     OnTimer = tmrRefreshDownloadTaskTimer

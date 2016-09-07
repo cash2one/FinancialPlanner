@@ -4,7 +4,21 @@ interface
 
 uses
   define_dealitem;
-               
+
+type
+  TDealDataSource = (
+    src_unknown,
+    src_ctp,
+    src_offical,
+    src_tongdaxin,
+    src_tonghuasun,
+    src_dazhihui,
+    src_sina,
+    src_163,
+    src_qq,
+    src_xq
+  );
+
 const          
   DataSrc_CTP        = 11;
   DataSrc_Standard   = 12; // 来至官方 证券交易所
@@ -24,8 +38,43 @@ const
   function GetStockCode_Sina(AStockItem: PRT_DealItem): AnsiString;
   function GetStockCode_QQ(AStockItem: PRT_DealItem): AnsiString;
 
+  function GetDealDataSource(ASourceCode: integer): TDealDataSource;
+  function GetDealDataSourceCode(ASource: TDealDataSource): integer;
+
 implementation
          
+function GetDealDataSource(ASourceCode: integer): TDealDataSource;
+begin
+  Result := src_unknown;
+  case ASourceCode of
+    DataSrc_CTP: Result := src_ctp;
+    DataSrc_Standard: Result := src_offical;
+    DataSrc_tongdaxin: Result := src_tongdaxin;
+    DataSrc_tonghuasun: Result := src_tonghuasun;
+    DataSrc_dazhihui: Result := src_dazhihui;
+    DataSrc_Sina: Result := src_sina;
+    DataSrc_163: Result := src_163;
+    DataSrc_QQ: Result := src_qq;
+    DataSrc_XQ: Result := src_xq;
+  end;
+end;
+
+function GetDealDataSourceCode(ASource: TDealDataSource): integer;
+begin           
+  Result := 0;
+  case ASource of
+    src_ctp: Result := DataSrc_Ctp;
+    src_offical: Result := DataSrc_Standard;
+    src_tongdaxin: Result := DataSrc_tongdaxin;
+    src_tonghuasun: Result := DataSrc_tonghuasun;
+    src_dazhihui: Result := DataSrc_dazhihui;
+    src_sina: Result := DataSrc_sina;
+    src_163: Result := DataSrc_163;
+    src_qq: Result := DataSrc_qq;
+    src_xq: Result := DataSrc_xq;
+  end;
+end;
+
 function GetDataSrcCode(ADataSrc: integer): AnsiString;
 begin
   Result := '';

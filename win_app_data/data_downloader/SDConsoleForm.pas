@@ -33,6 +33,7 @@ type
     lbStockQQ: TEdit;
     btnShutDown: TButton;
     tmrRefreshDownloadTask: TTimer;
+    chkShutDown: TCheckBox;
     procedure btnDownload163Click(Sender: TObject);
     procedure btnDownloadSinaClick(Sender: TObject);
     procedure btnDownloadXueqiuClick(Sender: TObject);
@@ -85,29 +86,47 @@ begin
 end;
                     
 procedure TfrmSDConsole.tmrRefreshDownloadTaskTimer(Sender: TObject);
+var
+  tmpActiveCount: integer;
 begin
   inherited;
+  tmpActiveCount := 0;
   if nil <> fFormSDConsoleData.Download163AllTask then
   begin
+    tmpActiveCount := tmpActiveCount + 1;
     if nil <> fFormSDConsoleData.Download163AllTask.DealItem then
       lbStock163.Text := fFormSDConsoleData.Download163AllTask.DealItem.sCode;
+    if TaskStatus_End = fFormSDConsoleData.Download163AllTask.TaskStatus then
+      tmpActiveCount := tmpActiveCount - 1;
   end;
   if nil <> fFormSDConsoleData.DownloadSinaAllTask then
-  begin
+  begin                      
+    tmpActiveCount := tmpActiveCount + 1;
     if nil <> fFormSDConsoleData.DownloadSinaAllTask.DealItem then
-      lbStock163.Text := fFormSDConsoleData.DownloadSinaAllTask.DealItem.sCode;
+      lbStockSina.Text := fFormSDConsoleData.DownloadSinaAllTask.DealItem.sCode;  
+    if TaskStatus_End = fFormSDConsoleData.DownloadSinaAllTask.TaskStatus then
+      tmpActiveCount := tmpActiveCount - 1;
   end;
   if nil <> fFormSDConsoleData.DownloadQQAllTask then
-  begin
-    lbStock163.Text := IntToStr(fFormSDConsoleData.DownloadQQAllTask.TaskDealItemCode);  
+  begin                                   
+    tmpActiveCount := tmpActiveCount + 1;
     if nil <> fFormSDConsoleData.DownloadQQAllTask.DealItem then
-      lbStock163.Text := fFormSDConsoleData.DownloadQQAllTask.DealItem.sCode;
+      lbStockQQ.Text := fFormSDConsoleData.DownloadQQAllTask.DealItem.sCode;  
+    if TaskStatus_End = fFormSDConsoleData.DownloadQQAllTask.TaskStatus then
+      tmpActiveCount := tmpActiveCount - 1;
   end;
   if nil <> fFormSDConsoleData.DownloadXQAllTask then
-  begin
-    lbStock163.Text := IntToStr(fFormSDConsoleData.DownloadXQAllTask.TaskDealItemCode); 
+  begin                             
+    tmpActiveCount := tmpActiveCount + 1;
     if nil <> fFormSDConsoleData.DownloadXQAllTask.DealItem then
-      lbStock163.Text := fFormSDConsoleData.DownloadXQAllTask.DealItem.sCode;
+      lbStockXQ.Text := fFormSDConsoleData.DownloadXQAllTask.DealItem.sCode;  
+    if TaskStatus_End = fFormSDConsoleData.DownloadXQAllTask.TaskStatus then
+      tmpActiveCount := tmpActiveCount - 1;
+  end;
+  if 0 = tmpActiveCount then
+  begin
+    if chkShutDown.Checked then
+      win.shutdown.ShutDown;
   end;
 end;
                
@@ -141,7 +160,7 @@ begin
   begin
     Application.ProcessMessages;
     Sleep(10);
-    fFormSDConsoleData.Download163AllTask := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(DataSrc_163, 0);
+    fFormSDConsoleData.Download163AllTask := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(src_163, 0);
     if nil <> fFormSDConsoleData.Download163AllTask then
       Break;
   end;
@@ -161,7 +180,7 @@ begin
   begin           
     Application.ProcessMessages;
     Sleep(10);
-    fFormSDConsoleData.DownloadSinaAllTask := TStockDataConsoleApp(App).GetDownloadTask(DataSrc_Sina, 0);
+    fFormSDConsoleData.DownloadSinaAllTask := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(src_sina, 0);
     if nil <> fFormSDConsoleData.DownloadSinaAllTask then
       Break;
   end;       
@@ -181,7 +200,7 @@ begin
   begin            
     Application.ProcessMessages;
     Sleep(10);
-    fFormSDConsoleData.DownloadQQAllTask := TStockDataConsoleApp(App).GetDownloadTask(0, DataSrc_QQ);
+    fFormSDConsoleData.DownloadQQAllTask := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(src_QQ, 0);
     if nil <> fFormSDConsoleData.DownloadQQAllTask then
       Break;
   end;       
@@ -201,7 +220,7 @@ begin
   begin                 
     Application.ProcessMessages;
     Sleep(10);
-    fFormSDConsoleData.DownloadXQAllTask := TStockDataConsoleApp(App).GetDownloadTask(0, DataSrc_XQ);
+    fFormSDConsoleData.DownloadXQAllTask := TStockDataConsoleApp(App.AppAgent).GetDownloadTask(Src_XQ, 0);
     if nil <> fFormSDConsoleData.DownloadXQAllTask then
       Break;
   end;       
@@ -221,10 +240,10 @@ begin
   begin             
     Application.ProcessMessages;
     Sleep(10);                                                                            
-    fFormSDConsoleData.Download163AllTask := TStockDataConsoleApp(App).GetDownloadTask(DataSrc_163, 0);
-    fFormSDConsoleData.DownloadSinaAllTask := TStockDataConsoleApp(App).GetDownloadTask(DataSrc_Sina, 0);
-    fFormSDConsoleData.DownloadQQAllTask := TStockDataConsoleApp(App).GetDownloadTask(DataSrc_QQ, 0);
-    fFormSDConsoleData.DownloadXQAllTask := TStockDataConsoleApp(App).GetDownloadTask(DataSrc_XQ, 0);
+    fFormSDConsoleData.Download163AllTask := TStockDataConsoleApp(App).GetDownloadTask(Src_163, 0);
+    fFormSDConsoleData.DownloadSinaAllTask := TStockDataConsoleApp(App).GetDownloadTask(Src_Sina, 0);
+    fFormSDConsoleData.DownloadQQAllTask := TStockDataConsoleApp(App).GetDownloadTask(Src_QQ, 0);
+    fFormSDConsoleData.DownloadXQAllTask := TStockDataConsoleApp(App).GetDownloadTask(Src_XQ, 0);
   end;
   tmrRefreshDownloadTask.Enabled := True;
 end;

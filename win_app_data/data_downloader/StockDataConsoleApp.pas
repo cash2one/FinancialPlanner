@@ -6,19 +6,25 @@ uses
   Forms, Sysutils, Windows, Classes,  
   BaseApp,
   BaseForm,
+  define_datasrc,
   define_dealItem,
   define_stockapp,
   define_StockDataApp,
   win.process;
-  
+
+const
+  TaskStatus_Active = 1;
+  TaskStatus_End = 2;
+
 type
   PDownloadTask       = ^TDownloadTask;
   TDownloadTask       = record
     DownloadProcess   : TRT_OwnedProcess;
     TaskID            : Integer;
-    TaskDataSrc       : Integer;
+    TaskDataSrc       : TDealDataSource; 
     TaskDealItemCode  : Integer;
     TaskDataType      : Integer;
+    TaskStatus        : Integer;
 
     DealItemIndex: Integer;
     DealItem: PRT_DealItem;
@@ -41,9 +47,9 @@ type
     procedure Run; override;
 
     procedure ClearTask;    
-    function GetDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;
-    function NewDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;    
-    function CheckOutDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;
+    function GetDownloadTask(ATaskDataSrc: TDealDataSource; ATaskDealItemCode: integer): PDownloadTask;
+    function NewDownloadTask(ATaskDataSrc: TDealDataSource; ATaskDealItemCode: integer): PDownloadTask;    
+    function CheckOutDownloadTask(ATaskDataSrc: TDealDataSource; ATaskDealItemCode: integer): PDownloadTask;
     function GetDownloadTaskByProcessID(AProcessId: integer): PDownloadTask;
     
     function CreateAppCommandWindow: Boolean;
@@ -60,9 +66,9 @@ implementation
 
 uses
   windef_msg,
+  //UtilsLog,
   BaseStockApp,
-  SDConsoleForm,
-  UtilsLog;
+  SDConsoleForm;
 
 function AppCommandWndProcA(AWnd: HWND; AMsg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
 var
@@ -92,11 +98,12 @@ begin
         begin                      
           tmpDataSrc := lParam;
           tmpStockCode := wParam;
-          tmpDownloadTask := G_StockDataConsoleApp.GetDownloadTask(tmpDataSrc, tmpStockCode);
+          tmpDownloadTask := G_StockDataConsoleApp.GetDownloadTask(GetDealDataSource(tmpDataSrc), tmpStockCode);
           if nil = tmpDownloadTask then
           begin
-            tmpDownloadTask := G_StockDataConsoleApp.NewDownloadTask(tmpDataSrc, tmpStockCode);
-          end;
+            tmpDownloadTask := G_StockDataConsoleApp.NewDownloadTask(GetDealDataSource(tmpDataSrc), tmpStockCode);
+          end;                    
+          tmpDownloadTask.TaskStatus := TaskStatus_Active;
           if G_StockDataConsoleApp.Console_CheckDownloaderProcess(tmpDownloadTask) then
           begin
             G_StockDataConsoleApp.Console_NotifyDownloadData(tmpDownloadTask);
@@ -116,10 +123,12 @@ begin
           if nil <> tmpDealItem then
           begin
             tmpDownloadTask.DealItem := tmpDealItem;
-            PostMessage(AWnd, WM_Console_Command_Download, tmpDownloadTask.TaskDealItemCode, tmpDownloadTask.TaskDataSrc);
+            PostMessage(AWnd, WM_Console_Command_Download, tmpDownloadTask.TaskDealItemCode, GetDealDataSourceCode(tmpDownloadTask.TaskDataSrc));
           end else
           begin
-            // 都下载完了 ???                      
+            // 都下载完了 ???        
+            tmpDownloadTask.DealItem := nil;
+            tmpDownloadTask.TaskStatus := TaskStatus_End;             
             G_StockDataConsoleApp.Console_NotifyDownloaderShutdown(tmpDownloadTask);
             //PostMessage(AWnd, WM_AppRequestEnd, 0, 0);
           end;
@@ -189,7 +198,7 @@ begin
   end;
 end;
 
-function TStockDataConsoleApp.GetDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;   
+function TStockDataConsoleApp.GetDownloadTask(ATaskDataSrc: TDealDataSource; ATaskDealItemCode: integer): PDownloadTask;   
 var
   i: Integer;   
   tmpTask: PDownloadTask;
@@ -229,7 +238,7 @@ begin
   end;
 end;
 
-function TStockDataConsoleApp.NewDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;
+function TStockDataConsoleApp.NewDownloadTask(ATaskDataSrc: TDealDataSource; ATaskDealItemCode: integer): PDownloadTask;
 begin
   Result := System.New(PDownloadTask);
   FillChar(Result^, SizeOf(TDownloadTask), 0);
@@ -239,7 +248,7 @@ begin
   fConsoleAppData.TaskList.Add(Result);
 end;
 
-function TStockDataConsoleApp.CheckOutDownloadTask(ATaskDataSrc, ATaskDealItemCode: integer): PDownloadTask;
+function TStockDataConsoleApp.CheckOutDownloadTask(ATaskDataSrc: TDealDataSource; ATaskDealItemCode: integer): PDownloadTask;
 begin
   Result := GetDownloadTask(ATaskDataSrc, ATaskDealItemCode);
   if nil = Result then
@@ -296,7 +305,7 @@ begin
   end;
   if Console_CheckDownloaderProcess(ADownloadTask) then
   begin
-    PostMessage(ADownloadTask.DownloadProcess.Core.AppCmdWnd, WM_Console2Downloader_Command_Download, ADownloadTask.DealItem.iCode, ADownloadTask.TaskDataSrc);
+    PostMessage(ADownloadTask.DownloadProcess.Core.AppCmdWnd, WM_Console2Downloader_Command_Download, ADownloadTask.DealItem.iCode, GetDealDataSourceCode(ADownloadTask.TaskDataSrc));
   end;
 end;
                
