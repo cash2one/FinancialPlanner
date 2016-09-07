@@ -25,6 +25,10 @@ type
     TaskDealItemCode  : Integer;
     TaskDataType      : Integer;
     TaskStatus        : Integer;
+    
+    // monitor if task process is crashed
+    MonitorTick       : DWORD;
+    MonitorDealItem   : PRT_DealItem;
 
     DealItemIndex: Integer;
     DealItem: PRT_DealItem;

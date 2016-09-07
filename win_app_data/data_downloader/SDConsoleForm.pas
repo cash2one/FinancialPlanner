@@ -87,43 +87,60 @@ begin
 end;
                     
 procedure TfrmSDConsole.tmrRefreshDownloadTaskTimer(Sender: TObject);
+
+  function CheckTask(ADownloadTask: PDownloadTask; AStockCodeDisplay: TEdit): integer;
+  var
+    exitcode_process: DWORD;
+    tick_gap: DWORD;
+  begin
+    Result := 0;
+    if nil = ADownloadTask then
+      exit;
+    Result := 1;
+    if nil <> ADownloadTask.DealItem then
+      AStockCodeDisplay.Text := ADownloadTask.DealItem.sCode;
+    if TaskStatus_End = ADownloadTask.TaskStatus then
+    begin
+      Result := 0;
+    end else
+    begin
+      Windows.GetExitCodeProcess(ADownloadTask.DownloadProcess.Core.ProcessHandle, exitcode_process);
+      if Windows.STILL_ACTIVE <> exitcode_process then
+      begin
+        ADownloadTask.DownloadProcess.Core.ProcessHandle := 0;
+        ADownloadTask.DownloadProcess.Core.ProcessId := 0;
+        ADownloadTask.DownloadProcess.Core.AppCmdWnd := 0;   
+        ADownloadTask.DealItem := TStockDataConsoleApp(App.AppAgent).Console_GetNextDownloadDealItem(ADownloadTask);
+        RequestDownloadStockData(ADownloadTask.TaskDataSrc, ADownloadTask.TaskDealItemCode);
+      end else
+      begin        
+        if ADownloadTask.MonitorDealItem <> ADownloadTask.DealItem then
+        begin
+          ADownloadTask.MonitorDealItem := ADownloadTask.DealItem;
+          ADownloadTask.MonitorTick := GetTickCount;
+        end else
+        begin
+          tick_gap := GetTickCount - ADownloadTask.MonitorTick;
+          if tick_gap > 10000 then
+          begin
+            TerminateProcess(ADownloadTask.DownloadProcess.Core.ProcessHandle, 0);  
+            ADownloadTask.DownloadProcess.Core.ProcessHandle := 0;
+            ADownloadTask.DownloadProcess.Core.ProcessId := 0;
+            ADownloadTask.DownloadProcess.Core.AppCmdWnd := 0;
+          end;
+        end;
+      end;
+    end;
+  end;
+  
 var
   tmpActiveCount: integer;
 begin
   inherited;
-  tmpActiveCount := 0;
-  if nil <> fFormSDConsoleData.Download163AllTask then
-  begin
-    tmpActiveCount := tmpActiveCount + 1;
-    if nil <> fFormSDConsoleData.Download163AllTask.DealItem then
-      lbStock163.Text := fFormSDConsoleData.Download163AllTask.DealItem.sCode;
-    if TaskStatus_End = fFormSDConsoleData.Download163AllTask.TaskStatus then
-      tmpActiveCount := tmpActiveCount - 1;
-  end;
-  if nil <> fFormSDConsoleData.DownloadSinaAllTask then
-  begin                      
-    tmpActiveCount := tmpActiveCount + 1;
-    if nil <> fFormSDConsoleData.DownloadSinaAllTask.DealItem then
-      lbStockSina.Text := fFormSDConsoleData.DownloadSinaAllTask.DealItem.sCode;  
-    if TaskStatus_End = fFormSDConsoleData.DownloadSinaAllTask.TaskStatus then
-      tmpActiveCount := tmpActiveCount - 1;
-  end;
-  if nil <> fFormSDConsoleData.DownloadQQAllTask then
-  begin                                   
-    tmpActiveCount := tmpActiveCount + 1;
-    if nil <> fFormSDConsoleData.DownloadQQAllTask.DealItem then
-      lbStockQQ.Text := fFormSDConsoleData.DownloadQQAllTask.DealItem.sCode;  
-    if TaskStatus_End = fFormSDConsoleData.DownloadQQAllTask.TaskStatus then
-      tmpActiveCount := tmpActiveCount - 1;
-  end;
-  if nil <> fFormSDConsoleData.DownloadXQAllTask then
-  begin                             
-    tmpActiveCount := tmpActiveCount + 1;
-    if nil <> fFormSDConsoleData.DownloadXQAllTask.DealItem then
-      lbStockXQ.Text := fFormSDConsoleData.DownloadXQAllTask.DealItem.sCode;  
-    if TaskStatus_End = fFormSDConsoleData.DownloadXQAllTask.TaskStatus then
-      tmpActiveCount := tmpActiveCount - 1;
-  end;
+  tmpActiveCount := CheckTask(fFormSDConsoleData.Download163AllTask, lbStock163);
+  tmpActiveCount := tmpActiveCount + CheckTask(fFormSDConsoleData.DownloadSinaAllTask, lbStockSina);
+  tmpActiveCount := tmpActiveCount + CheckTask(fFormSDConsoleData.DownloadQQAllTask, lbStockQQ);
+  tmpActiveCount := tmpActiveCount + CheckTask(fFormSDConsoleData.DownloadXQAllTask, lbStockXQ);
   if 0 = tmpActiveCount then
   begin
     if chkShutDown.Checked then

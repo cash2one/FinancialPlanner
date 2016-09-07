@@ -41,11 +41,11 @@ uses
   windef_msg,
   win.thread,
   BaseWinApp,
+  //UtilsLog,
   BaseStockApp,
   define_datasrc,
   StockDayData_Get_163,
-  StockDayData_Get_Sina,
-  UtilsLog;
+  StockDayData_Get_Sina;
 
 var
   G_StockDataDownloaderApp: TStockDataDownloaderApp = nil;
