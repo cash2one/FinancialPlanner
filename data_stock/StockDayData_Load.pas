@@ -14,7 +14,8 @@ implementation
 uses
   Sysutils,
   BaseWinFile,          
-  Define_Price,
+  define_Price,
+  define_datasrc,
   //UtilsLog,
   define_stock_quotes,
   define_dealstore_header,
@@ -31,10 +32,10 @@ begin
   Result := false;
   if weightNone <> ADataAccess.WeightMode then
   begin
-    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, GetDealDataSourceCode(ADataAccess.DataSource), 1, ADataAccess.StockItem);
   end else
   begin
-    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, GetDealDataSourceCode(ADataAccess.DataSource), 1, ADataAccess.StockItem);
   end;
   //Log('LoadStockDayData', 'FileUrl:' + tmpFileUrl);
   if App.Path.IsFileExists(tmpFileUrl) then
@@ -74,9 +75,9 @@ begin
     begin
       if (tmpHead.Header.BaseHeader.DataMode = DataMode_DayData) then
       begin
-        if 0 = ADataAccess.DataSourceId then
-          ADataAccess.DataSourceId  := tmpHead.Header.BaseHeader.DataSourceId;
-        if ADataAccess.DataSourceId = tmpHead.Header.BaseHeader.DataSourceId then
+        if src_unknown = ADataAccess.DataSource then
+          ADataAccess.DataSource  := GetDealDataSource(tmpHead.Header.BaseHeader.DataSourceId);
+        if ADataAccess.DataSource = GetDealDataSource(tmpHead.Header.BaseHeader.DataSourceId) then
         begin
           Result := tmpHead;
         end;
@@ -133,10 +134,10 @@ begin
   Result := true;
   if weightNone <> ADataAccess.WeightMode then
   begin
-    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, GetDealDataSourceCode(ADataAccess.DataSource), 1, ADataAccess.StockItem);
   end else
   begin
-    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, GetDealDataSourceCode(ADataAccess.DataSource), 1, ADataAccess.StockItem);
   end;
   if App.Path.IsFileExists(tmpFileUrl) then
   begin      

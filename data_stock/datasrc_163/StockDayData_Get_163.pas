@@ -307,7 +307,7 @@ var
   tmpHttpData: PIOBuffer;
 begin
   Result := false;
-  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_163, weightNone);
+  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, Src_163, weightNone);
   try
     tmpLastDealDate := Trunc(now());
     tmpInt := DayOfWeek(tmpLastDealDate);

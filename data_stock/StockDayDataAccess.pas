@@ -7,6 +7,7 @@ uses
   BaseDataSet,
   QuickList_int,
   define_price,
+  define_datasrc,
   define_stock_quotes;
   
 type
@@ -18,7 +19,7 @@ type
     DayDealData       : TALIntegerList;
     FirstDealDate     : Word;   // 2
     LastDealDate      : Word;   // 2 最后记录交易时间
-    DataSourceId      : integer;
+    DataSource        : TDealDataSource;
   end;
   
   TStockDayDataAccess = class(TBaseDataSetAccess)
@@ -41,7 +42,7 @@ type
     function GetRecordItem(AIndex: integer): Pointer; override;
     function GetRecordCount: Integer; override;
   public
-    constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer; AWeightMode: TWeightMode);
+    constructor Create(AStockItem: PRT_DealItem; ADataSrc: TDealDataSource; AWeightMode: TWeightMode);
     destructor Destroy; override;
     
     function FindRecord(ADate: Integer): PRT_Quote_Day;
@@ -60,7 +61,7 @@ type
     property LastDealDate: Word read GetLastDealDate;
     property EndDealDate: Word read GetEndDealDate write SetEndDealDate;
     property StockItem: PRT_DealItem read fStockDayData.DealItem write SetStockItem;
-    property DataSourceId: integer read fStockDayData.DataSourceId write fStockDayData.DataSourceId;
+    property DataSource: TDealDataSource read fStockDayData.DataSource write fStockDayData.DataSource;
     property WeightMode: TWeightMode read GetWeightMode write SetWeightMode;
   end;
                             
@@ -102,7 +103,7 @@ begin
   end;
 end;
         
-constructor TStockDayDataAccess.Create(AStockItem: PRT_DealItem; ADataSrcId: integer; AWeightMode: TWeightMode);
+constructor TStockDayDataAccess.Create(AStockItem: PRT_DealItem; ADataSrc: TDealDataSource; AWeightMode: TWeightMode);
 begin
   //inherited;
   FillChar(fStockDayData, SizeOf(fStockDayData), 0);
@@ -113,7 +114,7 @@ begin
    
   fStockDayData.FirstDealDate     := 0;   // 2
   fStockDayData.LastDealDate      := 0;   // 2 最后记录交易时间
-  fStockDayData.DataSourceId := ADataSrcId;
+  fStockDayData.DataSource := ADataSrc;
   fStockDayData.WeightMode := Byte(AWeightMode);
 end;
 

@@ -15,6 +15,7 @@ uses
   Windows,
   BaseWinFile,
   Define_Price,
+  define_datasrc,
   define_stock_quotes,
   define_dealstore_header,
   define_dealstore_file;
@@ -45,7 +46,7 @@ begin
   tmpHead.Header.BaseHeader.RecordCount         := ADataAccess.RecordCount;          // 4 -- 16
   tmpHead.Header.BaseHeader.CompressFlag        := 0;             // 1 -- 17
   tmpHead.Header.BaseHeader.EncryptFlag         := 0;             // 1 -- 18
-  tmpHead.Header.BaseHeader.DataSourceId        := ADataAccess.DataSourceId;             // 2 -- 20
+  tmpHead.Header.BaseHeader.DataSourceId        := GetDealDataSourceCode(ADataAccess.DataSource);             // 2 -- 20
   CopyMemory(@tmpHead.Header.BaseHeader.Code[0], @ADataAccess.StockItem.sCode[1], Length(ADataAccess.StockItem.sCode));
   //Move(ADataAccess.StockItem.Code, tmpHead.Header.BaseHeader.Code[0], Length(ADataAccess.StockItem.Code)); // 12 - 32
   // ----------------------------------------------------
@@ -89,10 +90,10 @@ var
 begin
   if weightNone <> ADataAccess.WeightMode then
   begin
-    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayDataWeight, GetDealDataSourceCode(ADataAccess.DataSource), 1, ADataAccess.StockItem);
   end else
   begin
-    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, ADataAccess.DataSourceId, 1, ADataAccess.StockItem);
+    tmpFileUrl := App.Path.GetFileUrl(FilePath_DBType_DayData, GetDealDataSourceCode(ADataAccess.DataSource), 1, ADataAccess.StockItem);
   end;
   SaveStockDayData(App, ADataAccess, tmpFileUrl);
 end;
