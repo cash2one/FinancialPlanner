@@ -4,7 +4,7 @@ interface
 
 uses
   Classes, Controls, Graphics, Forms, Messages, SysUtils, Windows,  
-  define_DealItem, define_price,
+  define_DealItem, define_price, define_datasrc,
   BaseApp, BaseForm, StockDayDataAccess, UIDealItemNode,
   BaseRule, Rule_CYHT, Rule_BDZX, Rule_Boll, Rule_Std, Rule_MA, ExtCtrls;
 
@@ -18,7 +18,7 @@ type
     Rule_BDZX_Price: TRule_BDZX_Price;   
     Rule_Boll: TRule_Boll_Price;
 
-    DataSrcId: integer;
+    DataSrc: TDealDataSource;
   end;
                        
   TfmeDayChartViewer = class(TfrmBase)
@@ -41,13 +41,13 @@ implementation
 {$R *.dfm}
 
 uses
-  Define_DataSrc, StockDayData_Load, define_stock_quotes;
+  StockDayData_Load, define_stock_quotes;
   
 constructor TfmeDayChartViewer.Create(AOwner: TComponent);
 begin
   inherited;
   FillChar(fDataChartData, SizeOf(fDataChartData), 0);
-  fDataChartData.DataSrcId := DataSrc_163;
+  fDataChartData.DataSrc := Src_163;
 end;
 
 destructor TfmeDayChartViewer.Destroy; 
@@ -70,7 +70,7 @@ begin
   fDataChartData.StockDayDataAccess := AStockItem.StockDayDataAccess;
 
   if nil = fDataChartData.StockDayDataAccess then
-    fDataChartData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataChartData.DataSrcId, fDataChartData.WeightMode);  
+    fDataChartData.StockDayDataAccess := TStockDayDataAccess.Create(AStockItem.StockItem, fDataChartData.DataSrc, fDataChartData.WeightMode);  
   fDataChartData.Rule_BDZX_Price := AStockItem.Rule_BDZX_Price;
   fDataChartData.Rule_CYHT_Price := AStockItem.Rule_CYHT_Price;
   fDataChartData.Rule_Boll := AStockItem.Rule_Boll;

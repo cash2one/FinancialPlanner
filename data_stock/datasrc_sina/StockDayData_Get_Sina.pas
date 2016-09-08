@@ -187,7 +187,7 @@ begin
   begin
     AWeightMode := weightBackward;
   end;
-  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, DataSrc_Sina, AWeightMode);
+  tmpStockDataAccess := TStockDayDataAccess.Create(AStockItem, src_Sina, AWeightMode);
   try                      
     tmpLastDealDate := Trunc(now());
     tmpInt := DayOfWeek(tmpLastDealDate);

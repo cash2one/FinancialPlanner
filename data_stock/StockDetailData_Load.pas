@@ -15,7 +15,8 @@ uses
   SysUtils,
   UtilsLog,
   BaseWinFile,          
-  Define_Price,
+  define_Price,
+  define_datasrc,
   define_stock_quotes,
   define_dealstore_header,
   define_dealstore_file;
@@ -25,7 +26,7 @@ procedure LoadStockDetailDataFromBuffer(App: TBaseApp; ADataAccess: TStockDetail
 procedure LoadStockDetailData(App: TBaseApp; ADataAccess: TStockDetailDataAccess; AIsDoLog: Boolean = false);
 begin
   LoadStockDetailData(App, ADataAccess,
-      App.Path.GetFileUrl(FilePath_DBType_DetailData, ADataAccess.DataSourceId, ADataAccess.FirstDealDate, ADataAccess.StockItem),
+      App.Path.GetFileUrl(FilePath_DBType_DetailData, GetDealDataSourceCode(ADataAccess.DataSource), ADataAccess.FirstDealDate, ADataAccess.StockItem),
       AIsDoLog);
 end;
              
@@ -97,14 +98,14 @@ begin
     begin
       if (tmpHead.Header.BaseHeader.DataMode = DataMode_DayDetailDataM2) then
       begin
-        if 0 = ADataAccess.DataSourceId then
-          ADataAccess.DataSourceId  := tmpHead.Header.BaseHeader.DataSourceId;  
+        if src_unknown = ADataAccess.DataSource then
+          ADataAccess.DataSource  := GetDealDataSource(tmpHead.Header.BaseHeader.DataSourceId);  
         if AIsDoLog then
         begin
-          Log('StockDetailData_Load.pas', 'ADataAccess.DataSourceId' + IntToStr(ADataAccess.DataSourceId) + '/' +
+          Log('StockDetailData_Load.pas', 'ADataAccess.DataSourceId' + IntToStr(GetDealDataSourceCode(ADataAccess.DataSource)) + '/' +
             IntToStr(tmpHead.Header.BaseHeader.DataSourceId));
         end;
-        if ADataAccess.DataSourceId = tmpHead.Header.BaseHeader.DataSourceId then
+        if GetDealDataSourceCode(ADataAccess.DataSource) = tmpHead.Header.BaseHeader.DataSourceId then
         begin
           tmpRecordCount := tmpHead.Header.BaseHeader.RecordCount;
           Inc(tmpHead);

@@ -120,7 +120,7 @@ begin
     tmpStockItem := TBaseStockApp(App).StockItemDB.RecordItem[i];
     if 0 = tmpStockItem.FirstDealDate then
     begin       
-      tmpDayDataAccess := TStockDayDataAccess.Create(tmpStockItem, DataSrc_163, weightNone);
+      tmpDayDataAccess := TStockDayDataAccess.Create(tmpStockItem, Src_163, weightNone);
       try
         LoadStockDayData(App, tmpDayDataAccess);
         if 0 < tmpDayDataAccess.RecordCount then
@@ -203,9 +203,9 @@ begin
     begin
       if nil <> tmpNodeData.DealItem then
       begin
-        fRepairFormData.StockDataTreeCtrlData.DayDataAccess1 := TStockDayDataAccess.Create(tmpNodeData.DealItem, DataSrc_163, weightNone);
+        fRepairFormData.StockDataTreeCtrlData.DayDataAccess1 := TStockDayDataAccess.Create(tmpNodeData.DealItem, Src_163, weightNone);
         LoadStockDayData(App, fRepairFormData.StockDataTreeCtrlData.DayDataAccess1);
-        fRepairFormData.StockDataTreeCtrlData.DayDataAccess2 := TStockDayDataAccess.Create(tmpNodeData.DealItem, DataSrc_Sina, weightForward);
+        fRepairFormData.StockDataTreeCtrlData.DayDataAccess2 := TStockDayDataAccess.Create(tmpNodeData.DealItem, Src_Sina, weightForward);
         LoadStockDayData(App, fRepairFormData.StockDataTreeCtrlData.DayDataAccess2);
 
         vtDayData.BeginUpdate;

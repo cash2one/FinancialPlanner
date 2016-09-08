@@ -4,6 +4,7 @@ interface
 
 uses
   define_DealItem,
+  define_datasrc,
   BaseDataSet,
   QuickList_int,
   define_stock_quotes;
@@ -13,7 +14,7 @@ type
   protected
     fStockItem: PRT_DealItem;  
     fDetailDealData: TALIntegerList;
-    fDataSourceId: integer;
+    fDataSource: TDealDataSource;
     fFirstDealDate: Word;
     fLastDealDate: Word;    
     function GetFirstDealDate: Word;
@@ -27,7 +28,7 @@ type
     function GetRecordItem(AIndex: integer): Pointer; override;
     function GetRecordCount: Integer; override;
   public
-    constructor Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
+    constructor Create(AStockItem: PRT_DealItem; ADataSrc: TDealDataSource);
     destructor Destroy; override;
     
     function FindRecord(ADealDay: Word; ADealTime: Word): PRT_Quote_Detail;
@@ -38,7 +39,7 @@ type
     property FirstDealDate: Word read GetFirstDealDate write SetFirstDealDate;
     property LastDealDate: Word read GetLastDealDate write SetLastDealDate;
     property StockItem: PRT_DealItem read fStockItem write SetStockItem;
-    property DataSourceId: integer read fDataSourceId write fDataSourceId;
+    property DataSource: TDealDataSource read fDataSource write fDataSource;
   end;
           
   function GetDetailTimeIndex(ADetailTime: string): Word;
@@ -106,12 +107,12 @@ begin
 end;     
 { TStockDetailDataAccess }
 
-constructor TStockDetailDataAccess.Create(AStockItem: PRT_DealItem; ADataSrcId: integer);
+constructor TStockDetailDataAccess.Create(AStockItem: PRT_DealItem; ADataSrc: TDealDataSource);
 begin
   fStockItem := AStockItem;   
   fDetailDealData := TALIntegerList.Create;
   fDetailDealData.Duplicates := lstDupAccept; 
-  fDataSourceId := ADataSrcId;
+  fDataSource := ADataSrc;
 end;
 
 destructor TStockDetailDataAccess.Destroy;

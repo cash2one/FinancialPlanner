@@ -138,17 +138,17 @@ begin
 
   if nil = fDataViewerData.StockDayDataAccess_163 then
   begin
-    fDataViewerData.StockDayDataAccess_163 := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_163, weightNone);
+    fDataViewerData.StockDayDataAccess_163 := TStockDayDataAccess.Create(AStockItem.StockItem, Src_163, weightNone);
     StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess_163);
   end;
   if nil = fDataViewerData.StockDayDataAccess_sina then
   begin
-    fDataViewerData.StockDayDataAccess_sina := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_Sina, weightNone);
+    fDataViewerData.StockDayDataAccess_sina := TStockDayDataAccess.Create(AStockItem.StockItem, Src_Sina, weightNone);
     StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess_sina);
   end;
   if nil = fDataViewerData.StockDayDataAccess_SinaW then
   begin
-    fDataViewerData.StockDayDataAccess_SinaW := TStockDayDataAccess.Create(AStockItem.StockItem, DataSrc_Sina, weightBackward);
+    fDataViewerData.StockDayDataAccess_SinaW := TStockDayDataAccess.Create(AStockItem.StockItem, Src_Sina, weightBackward);
     StockDayData_Load.LoadStockDayData(App, fDataViewerData.StockDayDataAccess_SinaW);
   end;
   tmpStr := '';
