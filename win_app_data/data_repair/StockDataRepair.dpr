@@ -7,6 +7,7 @@ uses
   QuickList_double in '..\..\..\devwintech\comps\list\QuickList_double.pas',
   QuickSortList in '..\..\..\devwintech\comps\list\QuickSortList.pas',
   VirtualTrees in '..\..\..\devdcomps\virtualtree\VirtualTrees.pas',
+  VirtualTree_Editor in '..\..\..\devdcomps\virtualtree\VirtualTree_Editor.pas',
   windef_msg in '..\..\..\devwintech\v0001\windef\windef_msg.pas',
   sysdef_string in '..\..\..\devwintech\v0001\sysdef\sysdef_string.pas',
   base.thread in '..\..\..\devwintech\v0001\rec\app_base\base.thread.pas',

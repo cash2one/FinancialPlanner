@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Forms, Classes, Controls, ExtCtrls, SysUtils, Graphics,
-  VirtualTrees, define_price,
+  VirtualTrees, define_price,   
+  VirtualTree_Editor,
   BaseForm, BaseApp, DealItemsTreeView, StockDayDataAccess, StdCtrls;
 
 type
@@ -49,15 +50,21 @@ type
     procedure vtStocksChange(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vtDayDataPaintText(Sender: TBaseVirtualTree;
       const TargetCanvas: TCanvas; Node: PVirtualNode; Column: TColumnIndex;
-      TextType: TVSTTextType);
+      TextType: TVSTTextType);      
     procedure btnCheckFirstDateClick(Sender: TObject);
     procedure btnFindErrorClick(Sender: TObject);
+    procedure vtDayDataCreateEditor(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; out EditLink: IVTEditLink);
+    procedure vtDayDataEditing(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
   private
     { Private declarations }    
     fRepairFormData: TRepairFormData;
     procedure InitializeStockListTree;  
     procedure InitializeStockDayDataListView(ATreeView: TVirtualStringTree); 
     procedure ClearDayData;
+
+    function vtDayDataGetEditDataType(ATree: TBaseVirtualTree; ANode: PVirtualNode; AColumn: TColumnIndex): TEditorValueType;
+    function vtDayDataGetEditText(ATree: TBaseVirtualTree; ANode: PVirtualNode; AColumn: TColumnIndex): WideString;
+    procedure vtDayDataGetEditUpdateData(ATree: TBaseVirtualTree; ANode: PVirtualNode; AColumn: TColumnIndex; AData: WideString);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -403,8 +410,39 @@ begin
     end;
   end;
 end;
+                           
+function TfrmSDRepair.vtDayDataGetEditDataType(ATree: TBaseVirtualTree; ANode: PVirtualNode; AColumn: TColumnIndex): TEditorValueType;
+begin
+  Result := editString;
+end;
 
-procedure TfrmSDRepair.InitializeStockDayDataListView(ATreeView: TVirtualStringTree); 
+function TfrmSDRepair.vtDayDataGetEditText(ATree: TBaseVirtualTree; ANode: PVirtualNode; AColumn: TColumnIndex): WideString;
+begin
+  vtDayDataGetText(ATree, ANode, AColumn, ttNormal, Result);
+end;
+
+procedure TfrmSDRepair.vtDayDataGetEditUpdateData(ATree: TBaseVirtualTree; ANode: PVirtualNode; AColumn: TColumnIndex; AData: WideString);
+var
+  tmpVData: PStockDayDataNode;
+begin                    
+  tmpVData := ATree.GetNodeData(ANode);
+  if nil <> tmpVData then
+  begin
+  
+  end;
+end;
+
+procedure TfrmSDRepair.vtDayDataCreateEditor(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; out EditLink: IVTEditLink);
+begin
+  EditLink := TPropertyEditLink.Create(vtDayDataGetEditDataType, vtDayDataGetEditText, vtDayDataGetEditUpdateData);
+end;
+                     
+procedure TfrmSDRepair.vtDayDataEditing(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; var Allowed: Boolean);
+begin
+  Allowed := true;
+end;
+
+procedure TfrmSDRepair.InitializeStockDayDataListView(ATreeView: TVirtualStringTree);
 var
   tmpCol: TVirtualTreeColumn;
   
@@ -446,10 +484,13 @@ begin
   ATreeView.Header.Options := [hoVisible, hoColumnResize];
   ATreeView.OnGetText := vtDayDataGetText;
   ATreeView.OnPaintText := vtDayDataPaintText;
+  ATreeView.OnCreateEditor := vtDayDataCreateEditor;
+  ATreeView.OnEditing := vtDayDataEditing;
 
   ATreeView.Indent := 4;
   ATreeView.TreeOptions.AnimationOptions := [];
   ATreeView.TreeOptions.SelectionOptions := [toExtendedFocus,toFullRowSelect];
+  ATreeView.TreeOptions.SelectionOptions := [toExtendedFocus];  
   ATreeView.TreeOptions.AutoOptions := [];
   
   tmpCol := ATreeView.Header.Columns.Add;
