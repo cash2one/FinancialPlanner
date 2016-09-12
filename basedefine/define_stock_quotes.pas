@@ -175,6 +175,14 @@ type
     Reserve             : array [0..32 - SizeOf(TStore_Quote_Detail) - 1] of Byte;
   end;          
 
+  PStore_WeightRecord   = ^TStore_WeightRecord;
+  TStore_WeightRecord   = packed record  // 16
+    WeightValue         : TStore_Weight; // 4
+    WeightValue2        : double; // 8
+    StartDate           : Word; // 2
+    EndDate             : Word; // 2   
+  end;          
+
 const
   DealType_Buy  = 1;
   DealType_Sale = 2;

@@ -15,7 +15,8 @@ const
   FilePath_DBType_DetailData    = 5;
   FilePath_DBType_ValueData     = 6;
   
-  FilePath_DBType_MinuteData    = 7;
+  FilePath_DBType_MinuteData    = 7;   
+  FilePath_DBType_WeightData    = 8;
   
   // 日线
   // sd_31  sdw_31
@@ -33,15 +34,17 @@ const
   FileExt_StockMinute     = 'm';
   FileExt_StockMinuteWeight = 'mw';
   
-  FileExt_StockWeek       = 'w';
-  FileExt_StockWeekWeight = 'ww';
+  FileExt_StockWeek       = 'wk';
+  FileExt_StockWeekWeight = 'wkw';
 
   // sm_31 smw_31
-  FileExt_StockMonth      = 'm';
-  FileExt_StockMonthWeight = 'mw';
+  FileExt_StockMonth      = 'mt';
+  FileExt_StockMonthWeight = 'mtw';
 
-  FileExt_StockAnalysis   = 'a';
-  FileExt_StockInstant    = 'i';
+  FileExt_StockAnalysis   = 'as';
+  FileExt_StockInstant    = 'it';
+
+  FileExt_StockWeight     = 'wt';
 
   // 总体统计分析
   FileExt_StockSummaryValue = 'sv';
